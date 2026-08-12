@@ -1,0 +1,48 @@
+ERC report (2026-08-13T03:57:05, Encoding UTF8)
+Report includes: Errors, Warnings, Exclusions
+
+***** Sheet /
+[isolated_pin_label]: Label connected to only one pin
+    ; warning
+    @(50.80 mm, 82.55 mm): Label 'M12_RAW1'
+[isolated_pin_label]: Label connected to only one pin
+    ; warning
+    @(50.80 mm, 85.09 mm): Label 'M12_RAW2'
+[isolated_pin_label]: Label connected to only one pin
+    ; warning
+    @(50.80 mm, 87.63 mm): Label 'M12_RAW3'
+[isolated_pin_label]: Label connected to only one pin
+    ; warning
+    @(50.80 mm, 90.17 mm): Label 'M12_RAW4'
+[isolated_pin_label]: Label connected to only one pin
+    ; warning
+    @(50.80 mm, 92.71 mm): Label 'M12_RAW5'
+[isolated_pin_label]: Label connected to only one pin
+    ; warning
+    @(50.80 mm, 95.25 mm): Label 'M12_RAW6'
+[isolated_pin_label]: Label connected to only one pin
+    ; warning
+    @(50.80 mm, 97.79 mm): Label 'M12_RAW7'
+[isolated_pin_label]: Label connected to only one pin
+    ; warning
+    @(50.80 mm, 100.33 mm): Label 'M12_RAW8'
+[isolated_pin_label]: Label connected to only one pin
+    ; warning
+    @(121.92 mm, 67.31 mm): Label 'PAIR_A_N_TBD'
+[isolated_pin_label]: Label connected to only one pin
+    ; warning
+    @(121.92 mm, 77.47 mm): Label 'PAIR_A_P_TBD'
+[isolated_pin_label]: Label connected to only one pin
+    ; warning
+    @(121.92 mm, 96.52 mm): Label 'PAIR_B_N_TBD'
+[isolated_pin_label]: Label connected to only one pin
+    ; warning
+    @(121.92 mm, 106.68 mm): Label 'PAIR_B_P_TBD'
+
+ ** ERC messages: 12  Errors 0  Warnings 12
+
+ ** Ignored checks:
+    - Global label only appears once in the schematic
+    - Four connection points are joined together
+    - SPICE model issue
+    - Assigned footprint doesn't match footprint filters

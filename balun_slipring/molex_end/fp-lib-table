@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name "balun_slipring_common")(type "KiCad")(uri "${KIPRJMOD}/../common.pretty")(options "")(descr "Shared connector footprints for balun_slipring"))
+)

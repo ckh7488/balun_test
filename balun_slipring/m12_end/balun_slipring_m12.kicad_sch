@@ -1,0 +1,2182 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "7f7c484d-06c7-551e-88d5-2f5ee005daa9")
+	(paper "A4")
+	(title_block
+		(title "100BASE-TX slip-ring VNA fixture - M12 END - PINMAP TBD")
+		(date "2026-08-13")
+		(rev "DRAFT 0")
+		(comment 1 "Two-channel 50 ohm single-ended to 100 ohm differential fixture core.")
+		(comment 2 "Connector RAW pins intentionally not mapped to balun pairs.")
+		(comment 3 "REVIEW ONLY - DO NOT FABRICATE UNTIL PINMAP AND CONNECTOR MECHANICS ARE VERIFIED.")
+	)
+	(lib_symbols
+		(symbol "Connector:Conn_Coaxial"
+					(pin_names
+						(offset 1.016)
+						(hide yes)
+					)
+					(exclude_from_sim no)
+					(in_bom yes)
+					(on_board yes)
+					(in_pos_files yes)
+					(duplicate_pin_numbers_are_jumpers no)
+					(property "Reference" "J"
+						(at 0.254 3.048 0)
+						(show_name no)
+						(do_not_autoplace no)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "Value" "Conn_Coaxial"
+						(at 2.921 0 90)
+						(show_name no)
+						(do_not_autoplace no)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "Footprint" ""
+						(at 0 0 0)
+						(show_name no)
+						(do_not_autoplace no)
+						(hide yes)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "Datasheet" ""
+						(at 0 0 0)
+						(show_name no)
+						(do_not_autoplace no)
+						(hide yes)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "Description" "coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"
+						(at 0 0 0)
+						(show_name no)
+						(do_not_autoplace no)
+						(hide yes)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "ki_keywords" "BNC SMA SMB SMC LEMO coaxial connector CINCH RCA MCX MMCX U.FL UMRF"
+						(at 0 0 0)
+						(show_name no)
+						(do_not_autoplace no)
+						(hide yes)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "ki_fp_filters" "*BNC* *SMA* *SMB* *SMC* *Cinch* *LEMO* *UMRF* *MCX* *U.FL*"
+						(at 0 0 0)
+						(show_name no)
+						(do_not_autoplace no)
+						(hide yes)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(symbol "Conn_Coaxial_0_1"
+						(polyline
+							(pts
+								(xy -2.54 0) (xy -0.508 0)
+							)
+							(stroke
+								(width 0)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+						(arc
+							(start 1.778 0)
+							(mid 0.222 -1.8079)
+							(end -1.778 -0.508)
+							(stroke
+								(width 0.254)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+						(arc
+							(start -1.778 0.508)
+							(mid 0.2221 1.8084)
+							(end 1.778 0)
+							(stroke
+								(width 0.254)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+						(circle
+							(center 0 0)
+							(radius 0.508)
+							(stroke
+								(width 0.2032)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+						(polyline
+							(pts
+								(xy 0 -2.54) (xy 0 -1.778)
+							)
+							(stroke
+								(width 0)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+					)
+					(symbol "Conn_Coaxial_1_1"
+						(pin passive line
+							(at -5.08 0 0)
+							(length 2.54)
+							(name "In"
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+							(number "1"
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+						)
+						(pin passive line
+							(at 0 -5.08 90)
+							(length 2.54)
+							(name "Ext"
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+							(number "2"
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+						)
+					)
+					(embedded_fonts no)
+				)
+		(symbol "Device:R"
+					(pin_numbers
+						(hide yes)
+					)
+					(pin_names
+						(offset 0)
+					)
+					(exclude_from_sim no)
+					(in_bom yes)
+					(on_board yes)
+					(in_pos_files yes)
+					(duplicate_pin_numbers_are_jumpers no)
+					(property "Reference" "R"
+						(at 2.032 0 90)
+						(show_name no)
+						(do_not_autoplace no)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "Value" "R"
+						(at 0 0 90)
+						(show_name no)
+						(do_not_autoplace no)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "Footprint" ""
+						(at -1.778 0 90)
+						(show_name no)
+						(do_not_autoplace no)
+						(hide yes)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "Datasheet" ""
+						(at 0 0 0)
+						(show_name no)
+						(do_not_autoplace no)
+						(hide yes)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "Description" "Resistor"
+						(at 0 0 0)
+						(show_name no)
+						(do_not_autoplace no)
+						(hide yes)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "ki_keywords" "R res resistor"
+						(at 0 0 0)
+						(show_name no)
+						(do_not_autoplace no)
+						(hide yes)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "ki_fp_filters" "R_*"
+						(at 0 0 0)
+						(show_name no)
+						(do_not_autoplace no)
+						(hide yes)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(symbol "R_0_1"
+						(rectangle
+							(start -1.016 -2.54)
+							(end 1.016 2.54)
+							(stroke
+								(width 0.254)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+					)
+					(symbol "R_1_1"
+						(pin passive line
+							(at 0 3.81 270)
+							(length 1.27)
+							(name ""
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+							(number "1"
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+						)
+						(pin passive line
+							(at 0 -3.81 90)
+							(length 1.27)
+							(name ""
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+							(number "2"
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+						)
+					)
+					(embedded_fonts no)
+				)
+		(symbol "Transformer:ADT2-1T"
+					(pin_names
+						(hide yes)
+					)
+					(exclude_from_sim no)
+					(in_bom yes)
+					(on_board yes)
+					(in_pos_files yes)
+					(duplicate_pin_numbers_are_jumpers no)
+					(property "Reference" "TR"
+						(at 0 6.35 0)
+						(show_name no)
+						(do_not_autoplace no)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "Value" "ADT2-1T"
+						(at 0 -6.985 0)
+						(show_name no)
+						(do_not_autoplace no)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "Footprint" "RF_Mini-Circuits:Mini-Circuits_CD542_H2.84mm"
+						(at 0 -8.89 0)
+						(show_name no)
+						(do_not_autoplace no)
+						(hide yes)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "Datasheet" "https://www.minicircuits.com/pdfs/ADT2-1T+.pdf"
+						(at 0 0 0)
+						(show_name no)
+						(do_not_autoplace no)
+						(hide yes)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "Description" "0.40-450MHz 1:2 RF Transformer, Unbalanced to Balanced Center Tap, CD542"
+						(at 0 0 0)
+						(show_name no)
+						(do_not_autoplace no)
+						(hide yes)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "ki_keywords" "Mini-Circuits RF Transformer"
+						(at 0 0 0)
+						(show_name no)
+						(do_not_autoplace no)
+						(hide yes)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(property "ki_fp_filters" "Mini?Circuits*CD542*"
+						(at 0 0 0)
+						(show_name no)
+						(do_not_autoplace no)
+						(hide yes)
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(symbol "ADT2-1T_0_1"
+						(circle
+							(center -3.81 3.81)
+							(radius 0.635)
+							(stroke
+								(width 0)
+								(type default)
+							)
+							(fill
+								(type outline)
+							)
+						)
+						(polyline
+							(pts
+								(xy -2.54 5.08) (xy -1.524 5.08) (xy -1.524 3.048)
+							)
+							(stroke
+								(width 0.1524)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+						(arc
+							(start -1.524 3.048)
+							(mid -0.7653 2.286)
+							(end -1.524 1.524)
+							(stroke
+								(width 0.2032)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+						(arc
+							(start -1.524 1.524)
+							(mid -0.7653 0.762)
+							(end -1.524 0)
+							(stroke
+								(width 0.2032)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+						(arc
+							(start -1.524 0)
+							(mid -0.7653 -0.762)
+							(end -1.524 -1.524)
+							(stroke
+								(width 0.2032)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+						(arc
+							(start -1.524 -1.524)
+							(mid -0.7653 -2.286)
+							(end -1.524 -3.048)
+							(stroke
+								(width 0.2032)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+						(polyline
+							(pts
+								(xy -1.524 -3.048) (xy -1.524 -5.08) (xy -2.54 -5.08)
+							)
+							(stroke
+								(width 0.1524)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+						(polyline
+							(pts
+								(xy 1.524 3.048) (xy 1.524 5.08) (xy 2.54 5.08)
+							)
+							(stroke
+								(width 0.1524)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+						(arc
+							(start 1.524 1.524)
+							(mid 0.7653 2.286)
+							(end 1.524 3.048)
+							(stroke
+								(width 0.2032)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+						(arc
+							(start 1.524 0)
+							(mid 0.7653 0.762)
+							(end 1.524 1.524)
+							(stroke
+								(width 0.2032)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+						(arc
+							(start 1.524 -1.524)
+							(mid 0.7653 -0.762)
+							(end 1.524 0)
+							(stroke
+								(width 0.2032)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+						(arc
+							(start 1.524 -3.048)
+							(mid 0.7653 -2.286)
+							(end 1.524 -1.524)
+							(stroke
+								(width 0.2032)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+						(polyline
+							(pts
+								(xy 2.54 0) (xy 1.27 0)
+							)
+							(stroke
+								(width 0.1524)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+						(polyline
+							(pts
+								(xy 2.54 -5.08) (xy 1.524 -5.08) (xy 1.524 -3.048)
+							)
+							(stroke
+								(width 0.1524)
+								(type default)
+							)
+							(fill
+								(type none)
+							)
+						)
+						(circle
+							(center 3.81 3.81)
+							(radius 0.635)
+							(stroke
+								(width 0)
+								(type default)
+							)
+							(fill
+								(type outline)
+							)
+						)
+					)
+					(symbol "ADT2-1T_1_1"
+						(pin passive line
+							(at -5.08 -5.08 0)
+							(length 2.54)
+							(name ""
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+							(number "1"
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+						)
+						(pin no_connect line
+							(at -2.54 0 0)
+							(length 2.54)
+							(hide yes)
+							(name ""
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+							(number "2"
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+						)
+						(pin passive line
+							(at -5.08 5.08 0)
+							(length 2.54)
+							(name ""
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+							(number "3"
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+						)
+						(pin passive line
+							(at 5.08 -5.08 180)
+							(length 2.54)
+							(name ""
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+							(number "4"
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+						)
+						(pin passive line
+							(at 5.08 0 180)
+							(length 2.54)
+							(name ""
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+							(number "5"
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+						)
+						(pin passive line
+							(at 5.08 5.08 180)
+							(length 2.54)
+							(name ""
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+							(number "6"
+								(effects
+									(font
+										(size 1.27 1.27)
+									)
+								)
+							)
+						)
+					)
+					(embedded_fonts no)
+				)
+		(symbol "Connector_Generic:Conn_01x08"
+				(pin_names
+					(offset 1.016)
+					(hide yes)
+				)
+				(exclude_from_sim no)
+				(in_bom yes)
+				(on_board yes)
+				(in_pos_files yes)
+				(duplicate_pin_numbers_are_jumpers no)
+				(property "Reference" "J"
+					(at 0 10.16 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(property "Value" "Conn_01x08"
+					(at 0 -12.7 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(property "Footprint" ""
+					(at 0 0 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(hide yes)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(property "Datasheet" ""
+					(at 0 0 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(hide yes)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(property "Description" "Generic connector, single row, 01x08, script generated (kicad-library-utils/schlib/autogen/connector/)"
+					(at 0 0 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(hide yes)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(property "ki_keywords" "connector"
+					(at 0 0 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(hide yes)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(property "ki_fp_filters" "Connector*:*_1x??_*"
+					(at 0 0 0)
+					(show_name no)
+					(do_not_autoplace no)
+					(hide yes)
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(symbol "Conn_01x08_1_1"
+					(rectangle
+						(start -1.27 8.89)
+						(end 1.27 -11.43)
+						(stroke
+							(width 0.254)
+							(type default)
+						)
+						(fill
+							(type background)
+						)
+					)
+					(rectangle
+						(start -1.27 7.747)
+						(end 0 7.493)
+						(stroke
+							(width 0.1524)
+							(type default)
+						)
+						(fill
+							(type none)
+						)
+					)
+					(rectangle
+						(start -1.27 5.207)
+						(end 0 4.953)
+						(stroke
+							(width 0.1524)
+							(type default)
+						)
+						(fill
+							(type none)
+						)
+					)
+					(rectangle
+						(start -1.27 2.667)
+						(end 0 2.413)
+						(stroke
+							(width 0.1524)
+							(type default)
+						)
+						(fill
+							(type none)
+						)
+					)
+					(rectangle
+						(start -1.27 0.127)
+						(end 0 -0.127)
+						(stroke
+							(width 0.1524)
+							(type default)
+						)
+						(fill
+							(type none)
+						)
+					)
+					(rectangle
+						(start -1.27 -2.413)
+						(end 0 -2.667)
+						(stroke
+							(width 0.1524)
+							(type default)
+						)
+						(fill
+							(type none)
+						)
+					)
+					(rectangle
+						(start -1.27 -4.953)
+						(end 0 -5.207)
+						(stroke
+							(width 0.1524)
+							(type default)
+						)
+						(fill
+							(type none)
+						)
+					)
+					(rectangle
+						(start -1.27 -7.493)
+						(end 0 -7.747)
+						(stroke
+							(width 0.1524)
+							(type default)
+						)
+						(fill
+							(type none)
+						)
+					)
+					(rectangle
+						(start -1.27 -10.033)
+						(end 0 -10.287)
+						(stroke
+							(width 0.1524)
+							(type default)
+						)
+						(fill
+							(type none)
+						)
+					)
+					(pin passive line
+						(at -5.08 7.62 0)
+						(length 3.81)
+						(name "Pin_1"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+						(number "1"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+					)
+					(pin passive line
+						(at -5.08 5.08 0)
+						(length 3.81)
+						(name "Pin_2"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+						(number "2"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+					)
+					(pin passive line
+						(at -5.08 2.54 0)
+						(length 3.81)
+						(name "Pin_3"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+						(number "3"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+					)
+					(pin passive line
+						(at -5.08 0 0)
+						(length 3.81)
+						(name "Pin_4"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+						(number "4"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+					)
+					(pin passive line
+						(at -5.08 -2.54 0)
+						(length 3.81)
+						(name "Pin_5"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+						(number "5"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+					)
+					(pin passive line
+						(at -5.08 -5.08 0)
+						(length 3.81)
+						(name "Pin_6"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+						(number "6"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+					)
+					(pin passive line
+						(at -5.08 -7.62 0)
+						(length 3.81)
+						(name "Pin_7"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+						(number "7"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+					)
+					(pin passive line
+						(at -5.08 -10.16 0)
+						(length 3.81)
+						(name "Pin_8"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+						(number "8"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+					)
+				)
+				(embedded_fonts no)
+			)
+	)
+	(text "PINMAP TBD - REVIEW ONLY - DO NOT FABRICATE"
+		(exclude_from_sim no)
+		(at 145 25 0)
+		(effects
+			(font
+				(size 1.6 1.6)
+				(bold yes)
+			)
+		)
+		(uuid "aa08d94e-a355-5c7c-b833-a4a030f82351")
+	)
+	(text "Common SMA/balun core is fixed; connector RAW nets are deliberately isolated."
+		(exclude_from_sim no)
+		(at 145 31 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+		)
+		(uuid "e7b87054-3598-5af8-bc4e-626dd4176f7d")
+	)
+	(text "After continuity test: replace RAW-to-PAIR boundary with four short symmetric direct routes."
+		(exclude_from_sim no)
+		(at 145 35 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+		)
+		(uuid "1d9c058d-d479-5e45-ab6f-31478ad9def3")
+	)
+	(text "Unused channel SMA requires an external 50 ohm termination during crosstalk tests."
+		(exclude_from_sim no)
+		(at 145 39 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+		)
+		(uuid "3d9d2b1b-663f-559a-93d0-806441a44aaf")
+	)
+	(text "J2 / PAIR A"
+		(exclude_from_sim no)
+		(at 82.5 60 0)
+		(effects
+			(font
+				(size 1 1)
+				(bold yes)
+			)
+		)
+		(uuid "a4143ca8-d850-5527-93f3-bc48c47e1682")
+	)
+	(text "J3 / PAIR B"
+		(exclude_from_sim no)
+		(at 82.5 89 0)
+		(effects
+			(font
+				(size 1 1)
+				(bold yes)
+			)
+		)
+		(uuid "d220c1fb-471d-5181-984e-76a0ae0100c7")
+	)
+	(text "J1 / RAW PINS"
+		(exclude_from_sim no)
+		(at 55 70 0)
+		(effects
+			(font
+				(size 1 1)
+				(bold yes)
+			)
+		)
+		(uuid "d3d9aa36-afee-5b32-bbd4-f181d27a4071")
+	)
+	(wire
+		(pts
+			(xy 87.63 67.31) (xy 111.76 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f9a69b39-c4be-522c-b86c-9e232f1ecf52")
+	)
+	(wire
+		(pts
+			(xy 121.92 72.39) (xy 143.51 72.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "15f7dd40-7240-5132-80e4-313516bca26a")
+	)
+	(wire
+		(pts
+			(xy 87.63 96.52) (xy 111.76 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "62b31cfc-ef8b-5e5b-8e13-06d3d1e9d512")
+	)
+	(wire
+		(pts
+			(xy 121.92 101.6) (xy 143.51 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5fb91c09-bedb-5dce-819d-6c173f600f79")
+	)
+	(label "GND"
+		(at 82.55 62.23 90)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "c1c1b600-7d6f-5540-ab98-71e53b607016")
+	)
+	(label "RF_A_50"
+		(at 99.06 67.31 0)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "d4a0b642-7f0d-52b6-bf7e-e4287f7ac1ed")
+	)
+	(label "GND"
+		(at 111.76 77.47 0)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "a3006169-fa5e-57bc-a2fe-11999cea4a1a")
+	)
+	(label "GND"
+		(at 135.89 72.39 180)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "ea908210-9049-52a6-90fb-0ba719d18e54")
+	)
+	(label "PAIR_A_N_TBD"
+		(at 121.92 67.31 180)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "ddffdf6c-7929-5bb0-834c-5ae2b7c9176c")
+	)
+	(label "PAIR_A_P_TBD"
+		(at 121.92 77.47 180)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "91bf9317-d557-59c8-9221-fe2ebe45fcc5")
+	)
+	(label "GND"
+		(at 82.55 91.44 90)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "7ae20ca8-7e71-53ec-a4d0-39e26d057f3a")
+	)
+	(label "RF_B_50"
+		(at 99.06 96.52 0)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "149255b6-e41c-5180-933c-e9f3e95fd3d1")
+	)
+	(label "GND"
+		(at 111.76 106.68 0)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "7a65e33f-9553-534c-b23c-af7ac9f56292")
+	)
+	(label "GND"
+		(at 135.89 101.6 180)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "80635251-7792-557b-bde6-4dcf4503b605")
+	)
+	(label "PAIR_B_N_TBD"
+		(at 121.92 96.52 180)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "f2199948-52a1-5ccd-b2d7-1b3eb75f3a5f")
+	)
+	(label "PAIR_B_P_TBD"
+		(at 121.92 106.68 180)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "af96f7c2-dbbe-597d-88e6-ada3419f01de")
+	)
+	(label "M12_RAW1"
+		(at 50.8 82.55 180)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "05492223-fc2c-59f0-b932-83867e09e7ae")
+	)
+	(label "M12_RAW2"
+		(at 50.8 85.09 180)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "6b436223-a153-5878-b82b-310b92555fa5")
+	)
+	(label "M12_RAW3"
+		(at 50.8 87.63 180)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "952faad2-4529-58bf-bd5f-a1f50ea2843d")
+	)
+	(label "M12_RAW4"
+		(at 50.8 90.17 180)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "c68bcfa3-8dab-517a-8490-2d6b60d87794")
+	)
+	(label "M12_RAW5"
+		(at 50.8 92.71 180)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "714eec16-16c9-5168-82c3-6f3e7c4c3d2a")
+	)
+	(label "M12_RAW6"
+		(at 50.8 95.25 180)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "b5f2febf-3ff1-5acd-aac3-6778bd092b80")
+	)
+	(label "M12_RAW7"
+		(at 50.8 97.79 180)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "aa27ebd6-18ee-5bdc-84a1-1825054671d3")
+	)
+	(label "M12_RAW8"
+		(at 50.8 100.33 180)
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+		(uuid "4ef20fdf-c0fb-5263-b452-af2dac057df6")
+	)
+	(symbol
+			(lib_id "Connector:Conn_Coaxial")
+			(at 82.55 67.31 180)
+			(unit 1)
+			(body_style 1)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(dnp no)
+			(uuid "8e378d3d-a99e-457d-9c59-3d43592cb06c")
+			(property "Reference" "J2"
+				(at 82.55 67.31 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "SMA_A"
+				(at 82.55 67.31 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Connector_Coaxial:SMA_Amphenol_132289_EdgeMount"
+				(at 82.55 67.31 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" "https://www.amphenolrf.com/132289.html"
+				(at 82.55 67.31 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 82.55 67.31 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Manufacturer" "Amphenol RF"
+				(at 85.09 72.3899 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" "132289"
+				(at 85.09 72.3899 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Assembly" "DNP UNTIL STACK/CONNECTOR DECISION"
+				(at 85.09 72.3899 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(pin "1"
+				(uuid "7be277a0-00bc-4956-b4da-304ce832405c")
+			)
+			(pin "2"
+				(uuid "dc914470-308b-4609-bdce-9aadf30534cf")
+			)
+			(instances
+				(project "balun_slipring_m12"
+					(path "/7f7c484d-06c7-551e-88d5-2f5ee005daa9"
+						(reference "J2")
+						(unit 1)
+					)
+				)
+			)
+		)
+	(symbol
+			(lib_id "Connector:Conn_Coaxial")
+			(at 82.55 96.52 180)
+			(unit 1)
+			(body_style 1)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(dnp no)
+			(uuid "25613112-a452-492a-8609-e1f92fc9c315")
+			(property "Reference" "J3"
+				(at 82.55 96.52 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "SMA_B"
+				(at 82.55 96.52 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Connector_Coaxial:SMA_Amphenol_132289_EdgeMount"
+				(at 82.55 96.52 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" "https://www.amphenolrf.com/132289.html"
+				(at 82.55 96.52 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 82.55 96.52 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Manufacturer" "Amphenol RF"
+				(at 85.09 101.5999 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" "132289"
+				(at 85.09 101.5999 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Assembly" "DNP UNTIL STACK/CONNECTOR DECISION"
+				(at 85.09 101.5999 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(pin "1"
+				(uuid "edff3b84-d4b6-47d5-93aa-5281b6aa4487")
+			)
+			(pin "2"
+				(uuid "b5effe7d-bcac-428b-9495-4c1b77f939d3")
+			)
+			(instances
+				(project "balun_slipring_m12"
+					(path "/7f7c484d-06c7-551e-88d5-2f5ee005daa9"
+						(reference "J3")
+						(unit 1)
+					)
+				)
+			)
+		)
+	(symbol
+			(lib_id "Transformer:ADT2-1T")
+			(at 116.84 72.39 0)
+			(unit 1)
+			(body_style 1)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(dnp no)
+			(uuid "cd8bc015-c5d9-4064-a3bd-ecad8524d249")
+			(property "Reference" "T1"
+				(at 116.84 78.74 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "ADT2-1T+"
+				(at 116.84 65.405 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" "RF_Mini-Circuits:Mini-Circuits_CD542_H2.84mm"
+				(at 116.84 63.5 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" "https://www.minicircuits.com/pdfs/ADT2-1T+.pdf"
+				(at 116.84 72.39 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 116.84 72.39 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Manufacturer" "Mini-Circuits"
+				(at 119.38 77.4699 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" "ADT2-1T+"
+				(at 119.38 77.4699 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Assembly" "FIT"
+				(at 119.38 77.4699 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(pin "1"
+				(uuid "d6669508-e480-4041-8111-0ae4d621468d")
+			)
+			(pin "2"
+				(uuid "537cc112-c1ef-4402-9def-7547ea37eff1")
+			)
+			(pin "3"
+				(uuid "231fda34-2378-4445-9b27-32295383a0cc")
+			)
+			(pin "4"
+				(uuid "c464e116-9096-4071-84b4-f777e3183256")
+			)
+			(pin "5"
+				(uuid "217c1c59-2861-4830-a4cf-a97f107eb578")
+			)
+			(pin "6"
+				(uuid "25f81f62-c993-4242-ab81-cc5512a30ca9")
+			)
+			(instances
+				(project "balun_slipring_m12"
+					(path "/7f7c484d-06c7-551e-88d5-2f5ee005daa9"
+						(reference "T1")
+						(unit 1)
+					)
+				)
+			)
+		)
+	(symbol
+			(lib_id "Transformer:ADT2-1T")
+			(at 116.84 101.6 0)
+			(unit 1)
+			(body_style 1)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(dnp no)
+			(uuid "eecb38d9-6984-45f0-b45d-cf8ac82a28a2")
+			(property "Reference" "T2"
+				(at 116.84 107.95 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "ADT2-1T+"
+				(at 116.84 94.615 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" "RF_Mini-Circuits:Mini-Circuits_CD542_H2.84mm"
+				(at 116.84 92.71 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" "https://www.minicircuits.com/pdfs/ADT2-1T+.pdf"
+				(at 116.84 101.6 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 116.84 101.6 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Manufacturer" "Mini-Circuits"
+				(at 119.38 106.6799 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" "ADT2-1T+"
+				(at 119.38 106.6799 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Assembly" "FIT"
+				(at 119.38 106.6799 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(pin "1"
+				(uuid "54e63609-7963-49a0-ac38-165b19233485")
+			)
+			(pin "2"
+				(uuid "c8384dca-78dc-4afa-a1cb-58bb0649c07f")
+			)
+			(pin "3"
+				(uuid "88dd5c34-a7bb-4698-a64d-822a0171c4b5")
+			)
+			(pin "4"
+				(uuid "dfb964c7-122a-4ef3-8d70-4a59c46c044f")
+			)
+			(pin "5"
+				(uuid "0debf42f-e606-455d-80fd-bae551048ebe")
+			)
+			(pin "6"
+				(uuid "7e0b22c7-5b1f-46a2-90c0-e60be03eca35")
+			)
+			(instances
+				(project "balun_slipring_m12"
+					(path "/7f7c484d-06c7-551e-88d5-2f5ee005daa9"
+						(reference "T2")
+						(unit 1)
+					)
+				)
+			)
+		)
+	(symbol
+			(lib_id "Device:R")
+			(at 139.7 72.39 90)
+			(unit 1)
+			(body_style 1)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(dnp no)
+			(uuid "ac3341d4-1abb-4680-b570-095e6910fe92")
+			(property "Reference" "RCT1"
+				(at 139.7 72.39 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "0R"
+				(at 139.7 72.39 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+				(at 137.922 72.39 90)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 139.7 72.39 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 139.7 72.39 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Manufacturer" "ANY"
+				(at 142.24 77.4699 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" "0 ohm 0805"
+				(at 142.24 77.4699 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Assembly" "FIT; remove for floating-CT comparison"
+				(at 142.24 77.4699 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(pin "1"
+				(uuid "1f74872e-1fea-4e7c-b23b-e8bec58a43fb")
+			)
+			(pin "2"
+				(uuid "d434c521-99d9-43b1-880a-3dfdd5dbd028")
+			)
+			(instances
+				(project "balun_slipring_m12"
+					(path "/7f7c484d-06c7-551e-88d5-2f5ee005daa9"
+						(reference "RCT1")
+						(unit 1)
+					)
+				)
+			)
+		)
+	(symbol
+			(lib_id "Device:R")
+			(at 139.7 101.6 90)
+			(unit 1)
+			(body_style 1)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(dnp no)
+			(uuid "fd97f624-74df-4217-ada2-078a1ac3e649")
+			(property "Reference" "RCT2"
+				(at 139.7 101.6 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "0R"
+				(at 139.7 101.6 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+				(at 137.922 101.6 90)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 139.7 101.6 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 139.7 101.6 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Manufacturer" "ANY"
+				(at 142.24 106.6799 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "MPN" "0 ohm 0805"
+				(at 142.24 106.6799 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Assembly" "FIT; remove for floating-CT comparison"
+				(at 142.24 106.6799 0)
+				(hide yes)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(pin "1"
+				(uuid "98a8cfb6-03df-4b81-9c61-90da90ae0ade")
+			)
+			(pin "2"
+				(uuid "59b461f3-362b-47fc-8ba2-8f5f33f02506")
+			)
+			(instances
+				(project "balun_slipring_m12"
+					(path "/7f7c484d-06c7-551e-88d5-2f5ee005daa9"
+						(reference "RCT2")
+						(unit 1)
+					)
+				)
+			)
+		)
+	(symbol
+		(lib_id "Connector_Generic:Conn_01x08")
+		(at 55.88 90.17 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board no)
+		(in_pos_files no)
+		(dnp yes)
+		(uuid "f5acb1fa-140c-546e-9350-9506c00da4ab")
+		(property "Reference" "J1"
+			(at 55.88 75 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "M12 A-8 FEMALE / EXACT MPN TBD"
+			(at 55.88 105 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 55.88 90.17 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://finecables.com/uploadfiles/2022/06/259%20M12%20A_coding%20Straight%20Connector%2C%20Panel%20Mount%2C%20PCB%20Type%2C%20Front%20fastened.pdf"
+			(at 55.88 90.17 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Connector-side raw pins; intentionally isolated from balun pairs until continuity mapping is verified"
+			(at 55.88 90.17 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Manufacturer" "Finecables (candidate family)"
+			(at 55.88 90.17 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "Female mate for MB12MBAFF08ST-0; suffix TBD"
+			(at 55.88 90.17 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Assembly" "TBD / DO NOT ORDER OR FABRICATE"
+			(at 55.88 90.17 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "a1d8507e-d204-5890-9707-1a3176d70d6d")
+		)
+		(pin "2"
+			(uuid "601e67b8-7d59-5fc6-8e06-59dca8bef3da")
+		)
+		(pin "3"
+			(uuid "4982c1b8-0fb9-52ea-99c5-55b8e108fb60")
+		)
+		(pin "4"
+			(uuid "b6fb67b5-33d1-5fc5-8767-ec8df7a33b9e")
+		)
+		(pin "5"
+			(uuid "163fbc3e-351c-5ede-9b1e-5193c669ee67")
+		)
+		(pin "6"
+			(uuid "bd34c4c3-3cf3-5da4-aaf6-c2880c844194")
+		)
+		(pin "7"
+			(uuid "29b5d6f1-db00-545d-ad66-fe180c580168")
+		)
+		(pin "8"
+			(uuid "7bf845ae-5717-52e6-9ba5-d1e4e3a9e47f")
+		)
+		(instances
+			(project "balun_slipring_m12"
+				(path "/7f7c484d-06c7-551e-88d5-2f5ee005daa9"
+					(reference "J1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)
