@@ -1031,7 +1031,7 @@
 				)
 			)
 		)
-		(property "Assembly" "FIT for direct shield bond"
+		(property "Assembly" "VARIANT; default FIT on one fixture board only"
 			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)
