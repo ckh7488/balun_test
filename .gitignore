@@ -1,0 +1,29 @@
+# KiCad per-user state, locks, and automatic backups
+*.kicad_prl
+~*.lck
+*-backups/
+
+# Local design history and named safety snapshots
+.history/
+backup_*/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Local routing/inspection experiments
+_*/
+_*.png
+_*.kicad_prl
+
+# Regenerable review outputs
+*_pcb_top.png
+*_pcb_bottom.png
+*_pcb_layers.pdf
+*_schematic.pdf
+*_drc_pass*.rpt
+
+# Fabrication exports are generated only after the release design is frozen.
+# The current directory/ZIP are archived Rev A outputs and must not be ordered.
+fabrication/
+*_fabrication_HOLD.zip

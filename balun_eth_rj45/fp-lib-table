@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name "balun_eth_rj45")(type "KiCad")(uri "${KIPRJMOD}/balun_eth_rj45.pretty")(options "")(descr "Project-specific verified footprints"))
+)
