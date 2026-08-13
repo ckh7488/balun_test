@@ -223,8 +223,10 @@ def _migrate_pair_b_return_via(
 def _local_ground_objects(newline: str) -> str:
     objects: list[str] = []
 
-    # Bottom-side centre-tap resistors lose their plane connection when B.Cu
-    # blanket copper is removed.  Give each one a short local path to L2/L3.
+    # Retain short L2/L3 connections for the optional bottom-side centre-tap
+    # grounding resistors after blanket B.Cu is removed.  RCT1-RCT4 remain
+    # DNP for the CT-FLOAT baseline; populate all eight parts across both
+    # fixture boards only for a controlled CT-GND comparison.
     for ref, x, y, via_x, via_y in (
         # Keep the through-via outside pair A's top-layer fanout corridor.
         ("RCT1", 58.0, 29.0, 58.0, 24.0),
@@ -712,7 +714,7 @@ def update_board(board_path: Path) -> dict[str, int]:
 
 
 def update_routing_only(board_path: Path) -> dict[str, int]:
-    """Replace only Ethernet routing and compact the existing RCT4 GND path.
+    """Replace only Ethernet routing and compact optional RCT4's GND path.
 
     This is the safe migration path for a board that is already at Rev B.  It
     deliberately leaves footprints, stack-up, RF routes, zones, and project

@@ -11,6 +11,10 @@ backup_*/
 __pycache__/
 *.py[cod]
 
+# Local source documents and third-party application binaries
+/Docs/
+/LibreVNA-GUI_Windows-*/
+
 # Local routing/inspection experiments
 _*/
 _*.png

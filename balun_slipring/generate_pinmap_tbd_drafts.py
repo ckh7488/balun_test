@@ -1,13 +1,13 @@
-"""Generate the two pre-pin-map KiCad 10 endpoint drafts.
+"""Generate the two document-mapped KiCad 10 endpoint drafts.
 
-The generated boards intentionally stop at the mapping boundary.  They are
-layout-review artifacts, not fabrication outputs.  Re-run only while the
-project is still in PINMAP-TBD state; once the pin map is known, edit the
-KiCad projects normally and retire this generator.
+The electrical mapping comes from slide 14 of ``Docs/[인수인계] PALA720.pptx``.
+The generated boards include the fixed 100BASE-TX fan-outs, but remain review
+artifacts rather than fabrication outputs until the connector mechanics and
+the 1.6 mm-compatible SMA choice are verified.
 
 Run this with KiCad's bundled Python, which provides the pcbnew module.  A
 forced regeneration is permitted only while every existing board and
-schematic still carries the DRAFT 0 / DO NOT FABRICATE markers.  Any saved
+schematic still carries a recognized draft revision / DO NOT FABRICATE marker.  Any saved
 DRC/ERC report is removed after generation because it no longer describes the
 new files; run kicad-cli again before trusting or committing fresh reports.
 """
@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 import re
 import textwrap
@@ -33,7 +34,7 @@ KICAD_FP = Path(r"C:\Program Files\KiCad\10.0\share\kicad\footprints")
 KICAD_SYM = Path(r"C:\Program Files\KiCad\10.0\share\kicad\symbols")
 COMMON_FP = HERE / "common.pretty"
 
-DRAFT_REVISION_MARKER = '(rev "DRAFT 0")'
+DRAFT_REVISION_MARKERS = ('(rev "DRAFT 0")', '(rev "DRAFT 1")')
 DRAFT_WARNING_MARKER = "DO NOT FABRICATE"
 
 OLD_PROJECT = "balun_eth_rj45"
@@ -43,37 +44,72 @@ VARIANTS = {
     "molex": {
         "directory": HERE / "molex_end",
         "project": "balun_slipring_molex",
-        "connector_symbol": "Conn_01x04",
-        "connector_value": "5055680471 / PINMAP TBD",
-        "connector_footprint": "balun_slipring_common:Molex_5055680471",
+        "connector_symbol": "Conn_01x05",
+        "connector_value": "5055680571 / MATE FOR 5055650501",
+        "connector_footprint": "balun_slipring_common:Molex_5055680571",
         "connector_datasheet": (
-            "https://www.molex.com/content/dam/molex/molex-dot-com/products/"
-            "automated/en-us/2ddrawingdxfadobe2d/505/505568/"
-            "5055680471.pdf?inline="
+            "https://www.molex.com/en-us/products/part-detail/5055680571"
         ),
         "connector_manufacturer": "Molex",
-        "connector_mpn": "5055680471",
-        "raw_prefix": "MOL_RAW",
-        "raw_count": 4,
-        "connector_dnp": False,
+        "connector_mpn": "5055680571",
+        "pin_nets": {
+            1: "PAIR_TX_P",
+            2: "PAIR_TX_N",
+            3: "PAIR_RX_P",
+            4: "PAIR_RX_N",
+            5: None,
+        },
+        "connector_dnp": True,
+        "assembly": (
+            "DNP UNTIL PHYSICAL MATING, KEY/PIN-1 ORIENTATION AND LAND PATTERN "
+            "ARE VERIFIED AGAINST REV-504"
+        ),
+        "connector_description": (
+            "Document-mapped five-circuit PCB-side candidate for the "
+            "5055650501 cable housing; circuit 5 is intentionally NC"
+        ),
+        "connector_position": (29.0, 42.0, 90.0),
+        "connector_flipped": False,
         "board_label": "MOLEX END",
     },
     "m12": {
         "directory": HERE / "m12_end",
         "project": "balun_slipring_m12",
         "connector_symbol": "Conn_01x08",
-        "connector_value": "M12 A-8 FEMALE / EXACT MPN TBD",
-        "connector_footprint": "",
+        "connector_value": "MB12FBAFF08ST-3 / VERIFY MECHANICS",
+        "connector_footprint": "balun_slipring_common:Finecables_MB12FBAFF08ST-3",
         "connector_datasheet": (
             "https://finecables.com/uploadfiles/2022/06/"
             "259%20M12%20A_coding%20Straight%20Connector%2C%20Panel%20Mount"
             "%2C%20PCB%20Type%2C%20Front%20fastened.pdf"
         ),
-        "connector_manufacturer": "Finecables (candidate family)",
-        "connector_mpn": "Female mate for MB12MBAFF08ST-0; suffix TBD",
-        "raw_prefix": "M12_RAW",
-        "raw_count": 8,
+        "connector_manufacturer": "Finecables",
+        "connector_mpn": "MB12FBAFF08ST-3 (candidate; verify mechanics)",
+        "pin_nets": {
+            1: "PAIR_RX_N",
+            2: "PAIR_RX_P",
+            3: "PAIR_TX_N",
+            4: "PAIR_TX_P",
+            5: None,
+            6: None,
+            7: None,
+            8: None,
+        },
         "connector_dnp": True,
+        "assembly": (
+            "BACK-SIDE CANDIDATE; DNP UNTIL MATING, KEY/PIN-1 ORIENTATION, "
+            "PANEL SUPPORT AND AVAILABILITY ARE VERIFIED"
+        ),
+        "connector_description": (
+            "Document-mapped M12 A-coded eight-pin female candidate; fixture "
+            "uses Ethernet pins 1-4 only and intentionally leaves pins 5-8 NC"
+        ),
+        # Back-side mounting puts the four Ethernet pads toward the baluns,
+        # so both members of both pairs can remain on F.Cu with zero vias.
+        # This is an electrical-layout candidate only: the real A-key,
+        # mating-face pin view and panel access remain fabrication blockers.
+        "connector_position": (30.0, 42.0, 225.0),
+        "connector_flipped": True,
         "board_label": "M12 END",
     },
 }
@@ -200,7 +236,7 @@ def schematic_no_connect(project: str, key: str, x: float, y: float) -> str:
 
 def connector_instance(config: dict[str, object], root_uuid: str) -> tuple[str, str]:
     project = str(config["project"])
-    count = int(config["raw_count"])
+    count = len(config["pin_nets"])
     symbol_uuid = stable_uuid(project, "symbol:J1")
     pin_blocks = "\n".join(
         f'''\t\t(pin "{pin}"
@@ -209,13 +245,11 @@ def connector_instance(config: dict[str, object], root_uuid: str) -> tuple[str, 
         for pin in range(1, count + 1)
     )
     dnp = "yes" if bool(config["connector_dnp"]) else "no"
-    on_board = "no" if dnp == "yes" else "yes"
+    # Keep a DNP candidate on the PCB so parity and the document-mapped escape
+    # routing can still be checked before its mechanical/procurement release.
+    on_board = "yes"
     in_pos_files = "no" if dnp == "yes" else "yes"
-    assembly = (
-        "TBD / DO NOT ORDER OR FABRICATE"
-        if dnp == "yes"
-        else "FOOTPRINT PLACED; SIGNAL PINMAP TBD / DO NOT FABRICATE"
-    )
+    assembly = str(config["assembly"])
     block = f'''\t(symbol
 \t\t(lib_id "Connector_Generic:{config['connector_symbol']}")
 \t\t(at 55.88 90.17 0)
@@ -269,7 +303,7 @@ def connector_instance(config: dict[str, object], root_uuid: str) -> tuple[str, 
 \t\t\t\t)
 \t\t\t)
 \t\t)
-\t\t(property "Description" "Connector-side raw pins; intentionally isolated from balun pairs until continuity mapping is verified"
+\t\t(property "Description" "{config['connector_description']}"
 \t\t\t(at 55.88 90.17 0)
 \t\t\t(hide yes)
 \t\t\t(show_name no)
@@ -366,6 +400,27 @@ def write_schematic(config: dict[str, object]) -> dict[str, str]:
                 block,
                 count=1,
             )
+            block = block.replace("(in_pos_files yes)", "(in_pos_files no)", 1)
+            block = block.replace("(dnp no)", "(dnp yes)", 1)
+        elif ref in ("RCT1", "RCT2"):
+            # The balanced winding is floating by default.  Keep the 0-ohm
+            # link as an explicit all-four-links CT-GND comparison option.
+            block, assembly_count = re.subn(
+                r'(\(property\s+"Assembly"\s+")[^"]*(")',
+                r'\1DNP; fit all four RCTs only for controlled CT-GND comparison\2',
+                block,
+                count=1,
+            )
+            if assembly_count != 1:
+                raise RuntimeError(f"Could not set {ref} DNP assembly property")
+            block, position_count = re.subn(
+                r'\(in_pos_files (?:yes|no)\)', "(in_pos_files no)", block, count=1
+            )
+            block, dnp_count = re.subn(
+                r'\(dnp (?:yes|no)\)', "(dnp yes)", block, count=1
+            )
+            if position_count != 1 or dnp_count != 1:
+                raise RuntimeError(f"Could not set {ref} native DNP flags")
         instances.append(indent_block(block, 1))
         symbol_uuids[ref] = re.search(r'\(uuid\s+"([^"]+)"\)', block).group(1)
 
@@ -377,17 +432,17 @@ def write_schematic(config: dict[str, object]) -> dict[str, str]:
     drawing.extend([
         schematic_text_item(
             project, "text:warning",
-            "PINMAP TBD - REVIEW ONLY - DO NOT FABRICATE",
+            "DOC PINMAP APPLIED - REVIEW ONLY - DO NOT FABRICATE",
             145, 25, 1.6, True,
         ),
         schematic_text_item(
             project, "text:scope",
-            "Common SMA/balun core is fixed; connector RAW nets are deliberately isolated.",
+            "PALA720 slide 14: Molex 1/2 = TX+/-; 3/4 = RX+/-. M12 4/3 = TX+/-; 2/1 = RX+/-.",
             145, 31, 1.0, False,
         ),
         schematic_text_item(
             project, "text:map",
-            "After continuity test: replace RAW-to-PAIR boundary with four short symmetric direct routes.",
+            "M12 5 GPS_RX, 6 GPS_1PPS, 7 +24V and 8 24V_GND are intentionally NC on this fixture.",
             145, 35, 1.0, False,
         ),
         schematic_text_item(
@@ -395,9 +450,9 @@ def write_schematic(config: dict[str, object]) -> dict[str, str]:
             "Unused channel SMA requires an external 50 ohm termination during crosstalk tests.",
             145, 39, 1.0, False,
         ),
-        schematic_text_item(project, "text:j2", "J2 / PAIR A", 82.5, 60, 1.0, True),
-        schematic_text_item(project, "text:j3", "J3 / PAIR B", 82.5, 89, 1.0, True),
-        schematic_text_item(project, "text:j1", "J1 / RAW PINS", 55, 70, 1.0, True),
+        schematic_text_item(project, "text:j2", "J2 / TX PAIR", 82.5, 60, 1.0, True),
+        schematic_text_item(project, "text:j3", "J3 / RX PAIR", 82.5, 89, 1.0, True),
+        schematic_text_item(project, "text:j1", "J1 / DOC-MAPPED PINS", 55, 70, 1.0, True),
     ])
 
     # Common RF core copied from the validated RJ45 fixture.  Transformer pin
@@ -411,28 +466,44 @@ def write_schematic(config: dict[str, object]) -> dict[str, str]:
         schematic_label(project, "label:j2:rf", "RF_A_50", 99.06, 67.31, 0),
         schematic_label(project, "label:t1:gnd", "GND", 111.76, 77.47, 0),
         schematic_label(project, "label:rct1:gnd", "GND", 135.89, 72.39, 180),
-        schematic_label(project, "label:t1:n", "PAIR_A_N_TBD", 121.92, 67.31, 180),
-        schematic_label(project, "label:t1:p", "PAIR_A_P_TBD", 121.92, 77.47, 180),
+        schematic_label(project, "label:t1:n", "PAIR_TX_N", 121.92, 67.31, 180),
+        schematic_label(project, "label:t1:p", "PAIR_TX_P", 121.92, 77.47, 180),
         schematic_label(project, "label:j3:gnd", "GND", 82.55, 91.44, 90),
         schematic_label(project, "label:j3:rf", "RF_B_50", 99.06, 96.52, 0),
         schematic_label(project, "label:t2:gnd", "GND", 111.76, 106.68, 0),
         schematic_label(project, "label:rct2:gnd", "GND", 135.89, 101.6, 180),
-        schematic_label(project, "label:t2:n", "PAIR_B_N_TBD", 121.92, 96.52, 180),
-        schematic_label(project, "label:t2:p", "PAIR_B_P_TBD", 121.92, 106.68, 180),
+        schematic_label(project, "label:t2:n", "PAIR_RX_N", 121.92, 96.52, 180),
+        schematic_label(project, "label:t2:p", "PAIR_RX_P", 121.92, 106.68, 180),
     ])
 
-    if int(config["raw_count"]) == 4:
-        pin_ys = (87.63, 90.17, 92.71, 95.25)
-    else:
+    count = len(config["pin_nets"])
+    if count == 5:
+        pin_ys = (85.09, 87.63, 90.17, 92.71, 95.25)
+    elif count == 8:
         pin_ys = (82.55, 85.09, 87.63, 90.17, 92.71, 95.25, 97.79, 100.33)
+    else:
+        raise ValueError(f"Unsupported connector pin count: {count}")
     for pin, y in enumerate(pin_ys, start=1):
-        drawing.append(schematic_label(
-            project,
-            f"label:j1:{pin}",
-            f"{config['raw_prefix']}{pin}",
-            50.80,
-            y,
-            180,
+        net_name = config["pin_nets"][pin]
+        if net_name is None:
+            drawing.append(schematic_no_connect(
+                project, f"no_connect:j1:{pin}", 50.80, y
+            ))
+        else:
+            drawing.append(schematic_label(
+                project, f"label:j1:{pin}", str(net_name), 50.80, y, 180
+            ))
+
+    if count == 5:
+        drawing.append(schematic_text_item(
+            project, "text:j1-unused", "J1.5 = NC (unused housing circuit)",
+            34, 104, 0.9, False,
+        ))
+    else:
+        drawing.append(schematic_text_item(
+            project, "text:j1-unused",
+            "J1.5 GPS_RX / 6 GPS_1PPS / 7 +24V / 8 24V_GND: ALL NC ON FIXTURE",
+            38, 107, 0.9, True,
         ))
 
     lib_text = "\n".join(indent_block(block, 2) for block in embedded)
@@ -443,12 +514,12 @@ def write_schematic(config: dict[str, object]) -> dict[str, str]:
 \t(uuid "{root_uuid}")
 \t(paper "A4")
 \t(title_block
-\t\t(title "100BASE-TX slip-ring VNA fixture - {config['board_label']} - PINMAP TBD")
+\t\t(title "100BASE-TX slip-ring VNA fixture - {config['board_label']} - DOC PINMAP")
 \t\t(date "2026-08-13")
-\t\t(rev "DRAFT 0")
+\t\t(rev "DRAFT 1")
 \t\t(comment 1 "Two-channel 50 ohm single-ended to 100 ohm differential fixture core.")
-\t\t(comment 2 "Connector RAW pins intentionally not mapped to balun pairs.")
-\t\t(comment 3 "REVIEW ONLY - DO NOT FABRICATE UNTIL PINMAP AND CONNECTOR MECHANICS ARE VERIFIED.")
+\t\t(comment 2 "Electrical map from PALA720 slide 14; TX and RX fan-outs are connected.")
+\t\t(comment 3 "REVIEW ONLY - DO NOT FABRICATE UNTIL CONTINUITY, CONNECTOR MECHANICS AND SMA STACK ARE VERIFIED.")
 \t)
 \t(lib_symbols
 {lib_text}
@@ -491,8 +562,8 @@ def write_project(config: dict[str, object]) -> None:
     net_settings = data["net_settings"]
     net_settings["netclass_patterns"] = [
         *(
-            {"netclass": "ETH100", "pattern": f"/PAIR_{pair}_{pol}_TBD"}
-            for pair in "AB" for pol in "PN"
+            {"netclass": "ETH100", "pattern": f"/PAIR_{pair}_{pol}"}
+            for pair in ("TX", "RX") for pol in "PN"
         ),
         {"netclass": "RF50", "pattern": "/RF_A_50"},
         {"netclass": "RF50", "pattern": "/RF_B_50"},
@@ -507,9 +578,10 @@ def write_project(config: dict[str, object]) -> None:
 
     dru = '''(version 1)
 
-# PINMAP-TBD draft.  Geometry follows the same JLC04161H-7628 stack used by
-# balun_eth_rj45 Rev B.  Connector-specific escape rules are intentionally
-# absent until the exact pin map and M12 female footprint are fixed.
+# Document-mapped DRAFT 1.  Electrical connectivity follows PALA720 slide 14.
+# Geometry follows the same provisional JLC04161H-7628 stack used by the
+# balun_eth_rj45 reference; connector and SMA mechanics remain fabrication
+# blockers and are deliberately carried as DNP candidates.
 
 (rule "Controlled traces isolated from other controlled signals"
     (condition "(A.Type == 'Track' || A.Type == 'Via') && (B.Type == 'Track' || B.Type == 'Via') && (A.hasNetclass('ETH100') || A.hasNetclass('RF50')) && (B.hasNetclass('ETH100') || B.hasNetclass('RF50')) && !AB.isCoupledDiffPair() && !A.intersectsCourtyard('T?') && !B.intersectsCourtyard('T?')")
@@ -548,17 +620,17 @@ def write_project(config: dict[str, object]) -> None:
 
 (rule "JLC 100 ohm differential coupled gap"
     (layer outer)
-    (condition "A.Type == 'Track' && A.hasNetclass('ETH100') && !A.intersectsCourtyard('T?')")
+    (condition "A.Type == 'Track' && A.hasNetclass('ETH100') && !A.intersectsCourtyard('T?') && !A.intersectsCourtyard('J1')")
     # The pair is allowed to open only in the short connector/transformer
     # fan-outs.  The uncoupled-length rule below bounds those exceptions.
-    (constraint diff_pair_gap (min 0.21mm) (opt 0.22mm))
+    (constraint diff_pair_gap (min 0.21mm) (opt 0.22mm) (max 0.23mm))
 )
 
 (rule "Ethernet pair topology"
     (condition "A.hasNetclass('ETH100')")
-    (constraint skew (max 0.55mm) (within_diff_pairs))
-    (constraint via_count (max 1))
-    (constraint diff_pair_uncoupled (max 16.00mm))
+    (constraint skew (max 0.10mm) (within_diff_pairs))
+    (constraint via_count (max 0))
+    (constraint diff_pair_uncoupled (max 11.20mm))
 )
 
 (rule "SMA edge-launch exception"
@@ -572,7 +644,8 @@ def write_project(config: dict[str, object]) -> None:
 def load_footprint(board: pcbnew.BOARD, library: str, name: str,
                    reference: str, value: str, x: float, y: float,
                    rotation: float = 0, board_only: bool = False,
-                   dnp: bool = False, symbol_uuid: str | None = None,
+                   dnp: bool = False, flipped: bool = False,
+                   symbol_uuid: str | None = None,
                    properties: dict[str, str] | None = None) -> pcbnew.FOOTPRINT:
     library_path = COMMON_FP if library == "balun_slipring_common" else KICAD_FP / f"{library}.pretty"
     footprint = pcbnew.PCB_IO_KICAD_SEXPR().FootprintLoad(str(library_path), name, False)
@@ -582,7 +655,8 @@ def load_footprint(board: pcbnew.BOARD, library: str, name: str,
     footprint.SetValue(value)
     footprint.SetFPIDAsString(f"{library}:{name}")
     footprint.SetPosition(point(x, y))
-    footprint.SetOrientationDegrees(rotation)
+    if not flipped:
+        footprint.SetOrientationDegrees(rotation)
     if symbol_uuid:
         footprint.SetPath(pcbnew.KIID_PATH("/" + symbol_uuid))
     for field_name, field_value in (properties or {}).items():
@@ -598,8 +672,15 @@ def load_footprint(board: pcbnew.BOARD, library: str, name: str,
         )
     if dnp:
         footprint.SetDNP(True)
-        footprint.SetAttributes(footprint.GetAttributes() | pcbnew.FP_DNP)
+        footprint.SetAttributes(
+            footprint.GetAttributes()
+            | pcbnew.FP_DNP
+            | pcbnew.FP_EXCLUDE_FROM_POS_FILES
+        )
     board.Add(footprint)
+    if flipped:
+        footprint.Flip(footprint.GetPosition(), pcbnew.FLIP_DIRECTION_TOP_BOTTOM)
+        footprint.SetOrientationDegrees(rotation)
     return footprint
 
 
@@ -621,6 +702,165 @@ def add_polyline(board: pcbnew.BOARD, nets: dict[str, pcbnew.NETINFO_ITEM],
                  layer: int, net_name: str) -> None:
     for start, end in zip(vertices, vertices[1:]):
         add_segment(board, nets, start, end, width, layer, net_name)
+
+
+def path_length(vertices: list[tuple[float, float]]) -> float:
+    return sum(math.dist(start, end) for start, end in zip(vertices, vertices[1:]))
+
+
+def offset_polyline(
+    centerline: list[tuple[float, float]], side: float,
+    distance: float = 0.225,
+) -> list[tuple[float, float]]:
+    """Miter-offset a shared centerline to preserve 0.45 mm pair spacing."""
+    segments: list[tuple[tuple[float, float], tuple[float, float]]] = []
+    for start, end in zip(centerline, centerline[1:]):
+        dx = end[0] - start[0]
+        dy = end[1] - start[1]
+        length = math.hypot(dx, dy)
+        if length <= 0:
+            raise RuntimeError("Differential centerline contains a zero-length segment")
+        unit = (dx / length, dy / length)
+        normal = (-unit[1], unit[0])
+        segments.append((unit, normal))
+
+    result = [(
+        centerline[0][0] + side * distance * segments[0][1][0],
+        centerline[0][1] + side * distance * segments[0][1][1],
+    )]
+
+    def cross(a: tuple[float, float], b: tuple[float, float]) -> float:
+        return a[0] * b[1] - a[1] * b[0]
+
+    for index, vertex in enumerate(centerline[1:-1], 1):
+        previous_unit, previous_normal = segments[index - 1]
+        next_unit, next_normal = segments[index]
+        previous_point = (
+            vertex[0] + side * distance * previous_normal[0],
+            vertex[1] + side * distance * previous_normal[1],
+        )
+        next_point = (
+            vertex[0] + side * distance * next_normal[0],
+            vertex[1] + side * distance * next_normal[1],
+        )
+        denominator = cross(previous_unit, next_unit)
+        if abs(denominator) < 1e-12:
+            intersection = (
+                (previous_point[0] + next_point[0]) / 2,
+                (previous_point[1] + next_point[1]) / 2,
+            )
+        else:
+            delta = (
+                next_point[0] - previous_point[0],
+                next_point[1] - previous_point[1],
+            )
+            scale = cross(delta, next_unit) / denominator
+            intersection = (
+                previous_point[0] + scale * previous_unit[0],
+                previous_point[1] + scale * previous_unit[1],
+            )
+        result.append(intersection)
+
+    result.append((
+        centerline[-1][0] + side * distance * segments[-1][1][0],
+        centerline[-1][1] + side * distance * segments[-1][1][1],
+    ))
+    return result
+
+
+def route_controlled_pair(
+    board: pcbnew.BOARD,
+    nets: dict[str, pcbnew.NETINFO_ITEM],
+    pair_name: str,
+    p_net: str,
+    n_net: str,
+    p_start: tuple[float, float],
+    n_start: tuple[float, float],
+    centerline: list[tuple[float, float]],
+    p_end: tuple[float, float],
+    n_end: tuple[float, float],
+    p_fanout: list[tuple[float, float]] | None = None,
+    n_fanout: list[tuple[float, float]] | None = None,
+) -> dict[str, float]:
+    """Route and reject a pair unless coupling, skew and topology are sound."""
+    p_trunk = offset_polyline(centerline, -1.0)
+    n_trunk = offset_polyline(centerline, 1.0)
+    p_path = [p_start, *p_trunk, *(p_fanout or []), p_end]
+    n_path = [n_start, *n_trunk, *(n_fanout or []), n_end]
+
+    p_length = path_length(p_path)
+    n_length = path_length(n_path)
+    p_coupled = path_length(p_trunk)
+    n_coupled = path_length(n_trunk)
+    skew = abs(p_length - n_length)
+    coupled = min(p_coupled, n_coupled)
+    uncoupled = max(p_length - p_coupled, n_length - n_coupled)
+
+    if skew > 0.01:
+        raise RuntimeError(f"{pair_name}: generated P/N skew {skew:.6f} mm exceeds 0.01 mm")
+    if coupled < 16.00:
+        raise RuntimeError(f"{pair_name}: coupled trunk {coupled:.6f} mm is below 16 mm")
+    if uncoupled > 11.00:
+        raise RuntimeError(f"{pair_name}: fan-in/out {uncoupled:.6f} mm exceeds 11 mm")
+
+    add_polyline(board, nets, p_path, 0.23, pcbnew.F_Cu, p_net)
+    add_polyline(board, nets, n_path, 0.23, pcbnew.F_Cu, n_net)
+    print(
+        f"  {pair_name}: P={p_length:.6f} mm N={n_length:.6f} mm "
+        f"skew={skew:.6f} mm coupled>={coupled:.6f} mm "
+        f"fanout<={uncoupled:.6f} mm vias=0/0"
+    )
+    return {
+        "p_length": p_length,
+        "n_length": n_length,
+        "skew": skew,
+        "coupled": coupled,
+        "uncoupled": uncoupled,
+    }
+
+
+def validate_board_pair_topology(
+    board: pcbnew.BOARD, pair_name: str, p_net: str, n_net: str,
+) -> None:
+    """Validate the quantized KiCad objects, not only source coordinates."""
+    metrics: dict[str, tuple[float, int, set[int]]] = {}
+    for net_name in (p_net, n_net):
+        items = [item for item in board.GetTracks() if item.GetNetname() == net_name]
+        vias = sum(isinstance(item, pcbnew.PCB_VIA) for item in items)
+        layers = {
+            item.GetLayer() for item in items
+            if not isinstance(item, pcbnew.PCB_VIA)
+        }
+        length = sum(
+            pcbnew.ToMM(item.GetLength()) for item in items
+            if not isinstance(item, pcbnew.PCB_VIA)
+        )
+        metrics[net_name] = (length, vias, layers)
+
+    p_length, p_vias, p_layers = metrics[p_net]
+    n_length, n_vias, n_layers = metrics[n_net]
+    skew = abs(p_length - n_length)
+    if skew > 0.01:
+        raise RuntimeError(f"{pair_name}: PCB-object skew {skew:.6f} mm exceeds 0.01 mm")
+    if p_vias != n_vias or p_vias != 0:
+        raise RuntimeError(f"{pair_name}: asymmetric/nonzero signal vias {p_vias}/{n_vias}")
+    if p_layers != n_layers or p_layers != {pcbnew.F_Cu}:
+        raise RuntimeError(
+            f"{pair_name}: P/N layer sequences differ or are not F.Cu-only: "
+            f"{p_layers}/{n_layers}"
+        )
+
+
+def footprint_pad_center(footprint: pcbnew.FOOTPRINT,
+                         pad_number: str) -> tuple[float, float]:
+    pads = [pad for pad in footprint.Pads() if pad.GetNumber() == pad_number]
+    if len(pads) != 1:
+        raise RuntimeError(
+            f"Expected one pad {footprint.GetReference()}.{pad_number}; "
+            f"found {len(pads)}"
+        )
+    position = pads[0].GetPosition()
+    return pcbnew.ToMM(position.x), pcbnew.ToMM(position.y)
 
 
 def add_via(board: pcbnew.BOARD, nets: dict[str, pcbnew.NETINFO_ITEM],
@@ -706,7 +946,7 @@ STACKUP = '''\t\t(stackup
 \t\t\t\t(material "Nan Ya NP-155F") (epsilon_r 4.4) (loss_tangent 0.02))
 \t\t\t(layer "In1.Cu" (type "copper") (thickness 0.0152))
 \t\t\t(layer "dielectric 2" (type "core") (thickness 1.065)
-\t\t\t\t(material "Nan Ya NP-155F") (epsilon_r 4.38) (loss_tangent 0.02))
+\t\t\t\t(material "Nan Ya NP-155F") (epsilon_r 4.36) (loss_tangent 0.02))
 \t\t\t(layer "In2.Cu" (type "copper") (thickness 0.0152))
 \t\t\t(layer "dielectric 3" (type "prepreg") (thickness 0.2104)
 \t\t\t\t(material "Nan Ya NP-155F") (epsilon_r 4.4) (loss_tangent 0.02))
@@ -738,23 +978,28 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
     settings.m_CopperEdgeClearance = mm(0.00)
 
     title = board.GetTitleBlock()
-    title.SetTitle(f"100BASE-TX slip-ring VNA fixture - {config['board_label']} - PINMAP TBD")
-    title.SetRevision("DRAFT 0")
+    title.SetTitle(f"100BASE-TX slip-ring VNA fixture - {config['board_label']} - DOC PINMAP")
+    title.SetRevision("DRAFT 1")
     title.SetDate("2026-08-13")
-    title.SetComment(0, "Common 2-channel RF core only; connector mapping is intentionally open.")
-    title.SetComment(1, "REVIEW ONLY - DO NOT FABRICATE.")
-    title.SetComment(2, "JLC04161H-7628: 50R W0.35; future 100R W0.23/G0.22; L2/L3 GND.")
+    title.SetComment(0, "Electrical map from PALA720 slide 14; TX and RX pairs are routed.")
+    title.SetComment(1, "REVIEW ONLY - DO NOT FABRICATE; verify continuity, connectors and SMA stack.")
+    title.SetComment(2, "JLC04161H-7628 draft: 50R W0.35; 100R W0.23/G0.22; L2/L3 GND.")
+    if bool(config["connector_flipped"]):
+        title.SetComment(3, "J1 BACK-SIDE CANDIDATE; verify A-key, pin 1 and mating face.")
 
     net_names = [
         "/GND",
-        "/PAIR_A_P_TBD", "/PAIR_A_N_TBD",
-        "/PAIR_B_P_TBD", "/PAIR_B_N_TBD",
+        "/PAIR_TX_P", "/PAIR_TX_N",
+        "/PAIR_RX_P", "/PAIR_RX_N",
         "/RF_A_50", "/RF_B_50",
         "Net-(RCT1-Pad2)", "Net-(RCT2-Pad2)",
         "unconnected-(T1-Pad2)", "unconnected-(T2-Pad2)",
     ]
-    if config["raw_prefix"] == "MOL_RAW":
-        net_names.extend(f"/MOL_RAW{pin}" for pin in range(1, 5))
+    net_names.extend(
+        f"unconnected-(J1-Pin_{pin}-Pad{pin})"
+        for pin, net_name in config["pin_nets"].items()
+        if net_name is None
+    )
     nets: dict[str, pcbnew.NETINFO_ITEM] = {}
     for net_name in net_names:
         net = pcbnew.NETINFO_ITEM(board, net_name)
@@ -767,6 +1012,7 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
         footprints[jref] = load_footprint(
             board, "Connector_Coaxial", "SMA_Amphenol_132289_EdgeMount",
             jref, f"SMA_{label}", 85.45, y,
+            dnp=True,
             symbol_uuid=symbol_uuids[jref],
             properties={
                 "Manufacturer": "Amphenol RF", "MPN": "132289",
@@ -786,25 +1032,32 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
         footprints[rref] = load_footprint(
             board, "Resistor_SMD", "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
             rref, "0R", 50.80, y,
+            dnp=True,
+            flipped=True,
             symbol_uuid=symbol_uuids[rref],
             properties={
                 "Manufacturer": "ANY", "MPN": "0 ohm 0805",
-                "Assembly": "FIT; remove for floating-CT comparison",
+                "Assembly": "DNP; fit all four RCTs only for controlled CT-GND comparison",
             },
         )
 
-    if config["raw_prefix"] == "MOL_RAW":
-        footprints["J1"] = load_footprint(
-            board, "balun_slipring_common", "Molex_5055680471",
-            "J1", "5055680471 / PINMAP TBD", 29.0, 42.0, 90,
-            symbol_uuid=symbol_uuids["J1"],
-            properties={
-                "Manufacturer": "Molex", "MPN": "5055680471",
-                "Assembly": "FOOTPRINT PLACED; SIGNAL PINMAP TBD / DO NOT FABRICATE",
-                "Datasheet": str(config["connector_datasheet"]),
-                "Description": "Connector-side raw pins; intentionally isolated from balun pairs until continuity mapping is verified",
-            },
-        )
+    connector_x, connector_y, connector_rotation = config["connector_position"]
+    footprint_name = str(config["connector_footprint"]).split(":", 1)[1]
+    footprints["J1"] = load_footprint(
+        board, "balun_slipring_common", footprint_name,
+        "J1", str(config["connector_value"]),
+        float(connector_x), float(connector_y), float(connector_rotation),
+        dnp=bool(config["connector_dnp"]),
+        flipped=bool(config["connector_flipped"]),
+        symbol_uuid=symbol_uuids["J1"],
+        properties={
+            "Manufacturer": str(config["connector_manufacturer"]),
+            "MPN": str(config["connector_mpn"]),
+            "Assembly": str(config["assembly"]),
+            "Datasheet": str(config["connector_datasheet"]),
+            "Description": str(config["connector_description"]),
+        },
+    )
 
     for index, (x, y) in enumerate(((25, 25), (25, 59), (74, 25), (74, 59)), start=1):
         reference = f"H{index}"
@@ -820,10 +1073,6 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
             ("T1", "1"), ("T2", "1"),
             ("RCT1", "1"), ("RCT2", "1"),
         ),
-        "/PAIR_A_P_TBD": (("T1", "4"),),
-        "/PAIR_A_N_TBD": (("T1", "6"),),
-        "/PAIR_B_P_TBD": (("T2", "4"),),
-        "/PAIR_B_N_TBD": (("T2", "6"),),
         "/RF_A_50": (("J2", "1"), ("T1", "3")),
         "/RF_B_50": (("J3", "1"), ("T2", "3")),
         "Net-(RCT1-Pad2)": (("RCT1", "2"), ("T1", "5")),
@@ -831,9 +1080,21 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
         "unconnected-(T1-Pad2)": (("T1", "2"),),
         "unconnected-(T2-Pad2)": (("T2", "2"),),
     }
-    if "J1" in footprints:
-        for pin in range(1, 5):
-            connections[f"/MOL_RAW{pin}"] = (("J1", str(pin)),)
+    transformer_nodes = {
+        "PAIR_TX_P": ("T1", "4"),
+        "PAIR_TX_N": ("T1", "6"),
+        "PAIR_RX_P": ("T2", "4"),
+        "PAIR_RX_N": ("T2", "6"),
+    }
+    for pin, mapped_net in config["pin_nets"].items():
+        if mapped_net is None:
+            connections[f"unconnected-(J1-Pin_{pin}-Pad{pin})"] = (("J1", str(pin)),)
+            continue
+        net_name = f"/{mapped_net}"
+        connections[net_name] = (
+            transformer_nodes[str(mapped_net)],
+            ("J1", str(pin)),
+        )
 
     for net_name, nodes in connections.items():
         for reference, pad_number in nodes:
@@ -850,20 +1111,29 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
     for start, end in zip(outline, outline[1:]):
         add_line(board, start, end)
 
-    # The only controlled routes committed before pin mapping are the two
-    # identical 50-ohm single-ended paths.  Differential pads stop at T1/T2.
+    # The two identical 50-ohm single-ended launches remain inherited from
+    # the validated reference fixture.  Document-mapped differential routes
+    # are added below and kept on F.Cu over the solid inner GND planes.
     for _label, jref, _tref, rref, y in channels:
-        input_net = f"/RF_{label}_50"
+        input_net = f"/RF_{_label}_50"
         add_segment(board, nets, (85.45, y), (83.40, y), 0.80, pcbnew.F_Cu, input_net)
         add_segment(board, nets, (83.40, y), (82.00, y), 0.55, pcbnew.F_Cu, input_net)
         add_segment(board, nets, (82.00, y), (79.46, y - 2.54), 0.35, pcbnew.F_Cu, input_net)
         add_segment(board, nets, (79.46, y - 2.54), (61.54, y - 2.54), 0.35, pcbnew.F_Cu, input_net)
         add_segment(board, nets, (61.54, y - 2.54), (60.04, y - 2.54), 0.55, pcbnew.F_Cu, input_net)
 
+        # Preserve an optional CT-GND test path below the differential pair.
+        # The transformer CT reaches B.Cu through one central via, then the
+        # DNP-by-default back-side 0-ohm link reaches a remote GND return via.
+        # Populate all four RCT links across both fixture boards together only
+        # for a controlled grounded-center-tap comparison.
         ct_net = f"Net-({rref}-Pad2)"
-        add_segment(board, nets, (54.96, y), (51.80, y), 0.30, pcbnew.F_Cu, ct_net)
-        add_segment(board, nets, (49.80, y), (48.30, y), 0.50, pcbnew.F_Cu, "/GND")
-        add_via(board, nets, 48.30, y, "/GND")
+        add_segment(board, nets, (54.96, y), (52.80, y), 0.30, pcbnew.F_Cu, ct_net)
+        add_via(board, nets, 52.80, y, ct_net)
+        add_segment(board, nets, (52.80, y), (51.80, y), 0.30, pcbnew.B_Cu, ct_net)
+        ground_via_y = 24.0 if y < 42.0 else 60.0
+        add_segment(board, nets, (49.80, y), (49.00, ground_via_y), 0.50, pcbnew.B_Cu, "/GND")
+        add_via(board, nets, 49.00, ground_via_y, "/GND")
 
         add_segment(board, nets, (60.04, y + 2.54), (62.00, y + 2.54), 0.80, pcbnew.F_Cu, "/GND")
         add_via(board, nets, 62.00, y + 2.54, "/GND")
@@ -873,6 +1143,76 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
             add_segment(board, nets, (85.45, sy), (83.70, sy), 0.80, pcbnew.F_Cu, "/GND")
             add_via(board, nets, 83.70, sy, "/GND")
             add_via(board, nets, 81.90, sy, "/GND")
+
+    mapped_pin = {
+        str(net_name): str(pin)
+        for pin, net_name in config["pin_nets"].items()
+        if net_name is not None
+    }
+    route_ends = {
+        "PAIR_TX_P": footprint_pad_center(footprints["T1"], "4"),
+        "PAIR_TX_N": footprint_pad_center(footprints["T1"], "6"),
+        "PAIR_RX_P": footprint_pad_center(footprints["T2"], "4"),
+        "PAIR_RX_N": footprint_pad_center(footprints["T2"], "6"),
+    }
+    route_starts = {
+        net_name: footprint_pad_center(footprints["J1"], pin)
+        for net_name, pin in mapped_pin.items()
+    }
+
+    # Each pair is derived from one shared centerline.  Offsetting it by
+    # +/-0.225 mm creates W=0.23 mm traces at 0.45 mm center spacing, hence a
+    # 0.22 mm edge gap.  Only the short connector/transformer fan-in/out is
+    # opened.  The generator rejects skew above 0.01 mm, coupled trunk below
+    # 16 mm, or total fan-in/out above 11 mm.
+    if len(config["pin_nets"]) == 5:
+        route_controlled_pair(
+            board, nets, "Molex TX", "/PAIR_TX_P", "/PAIR_TX_N",
+            route_starts["PAIR_TX_P"], route_starts["PAIR_TX_N"],
+            [(34.0, 40.125), (38.0, 40.125), (49.0, 31.0), (51.0, 31.0)],
+            route_ends["PAIR_TX_P"], route_ends["PAIR_TX_N"],
+        )
+        route_controlled_pair(
+            board, nets, "Molex RX", "/PAIR_RX_P", "/PAIR_RX_N",
+            route_starts["PAIR_RX_P"], route_starts["PAIR_RX_N"],
+            [(34.0, 42.625), (38.0, 42.625), (49.0, 53.0), (51.0, 53.0)],
+            route_ends["PAIR_RX_P"], route_ends["PAIR_RX_N"],
+        )
+    else:
+        # J1 is a back-side electrical-layout candidate at 225 degrees.  Its
+        # PTH signal pads 1-4 then face the baluns while NC pads 5-8 face away,
+        # allowing both complete pairs to stay on F.Cu with zero signal vias.
+        # The slight final centerline angles provide smooth length correction;
+        # there are no one-sided U-turns or polarity-specific layer changes.
+        route_controlled_pair(
+            board, nets, "M12 TX", "/PAIR_TX_P", "/PAIR_TX_N",
+            route_starts["PAIR_TX_P"], route_starts["PAIR_TX_N"],
+            [
+                (33.272393, 37.576874), (35.651584, 34.361372),
+                (46.0, 31.0), (48.0, 30.682805736),
+            ],
+            route_ends["PAIR_TX_P"], route_ends["PAIR_TX_N"],
+            [(49.0, 29.9), (52.8, 28.46)],
+            [(49.0, 32.1), (52.8, 33.54)],
+        )
+        route_controlled_pair(
+            board, nets, "M12 RX", "/PAIR_RX_P", "/PAIR_RX_N",
+            route_starts["PAIR_RX_P"], route_starts["PAIR_RX_N"],
+            [
+                (33.924798, 45.856172), (36.778528, 48.659068),
+                (46.0, 53.0), (48.0, 53.259219334),
+            ],
+            route_ends["PAIR_RX_P"], route_ends["PAIR_RX_N"],
+            [(49.0, 51.9), (52.8, 50.46)],
+            [(49.0, 54.1), (52.8, 55.54)],
+        )
+
+    validate_board_pair_topology(
+        board, f"{config['board_label']} TX", "/PAIR_TX_P", "/PAIR_TX_N"
+    )
+    validate_board_pair_topology(
+        board, f"{config['board_label']} RX", "/PAIR_RX_P", "/PAIR_RX_N"
+    )
 
     # Ground stitching only; there are deliberately no F/B blanket pours.
     stitch_points = [
@@ -887,13 +1227,13 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
     for layer in (pcbnew.In1_Cu, pcbnew.In2_Cu):
         add_ground_zone(board, nets["/GND"], layer)
 
-    add_board_text(board, f"SLIPRING {config['board_label']} / PINMAP TBD", 54, 22.1, size=1.05, thickness=0.18)
-    add_board_text(board, "DRAFT - DO NOT FAB", 53, 62.0, size=1.05, thickness=0.18)
-    add_board_text(board, "A", 78.5, 33.8, size=1.0, thickness=0.16)
-    add_board_text(board, "B", 78.5, 55.8, size=1.0, thickness=0.16)
+    add_board_text(board, f"SLIPRING {config['board_label']} / DOC MAP", 54, 22.1, size=1.05, thickness=0.18)
+    add_board_text(board, "DRAFT 1 - DO NOT FAB", 53, 62.0, size=1.05, thickness=0.18)
+    add_board_text(board, "TX", 78.5, 33.8, size=1.0, thickness=0.16)
+    add_board_text(board, "RX", 78.5, 55.8, size=1.0, thickness=0.16)
     add_board_text(board, "UNUSED SMA -> 50R", 71.5, 62.0, pcbnew.B_SilkS, 0.8, 0.13)
-    add_board_text(board, "PINMAP TBD", 43.5, 42.0, pcbnew.Cmts_User, 1.2, 0.18, 90)
-    add_board_text(board, "NO ROUTING IN THIS GAP UNTIL CONTINUITY MAP IS VERIFIED", 45.5, 66.5, pcbnew.Cmts_User, 0.9, 0.14)
+    add_board_text(board, "DOC MAP: TX / RX", 43.5, 42.0, pcbnew.Cmts_User, 1.2, 0.18, 90)
+    add_board_text(board, "VERIFY REV-504 CONTINUITY + J1 PIN 1 / KEY BEFORE FAB", 52.0, 66.5, pcbnew.Cmts_User, 0.9, 0.14)
 
     # Mapping boundary / connector-mechanics reservation on user layers.
     for start, end in zip(
@@ -902,23 +1242,20 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
     ):
         add_line(board, start, end, pcbnew.Cmts_User, 0.15)
 
-    if "J1" in footprints:
-        add_board_text(board, "J1 PIN 1", 29.0, 35.5, size=0.80, thickness=0.13)
-        add_board_text(board, "5055680471", 29.0, 49.0, size=0.80, thickness=0.13)
+    if len(config["pin_nets"]) == 5:
+        add_board_text(board, "J1 PIN 1", 29.0, 36.0, size=0.80, thickness=0.13)
+        add_board_text(board, "5055680571 CAND", 29.0, 49.0, size=0.80, thickness=0.13)
     else:
-        add_circle(board, (29.0, 42.0), 8.5, pcbnew.F_SilkS, 0.2)
-        add_board_text(board, "M12 AREA TBD", 29.0, 42.0, size=0.80, thickness=0.13)
-        add_circle(board, (29.0, 42.0), 11.5, pcbnew.Cmts_User, 0.2)
-        add_circle(board, (29.0, 42.0), 8.0, pcbnew.Cmts_User, 0.15)
-        add_board_text(board, "M12 FEMALE", 29.0, 39.8, pcbnew.Cmts_User, 0.9, 0.14)
-        add_board_text(board, "FOOTPRINT TBD", 29.0, 42.2, pcbnew.Cmts_User, 0.9, 0.14)
-        add_board_text(board, "MECHANICS TBD", 29.0, 44.6, pcbnew.Cmts_User, 0.9, 0.14)
+        add_board_text(board, "M12 FEMALE / BACK SIDE CAND", 30.0, 30.0, size=0.80, thickness=0.13)
+        add_board_text(board, "PIN 1 / A-KEY VERIFY", 30.0, 52.8, pcbnew.Cmts_User, 0.8, 0.13)
+        add_board_text(board, "VERIFY MATING FACE / PANEL ACCESS", 30.0, 32.0, pcbnew.Cmts_User, 0.7, 0.12)
+        add_board_text(board, "PINS 5-8: NC", 30.0, 55.0, pcbnew.Cmts_User, 0.8, 0.13)
 
     reference_positions = {
         "J2": (80.0, 24.2, 0), "J3": (80.0, 46.2, 0),
         "T1": (57.5, 25.5, 0), "T2": (57.5, 47.5, 0),
         "RCT1": (49.8, 34.0, 0), "RCT2": (49.8, 56.0, 0),
-        "J1": (29.0, 33.5, 0),
+        "J1": (29.0, 34.0, 0) if len(config["pin_nets"]) == 5 else (30.0, 31.8, 0),
     }
     for reference, (x, y, angle) in reference_positions.items():
         if reference not in footprints:
@@ -955,7 +1292,7 @@ def verify_overwrite_policy(force: bool) -> None:
         raise SystemExit(
             "REFUSED: draft outputs already exist.  This generator can overwrite manual edits.\n"
             f"{formatted}\n"
-            "Use --force only while intentionally regenerating the PINMAP-TBD drafts."
+            "Use --force only while intentionally regenerating the document-mapped drafts."
         )
 
     if force:
@@ -965,14 +1302,14 @@ def verify_overwrite_policy(force: bool) -> None:
                 continue
             content = path.read_text(encoding="utf-8")
             if (
-                DRAFT_REVISION_MARKER not in content
+                not any(marker in content for marker in DRAFT_REVISION_MARKERS)
                 or DRAFT_WARNING_MARKER not in content
             ):
                 protected.append(path)
         if protected:
             formatted = "\n".join(f"  {path.relative_to(HERE)}" for path in protected)
             raise SystemExit(
-                "REFUSED: at least one design no longer has both DRAFT 0 and "
+                "REFUSED: at least one design no longer has a recognized draft revision and "
                 "DO NOT FABRICATE markers.\n"
                 f"{formatted}\n"
                 "The project may contain manual post-pin-map work; retire this generator."

@@ -559,19 +559,19 @@
     "netclass_patterns": [
       {
         "netclass": "ETH100",
-        "pattern": "/PAIR_A_P_TBD"
+        "pattern": "/PAIR_TX_P"
       },
       {
         "netclass": "ETH100",
-        "pattern": "/PAIR_A_N_TBD"
+        "pattern": "/PAIR_TX_N"
       },
       {
         "netclass": "ETH100",
-        "pattern": "/PAIR_B_P_TBD"
+        "pattern": "/PAIR_RX_P"
       },
       {
         "netclass": "ETH100",
-        "pattern": "/PAIR_B_N_TBD"
+        "pattern": "/PAIR_RX_N"
       },
       {
         "netclass": "RF50",

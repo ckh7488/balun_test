@@ -127,7 +127,11 @@ def load_footprint(library, name, reference, value, x, y, rotation=0,
         )
     if dnp:
         footprint.SetDNP(True)
-        footprint.SetAttributes(footprint.GetAttributes() | pcbnew.FP_DNP)
+        footprint.SetAttributes(
+            footprint.GetAttributes()
+            | pcbnew.FP_DNP
+            | pcbnew.FP_EXCLUDE_FROM_POS_FILES
+        )
     board.Add(footprint)
     if flipped:
         footprint.Flip(footprint.GetPosition(), pcbnew.FLIP_DIRECTION_TOP_BOTTOM)
@@ -175,10 +179,10 @@ for label, _pair, index, jref, tref, rref, y in channels:
     )
     footprints[rref] = load_footprint(
         "Resistor_SMD", "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
-        rref, "0R", 59.00, y, flipped=(index != 2),
+        rref, "0R", 59.00, y, flipped=(index != 2), dnp=True,
         properties={
             "Manufacturer": "ANY", "MPN": "0 ohm 0805",
-            "Assembly": "FIT; remove for floating-CT comparison",
+            "Assembly": "DNP DEFAULT; fit all eight only for CT-GND comparison",
         },
     )
 
@@ -402,8 +406,10 @@ for _label, _pair, index, jref, _tref, _rref, y in channels:
     add_segment((69.54, y - 2.54), (68.04, y - 2.54), 0.55, pcbnew.F_Cu, net_name)
 
 
-# Centre-tap 0-ohm grounding links.  Three are on B.Cu to leave the matched
-# pairs undisturbed; T2/RCT2 stays on F.Cu because pair B is below it.
+# Optional centre-tap grounding paths are retained even though RCT1-RCT4 are
+# DNP by default.  Three are on B.Cu to leave the matched pairs undisturbed;
+# T2/RCT2 stays on F.Cu because pair B is below it.  Populate all eight RCTs
+# across both fixture boards only for a controlled CT-GND comparison.
 for _label, _pair, index, _jref, _tref, rref, y in channels:
     net_name = f"Net-({rref}-Pad2)"
     if index == 2:
@@ -431,8 +437,8 @@ add_segment((31.00, 45.50), (31.00, 43.50), 0.80, pcbnew.F_Cu, "/GND")
 add_via(31.00, 43.50, "/GND")
 add_segment((31.00, 69.8625), (31.00, 72.00), 0.80, pcbnew.F_Cu, "/GND")
 add_via(31.00, 72.00, "/GND")
-# RCT2 can otherwise sit in a small F.Cu island enclosed by the pair-B
-# breakout.  Give its ground end an unambiguous local plane connection.
+# If optional RCT2 is populated, its ground end needs an unambiguous local
+# plane connection instead of the small F.Cu island enclosed by pair B.
 add_segment((58.00, 47.00), (57.00, 44.00), 0.50, pcbnew.F_Cu, "/GND")
 add_via(57.00, 44.00, "/GND")
 

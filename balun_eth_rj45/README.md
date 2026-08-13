@@ -42,7 +42,7 @@ T1–T4는 Mini-Circuits `ADT2-1T+`다. primary pin 3은 SMA center, pin 1은 GN
 - 서로 다른 controlled signal 사이 최소 clearance는 `0.60 mm`; 가능하면 그 이상을 유지한다.
 - 결합 gap은 최소 `0.21 mm` / 권장 `0.22 mm`; fan-out을 포함한 uncoupled 길이는 일반 pair `16.0 mm`, split pair B `16.5 mm` 이하로 제한한다.
 - transformer 앞에서는 한쪽 선에 짧은 U자 보정을 넣지 않는다. 대신 coupled trunk의 마지막 분기점을 약 1.3 mm 이동해 부드러운 fan-out 형상으로 end-to-end 길이를 맞춘다.
-- RCT4 GND via는 0 Ω 저항의 GND pad 바로 옆에 두고 내부 GND plane으로 짧게 연결한다.
+- RCT4를 포함한 선택형 CT-GND 경로는 0 Ω 저항의 GND pad를 내부 GND plane에 짧게 연결한다. RCT가 DNP이면 GND측 동박과 via는 plane에 남지만 transformer center-tap으로 이어지는 경로는 개방된다.
 - L2/L3에는 track 및 non-GND zone을 금지한다.
 
 저장된 외층 선분 길이 검산 결과는 다음과 같다. B만 P/N에 동일한 via 한 개가 있으므로 via 지연도 대칭이다.
@@ -61,24 +61,27 @@ KiCad의 `skew (within_diff_pairs)`는 전체 선분 합이 아니라 결합 구
 - T1–T4: Mini-Circuits `ADT2-1T+`, CD542.
 - J1: Amphenol `RJE591885401`, CAT6 shielded, LED/magnetics 없음.
 - J2–J5: Amphenol RF `132289` edge-mount SMA.
-- RCT1–RCT4: 기본 0 Ω. floating center-tap 비교 시 두 보드에서 모두 제거한다.
+- RCT1–RCT4: 각 보드에서 기본 DNP이며, 이 `CT-FLOAT` 상태를 golden/DUT 비교의 baseline으로 사용한다.
+- `CT-GND` 영향만 별도로 비교할 때 두 보드의 RCT1–RCT4, 총 8개 위치에 0 Ω을 모두 장착한다. 보드 한쪽만 또는 일부 pair만 장착한 mixed 상태는 사용하지 않는다.
 - RSH1: 동일 PCB 두 장 중 VNA Port 1 쪽 보드에만 기본 0 Ω을 장착하고, Port 2 쪽 보드는 DNP로 둬 DUT shield의 DC 접점을 한 점으로 만든다. 어느 쪽을 접지했는지는 결과와 함께 기록한다.
 - CSH1: 두 보드 모두 기본 DNP. AC shield bond 시험 시 해당 보드의 RSH1을 제거한 뒤 1 nF / 2 kV를 장착한다. 한 보드에서 RSH1과 CSH1을 동시에 장착하지 않는다.
 
-두 지그는 같은 PCB artwork를 사용하지만 RSH1 조립 상태는 기본적으로 서로 다르다. 비교 시험 중 조립 변형을 바꿀 때는 두 보드의 RSH1/CSH1 상태를 반드시 함께 기록한다.
+LibreVNA의 두 RF port는 공통 GND를 사용하므로 RCT 8개를 장착하면 두 fixture의 center tap에 공통모드 기준 경로가 추가된다. 따라서 `CT-GND` 결과는 케이블/슬립링 고유값이 아니라 해당 종단 조건을 포함한 비교값으로 해석한다.
+
+두 지그는 같은 PCB artwork를 사용하지만 RSH1 조립 상태는 기본적으로 서로 다르다. CT-FLOAT와 CT-GND 결과를 비교할 때는 RCT 외의 RSH1/CSH1 상태와 cable 배치를 고정하고, CT 상태를 바꾼 뒤 golden baseline부터 다시 측정한다.
 
 첫 보드 조립 후 RJ45 1–8, shield tab, SMA center-to-transformer 연결을 continuity test로 확인한 다음 두 번째 보드를 조립한다.
 
 ## 측정 순서
 
 1. VNA coax cable 끝에서 일반 coax SOLT를 수행한다. 이 보드는 SOLT 기준면 뒤의 fixture로 남는다.
-2. 동일 지그 두 장과 golden RJ45 cable을 연결하고, 선택하지 않은 SMA 세 개씩에는 50 Ω terminator를 단다.
+2. RCT 8개가 모두 DNP인 `CT-FLOAT` 상태에서 동일 지그 두 장과 golden RJ45 cable을 연결하고, 선택하지 않은 SMA 세 개씩에는 50 Ω terminator를 단다.
 3. 동일 sweep 조건으로 golden baseline과 DUT를 측정한다.
 4. S11/S22(return loss), S21(insertion loss), phase/group delay를 baseline 대비 비교한다.
 5. NEXT/FEXT는 aggressor/victim SMA 조합을 바꿔 각 조합의 S21로 측정한다. 2-port VNA라 모든 조합을 순차 측정해야 한다.
-6. RCT/shield 조립 상태, terminator, VNA power, IFBW, averaging, point 수를 결과와 함께 기록한다.
+6. `CT-FLOAT` 또는 `CT-GND(all 8 FIT)` 상태, shield 조립 상태, terminator, VNA power, IFBW, averaging, point 수를 결과와 함께 기록한다.
 
-coax SOLT만으로 기준면이 RJ45 접점까지 이동하지는 않는다. 절대적인 differential S-parameter가 필요하면 검증된 2x-thru/de-embedding 절차가 추가로 필요하다. 이 지그의 우선 목적은 동일 fixture를 사용해 golden cable과 slip ring의 차이를 안정적으로 찾는 것이다.
+coax SOLT만으로 기준면이 RJ45 접점까지 이동하지는 않는다. 또한 이 2-port balun back-to-back 결과는 differential IL/RL과 NEXT/FEXT의 비교용 proxy이며, `Sdd/Sdc/Scd/Scc`를 분리하거나 정식 CMRR을 나타내지 않는다. 절대적인 mixed-mode S-parameter가 필요하면 4-port 측정과 검증된 de-embedding 절차가 추가로 필요하다. 이 지그의 우선 목적은 같은 CT/shield 상태의 동일 fixture를 사용해 golden cable과 slip ring의 차이를 안정적으로 찾는 것이다.
 
 ## 파일과 재생성 주의
 

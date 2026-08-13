@@ -1371,7 +1371,7 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "RCT3  0R (FIT)"
+	(text "RCT3  0R (DNP DEFAULT)"
 		(exclude_from_sim no)
 		(at 139.7 127 0)
 		(effects
@@ -1435,7 +1435,7 @@
 		)
 		(uuid "6b5ffb8e-b2cf-401d-9716-c84a834e3eb9")
 	)
-	(text "RCT4  0R (FIT)"
+	(text "RCT4  0R (DNP DEFAULT)"
 		(exclude_from_sim no)
 		(at 139.7 156.21 0)
 		(effects
@@ -1456,7 +1456,7 @@
 		)
 		(uuid "80b86d71-4e37-4899-9c38-b619ede117c0")
 	)
-	(text "RCT1  0R (FIT)"
+	(text "RCT1  0R (DNP DEFAULT)"
 		(exclude_from_sim no)
 		(at 139.7 68.58 0)
 		(effects
@@ -1498,7 +1498,7 @@
 		)
 		(uuid "c3ce1b34-8842-4792-a2a5-d0b858fbeb89")
 	)
-	(text "SHIELD: RSH1 fitted = direct; CSH1 alone = AC; both DNP = floating. Default 2-board setup: fit RSH1 on one board only."
+	(text "SHIELD: RSH1 fitted = direct; CSH1 alone = AC; both DNP = floating. Fit RSH1 on one board only; keep this state fixed across CT variants."
 		(exclude_from_sim no)
 		(at 148 46.99 0)
 		(effects
@@ -1508,7 +1508,7 @@
 		)
 		(uuid "c5828dc7-423c-4896-bd3d-2be6fc30e9e1")
 	)
-	(text "RCT1..4: fit 0R for grounded CT; remove all four only for a controlled floating-CT comparison"
+	(text "RCT1..4: DNP default (CT-FLOAT); for CT-GND comparison fit all eight RCTs across both boards; no mixed states"
 		(exclude_from_sim no)
 		(at 148 43.18 0)
 		(effects
@@ -1518,7 +1518,7 @@
 		)
 		(uuid "c9c7c96c-af61-4a3a-bd9b-553d056ddf7a")
 	)
-	(text "RCT2  0R (FIT)"
+	(text "RCT2  0R (DNP DEFAULT)"
 		(exclude_from_sim no)
 		(at 139.7 97.79 0)
 		(effects
@@ -2364,7 +2364,7 @@
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
-		(in_pos_files yes)
+		(in_pos_files no)
 		(dnp yes)
 		(uuid "7cf4fcff-a207-4f12-bc92-15c4fe48e4b0")
 		(property "Reference" "CSH1"
@@ -2767,8 +2767,8 @@
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
+		(in_pos_files no)
+		(dnp yes)
 		(uuid "ac3341d4-1abb-4680-b570-095e6910fe92")
 		(property "Reference" "RCT1"
 			(at 139.7 72.39 0)
@@ -2845,7 +2845,7 @@
 				)
 			)
 		)
-		(property "Assembly" "FIT; remove for floating-CT comparison"
+		(property "Assembly" "DNP DEFAULT; fit all eight only for CT-GND comparison"
 			(at 142.24 77.4699 0)
 			(hide yes)
 			(show_name no)
@@ -3126,8 +3126,8 @@
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
+		(in_pos_files no)
+		(dnp yes)
 		(uuid "cb431d9a-a979-485f-ae28-a61e95254633")
 		(property "Reference" "RCT4"
 			(at 139.7 160.02 0)
@@ -3204,7 +3204,7 @@
 				)
 			)
 		)
-		(property "Assembly" "FIT; remove for floating-CT comparison"
+		(property "Assembly" "DNP DEFAULT; fit all eight only for CT-GND comparison"
 			(at 142.24 165.0999 0)
 			(hide yes)
 			(show_name no)
@@ -3363,8 +3363,8 @@
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
+		(in_pos_files no)
+		(dnp yes)
 		(uuid "e2362941-3367-4e3c-85ab-f564ddfd5b52")
 		(property "Reference" "RCT3"
 			(at 139.7 130.81 0)
@@ -3441,7 +3441,7 @@
 				)
 			)
 		)
-		(property "Assembly" "FIT; remove for floating-CT comparison"
+		(property "Assembly" "DNP DEFAULT; fit all eight only for CT-GND comparison"
 			(at 142.24 135.8899 0)
 			(hide yes)
 			(show_name no)
@@ -3815,8 +3815,8 @@
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
+		(in_pos_files no)
+		(dnp yes)
 		(uuid "fd97f624-74df-4217-ada2-078a1ac3e649")
 		(property "Reference" "RCT2"
 			(at 139.7 101.6 0)
@@ -3893,7 +3893,7 @@
 				)
 			)
 		)
-		(property "Assembly" "FIT; remove for floating-CT comparison"
+		(property "Assembly" "DNP DEFAULT; fit all eight only for CT-GND comparison"
 			(at 142.24 106.6799 0)
 			(hide yes)
 			(show_name no)

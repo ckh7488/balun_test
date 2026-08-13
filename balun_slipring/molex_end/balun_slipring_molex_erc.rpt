@@ -1,33 +1,9 @@
-ERC report (2026-08-13T03:56:51, Encoding UTF8)
-Report includes: Errors, Warnings, Exclusions
+ERC report (2026-08-13T17:06:04, Encoding UTF8)
+Report includes: Errors, Warnings
 
 ***** Sheet /
-[isolated_pin_label]: Label connected to only one pin
-    ; warning
-    @(50.80 mm, 87.63 mm): Label 'MOL_RAW1'
-[isolated_pin_label]: Label connected to only one pin
-    ; warning
-    @(50.80 mm, 90.17 mm): Label 'MOL_RAW2'
-[isolated_pin_label]: Label connected to only one pin
-    ; warning
-    @(50.80 mm, 92.71 mm): Label 'MOL_RAW3'
-[isolated_pin_label]: Label connected to only one pin
-    ; warning
-    @(50.80 mm, 95.25 mm): Label 'MOL_RAW4'
-[isolated_pin_label]: Label connected to only one pin
-    ; warning
-    @(121.92 mm, 67.31 mm): Label 'PAIR_A_N_TBD'
-[isolated_pin_label]: Label connected to only one pin
-    ; warning
-    @(121.92 mm, 77.47 mm): Label 'PAIR_A_P_TBD'
-[isolated_pin_label]: Label connected to only one pin
-    ; warning
-    @(121.92 mm, 96.52 mm): Label 'PAIR_B_N_TBD'
-[isolated_pin_label]: Label connected to only one pin
-    ; warning
-    @(121.92 mm, 106.68 mm): Label 'PAIR_B_P_TBD'
 
- ** ERC messages: 8  Errors 0  Warnings 8
+ ** ERC messages: 0  Errors 0  Warnings 0
 
  ** Ignored checks:
     - Global label only appears once in the schematic

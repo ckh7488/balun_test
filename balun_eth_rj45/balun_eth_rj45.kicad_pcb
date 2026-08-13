@@ -2370,7 +2370,7 @@
 				)
 			)
 		)
-		(property "Assembly" "FIT; remove for floating-CT comparison"
+		(property "Assembly" "DNP DEFAULT; fit all eight only for CT-GND comparison"
 			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)
@@ -2383,7 +2383,7 @@
 			)
 		)
 		(path "/fd97f624-74df-4217-ada2-078a1ac3e649")
-		(attr smd)
+		(attr smd exclude_from_pos_files dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.227064 -0.735)
@@ -3138,7 +3138,7 @@
 			)
 		)
 		(path "/7cf4fcff-a207-4f12-bc92-15c4fe48e4b0")
-		(attr smd dnp)
+		(attr smd exclude_from_pos_files dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.711252 -0.91)
@@ -4777,7 +4777,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Assembly" "FIT; remove for floating-CT comparison"
+		(property "Assembly" "DNP DEFAULT; fit all eight only for CT-GND comparison"
 			(at 0 0 180)
 			(layer "B.SilkS")
 			(hide yes)
@@ -4791,7 +4791,7 @@
 			)
 		)
 		(path "/cb431d9a-a979-485f-ae28-a61e95254633")
-		(attr smd)
+		(attr smd exclude_from_pos_files dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.227064 -0.735)
@@ -4970,7 +4970,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Assembly" "FIT; remove for floating-CT comparison"
+		(property "Assembly" "DNP DEFAULT; fit all eight only for CT-GND comparison"
 			(at 0 0 180)
 			(layer "B.SilkS")
 			(hide yes)
@@ -4984,7 +4984,7 @@
 			)
 		)
 		(path "/ac3341d4-1abb-4680-b570-095e6910fe92")
-		(attr smd)
+		(attr smd exclude_from_pos_files dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.227064 -0.735)
@@ -5163,7 +5163,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Assembly" "FIT; remove for floating-CT comparison"
+		(property "Assembly" "DNP DEFAULT; fit all eight only for CT-GND comparison"
 			(at 0 0 180)
 			(layer "B.SilkS")
 			(hide yes)
@@ -5177,7 +5177,7 @@
 			)
 		)
 		(path "/e2362941-3367-4e3c-85ab-f564ddfd5b52")
-		(attr smd)
+		(attr smd exclude_from_pos_files dnp)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
 			(start -0.227064 -0.735)

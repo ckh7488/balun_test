@@ -1,8 +1,9 @@
 (version 1)
 
-# PINMAP-TBD draft.  Geometry follows the same JLC04161H-7628 stack used by
-# balun_eth_rj45 Rev B.  Connector-specific escape rules are intentionally
-# absent until the exact pin map and M12 female footprint are fixed.
+# Document-mapped DRAFT 1.  Electrical connectivity follows PALA720 slide 14.
+# Geometry follows the same provisional JLC04161H-7628 stack used by the
+# balun_eth_rj45 reference; connector and SMA mechanics remain fabrication
+# blockers and are deliberately carried as DNP candidates.
 
 (rule "Controlled traces isolated from other controlled signals"
     (condition "(A.Type == 'Track' || A.Type == 'Via') && (B.Type == 'Track' || B.Type == 'Via') && (A.hasNetclass('ETH100') || A.hasNetclass('RF50')) && (B.hasNetclass('ETH100') || B.hasNetclass('RF50')) && !AB.isCoupledDiffPair() && !A.intersectsCourtyard('T?') && !B.intersectsCourtyard('T?')")
@@ -41,17 +42,17 @@
 
 (rule "JLC 100 ohm differential coupled gap"
     (layer outer)
-    (condition "A.Type == 'Track' && A.hasNetclass('ETH100') && !A.intersectsCourtyard('T?')")
+    (condition "A.Type == 'Track' && A.hasNetclass('ETH100') && !A.intersectsCourtyard('T?') && !A.intersectsCourtyard('J1')")
     # The pair is allowed to open only in the short connector/transformer
     # fan-outs.  The uncoupled-length rule below bounds those exceptions.
-    (constraint diff_pair_gap (min 0.21mm) (opt 0.22mm))
+    (constraint diff_pair_gap (min 0.21mm) (opt 0.22mm) (max 0.23mm))
 )
 
 (rule "Ethernet pair topology"
     (condition "A.hasNetclass('ETH100')")
-    (constraint skew (max 0.55mm) (within_diff_pairs))
-    (constraint via_count (max 1))
-    (constraint diff_pair_uncoupled (max 16.00mm))
+    (constraint skew (max 0.10mm) (within_diff_pairs))
+    (constraint via_count (max 0))
+    (constraint diff_pair_uncoupled (max 11.20mm))
 )
 
 (rule "SMA edge-launch exception"

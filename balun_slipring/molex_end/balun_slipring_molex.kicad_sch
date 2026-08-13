@@ -5,12 +5,12 @@
 	(uuid "1c3fe74f-f7a1-5468-910f-539d70829621")
 	(paper "A4")
 	(title_block
-		(title "100BASE-TX slip-ring VNA fixture - MOLEX END - PINMAP TBD")
+		(title "100BASE-TX slip-ring VNA fixture - MOLEX END - DOC PINMAP")
 		(date "2026-08-13")
-		(rev "DRAFT 0")
+		(rev "DRAFT 1")
 		(comment 1 "Two-channel 50 ohm single-ended to 100 ohm differential fixture core.")
-		(comment 2 "Connector RAW pins intentionally not mapped to balun pairs.")
-		(comment 3 "REVIEW ONLY - DO NOT FABRICATE UNTIL PINMAP AND CONNECTOR MECHANICS ARE VERIFIED.")
+		(comment 2 "Electrical map from PALA720 slide 14; TX and RX fan-outs are connected.")
+		(comment 3 "REVIEW ONLY - DO NOT FABRICATE UNTIL CONTINUITY, CONNECTOR MECHANICS AND SMA STACK ARE VERIFIED.")
 	)
 	(lib_symbols
 		(symbol "Connector:Conn_Coaxial"
@@ -716,7 +716,7 @@
 					)
 					(embedded_fonts no)
 				)
-		(symbol "Connector_Generic:Conn_01x04"
+		(symbol "Connector_Generic:Conn_01x05"
 				(pin_names
 					(offset 1.016)
 					(hide yes)
@@ -727,7 +727,7 @@
 				(in_pos_files yes)
 				(duplicate_pin_numbers_are_jumpers no)
 				(property "Reference" "J"
-					(at 0 5.08 0)
+					(at 0 7.62 0)
 					(show_name no)
 					(do_not_autoplace no)
 					(effects
@@ -736,7 +736,7 @@
 						)
 					)
 				)
-				(property "Value" "Conn_01x04"
+				(property "Value" "Conn_01x05"
 					(at 0 -7.62 0)
 					(show_name no)
 					(do_not_autoplace no)
@@ -768,7 +768,7 @@
 						)
 					)
 				)
-				(property "Description" "Generic connector, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)"
+				(property "Description" "Generic connector, single row, 01x05, script generated (kicad-library-utils/schlib/autogen/connector/)"
 					(at 0 0 0)
 					(show_name no)
 					(do_not_autoplace no)
@@ -801,9 +801,9 @@
 						)
 					)
 				)
-				(symbol "Conn_01x04_1_1"
+				(symbol "Conn_01x05_1_1"
 					(rectangle
-						(start -1.27 3.81)
+						(start -1.27 6.35)
 						(end 1.27 -6.35)
 						(stroke
 							(width 0.254)
@@ -811,6 +811,17 @@
 						)
 						(fill
 							(type background)
+						)
+					)
+					(rectangle
+						(start -1.27 5.207)
+						(end 0 4.953)
+						(stroke
+							(width 0.1524)
+							(type default)
+						)
+						(fill
+							(type none)
 						)
 					)
 					(rectangle
@@ -858,7 +869,7 @@
 						)
 					)
 					(pin passive line
-						(at -5.08 2.54 0)
+						(at -5.08 5.08 0)
 						(length 3.81)
 						(name "Pin_1"
 							(effects
@@ -876,7 +887,7 @@
 						)
 					)
 					(pin passive line
-						(at -5.08 0 0)
+						(at -5.08 2.54 0)
 						(length 3.81)
 						(name "Pin_2"
 							(effects
@@ -894,7 +905,7 @@
 						)
 					)
 					(pin passive line
-						(at -5.08 -2.54 0)
+						(at -5.08 0 0)
 						(length 3.81)
 						(name "Pin_3"
 							(effects
@@ -912,7 +923,7 @@
 						)
 					)
 					(pin passive line
-						(at -5.08 -5.08 0)
+						(at -5.08 -2.54 0)
 						(length 3.81)
 						(name "Pin_4"
 							(effects
@@ -929,11 +940,29 @@
 							)
 						)
 					)
+					(pin passive line
+						(at -5.08 -5.08 0)
+						(length 3.81)
+						(name "Pin_5"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+						(number "5"
+							(effects
+								(font
+									(size 1.27 1.27)
+								)
+							)
+						)
+					)
 				)
 				(embedded_fonts no)
 			)
 	)
-	(text "PINMAP TBD - REVIEW ONLY - DO NOT FABRICATE"
+	(text "DOC PINMAP APPLIED - REVIEW ONLY - DO NOT FABRICATE"
 		(exclude_from_sim no)
 		(at 145 25 0)
 		(effects
@@ -944,7 +973,7 @@
 		)
 		(uuid "4d3895ea-538a-5abe-92c1-e565bda879d3")
 	)
-	(text "Common SMA/balun core is fixed; connector RAW nets are deliberately isolated."
+	(text "PALA720 slide 14: Molex 1/2 = TX+/-; 3/4 = RX+/-. M12 4/3 = TX+/-; 2/1 = RX+/-."
 		(exclude_from_sim no)
 		(at 145 31 0)
 		(effects
@@ -954,7 +983,7 @@
 		)
 		(uuid "38586348-3511-53d7-b38a-ff619dfb40c5")
 	)
-	(text "After continuity test: replace RAW-to-PAIR boundary with four short symmetric direct routes."
+	(text "M12 5 GPS_RX, 6 GPS_1PPS, 7 +24V and 8 24V_GND are intentionally NC on this fixture."
 		(exclude_from_sim no)
 		(at 145 35 0)
 		(effects
@@ -974,7 +1003,7 @@
 		)
 		(uuid "fe973c66-55ba-5706-857d-fbb761cda513")
 	)
-	(text "J2 / PAIR A"
+	(text "J2 / TX PAIR"
 		(exclude_from_sim no)
 		(at 82.5 60 0)
 		(effects
@@ -985,7 +1014,7 @@
 		)
 		(uuid "8f40a370-e0f3-5cc6-a194-c75fb212e127")
 	)
-	(text "J3 / PAIR B"
+	(text "J3 / RX PAIR"
 		(exclude_from_sim no)
 		(at 82.5 89 0)
 		(effects
@@ -996,7 +1025,7 @@
 		)
 		(uuid "93dff585-9f02-5d69-a891-d7ac0d63db9f")
 	)
-	(text "J1 / RAW PINS"
+	(text "J1 / DOC-MAPPED PINS"
 		(exclude_from_sim no)
 		(at 55 70 0)
 		(effects
@@ -1083,7 +1112,7 @@
 		)
 		(uuid "90cb2c40-08b1-5d0e-b6bf-030bd6be6e9f")
 	)
-	(label "PAIR_A_N_TBD"
+	(label "PAIR_TX_N"
 		(at 121.92 67.31 180)
 		(effects
 			(font
@@ -1092,7 +1121,7 @@
 		)
 		(uuid "e09fb265-422f-5755-8959-e358cd9420e5")
 	)
-	(label "PAIR_A_P_TBD"
+	(label "PAIR_TX_P"
 		(at 121.92 77.47 180)
 		(effects
 			(font
@@ -1137,7 +1166,7 @@
 		)
 		(uuid "0d5cb836-4b39-55ff-8f8e-4e15b96c829e")
 	)
-	(label "PAIR_B_N_TBD"
+	(label "PAIR_RX_N"
 		(at 121.92 96.52 180)
 		(effects
 			(font
@@ -1146,7 +1175,7 @@
 		)
 		(uuid "346ebb3c-66e7-5239-88ca-21cf4cb0ee95")
 	)
-	(label "PAIR_B_P_TBD"
+	(label "PAIR_RX_P"
 		(at 121.92 106.68 180)
 		(effects
 			(font
@@ -1155,8 +1184,8 @@
 		)
 		(uuid "f25eed93-3a20-59e8-8e83-8bfe2f6a72db")
 	)
-	(label "MOL_RAW1"
-		(at 50.8 87.63 180)
+	(label "PAIR_TX_P"
+		(at 50.8 85.09 180)
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -1164,8 +1193,8 @@
 		)
 		(uuid "925b4798-6b07-5a19-95aa-06619439f9ae")
 	)
-	(label "MOL_RAW2"
-		(at 50.8 90.17 180)
+	(label "PAIR_TX_N"
+		(at 50.8 87.63 180)
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -1173,8 +1202,8 @@
 		)
 		(uuid "3f946e5c-dbd8-5470-811e-b58f65b88e9c")
 	)
-	(label "MOL_RAW3"
-		(at 50.8 92.71 180)
+	(label "PAIR_RX_P"
+		(at 50.8 90.17 180)
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -1182,14 +1211,28 @@
 		)
 		(uuid "86d02950-5400-5d90-9a3d-7a1360d49c39")
 	)
-	(label "MOL_RAW4"
-		(at 50.8 95.25 180)
+	(label "PAIR_RX_N"
+		(at 50.8 92.71 180)
 		(effects
 			(font
 				(size 0.8 0.8)
 			)
 		)
 		(uuid "3fbbb70f-72d2-5faa-b012-93d04dfd9466")
+	)
+	(no_connect
+		(at 50.8 95.25)
+		(uuid "046514d4-e7c9-53d3-86ac-b15708e53ce2")
+	)
+	(text "J1.5 = NC (unused housing circuit)"
+		(exclude_from_sim no)
+		(at 34 104 0)
+		(effects
+			(font
+				(size 0.9 0.9)
+			)
+		)
+		(uuid "f7a0ba72-8bd4-58ac-a4ba-42df2ff19b14")
 	)
 	(symbol
 			(lib_id "Connector:Conn_Coaxial")
@@ -1199,8 +1242,8 @@
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(in_pos_files yes)
-			(dnp no)
+			(in_pos_files no)
+			(dnp yes)
 			(uuid "8e378d3d-a99e-457d-9c59-3d43592cb06c")
 			(property "Reference" "J2"
 				(at 82.55 67.31 0)
@@ -1312,8 +1355,8 @@
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(in_pos_files yes)
-			(dnp no)
+			(in_pos_files no)
+			(dnp yes)
 			(uuid "25613112-a452-492a-8609-e1f92fc9c315")
 			(property "Reference" "J3"
 				(at 82.55 96.52 0)
@@ -1675,8 +1718,8 @@
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(in_pos_files yes)
-			(dnp no)
+			(in_pos_files no)
+			(dnp yes)
 			(uuid "ac3341d4-1abb-4680-b570-095e6910fe92")
 			(property "Reference" "RCT1"
 				(at 139.7 72.39 0)
@@ -1753,7 +1796,7 @@
 					)
 				)
 			)
-			(property "Assembly" "FIT; remove for floating-CT comparison"
+			(property "Assembly" "DNP; fit all four RCTs only for controlled CT-GND comparison"
 				(at 142.24 77.4699 0)
 				(hide yes)
 				(show_name no)
@@ -1787,8 +1830,8 @@
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(in_pos_files yes)
-			(dnp no)
+			(in_pos_files no)
+			(dnp yes)
 			(uuid "fd97f624-74df-4217-ada2-078a1ac3e649")
 			(property "Reference" "RCT2"
 				(at 139.7 101.6 0)
@@ -1865,7 +1908,7 @@
 					)
 				)
 			)
-			(property "Assembly" "FIT; remove for floating-CT comparison"
+			(property "Assembly" "DNP; fit all four RCTs only for controlled CT-GND comparison"
 				(at 142.24 106.6799 0)
 				(hide yes)
 				(show_name no)
@@ -1892,15 +1935,15 @@
 			)
 		)
 	(symbol
-		(lib_id "Connector_Generic:Conn_01x04")
+		(lib_id "Connector_Generic:Conn_01x05")
 		(at 55.88 90.17 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
+		(in_pos_files no)
+		(dnp yes)
 		(uuid "0f717228-76fe-5ae8-a6a4-b1bc37c7bc23")
 		(property "Reference" "J1"
 			(at 55.88 75 0)
@@ -1912,7 +1955,7 @@
 				)
 			)
 		)
-		(property "Value" "5055680471 / PINMAP TBD"
+		(property "Value" "5055680571 / MATE FOR 5055650501"
 			(at 55.88 105 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1922,7 +1965,7 @@
 				)
 			)
 		)
-		(property "Footprint" "balun_slipring_common:Molex_5055680471"
+		(property "Footprint" "balun_slipring_common:Molex_5055680571"
 			(at 55.88 90.17 0)
 			(hide yes)
 			(show_name no)
@@ -1933,7 +1976,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://www.molex.com/content/dam/molex/molex-dot-com/products/automated/en-us/2ddrawingdxfadobe2d/505/505568/5055680471.pdf?inline="
+		(property "Datasheet" "https://www.molex.com/en-us/products/part-detail/5055680571"
 			(at 55.88 90.17 0)
 			(hide yes)
 			(show_name no)
@@ -1944,7 +1987,7 @@
 				)
 			)
 		)
-		(property "Description" "Connector-side raw pins; intentionally isolated from balun pairs until continuity mapping is verified"
+		(property "Description" "Document-mapped five-circuit PCB-side candidate for the 5055650501 cable housing; circuit 5 is intentionally NC"
 			(at 55.88 90.17 0)
 			(hide yes)
 			(show_name no)
@@ -1966,7 +2009,7 @@
 				)
 			)
 		)
-		(property "MPN" "5055680471"
+		(property "MPN" "5055680571"
 			(at 55.88 90.17 0)
 			(hide yes)
 			(show_name no)
@@ -1977,7 +2020,7 @@
 				)
 			)
 		)
-		(property "Assembly" "FOOTPRINT PLACED; SIGNAL PINMAP TBD / DO NOT FABRICATE"
+		(property "Assembly" "DNP UNTIL PHYSICAL MATING, KEY/PIN-1 ORIENTATION AND LAND PATTERN ARE VERIFIED AGAINST REV-504"
 			(at 55.88 90.17 0)
 			(hide yes)
 			(show_name no)
@@ -1999,6 +2042,9 @@
 		)
 		(pin "4"
 			(uuid "8283224b-9bb0-5899-bdc6-46585d53b2d4")
+		)
+		(pin "5"
+			(uuid "102d1ccd-8c9c-5864-bb67-3cc3d35e7cec")
 		)
 		(instances
 			(project "balun_slipring_molex"

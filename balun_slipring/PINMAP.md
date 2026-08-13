@@ -1,69 +1,71 @@
-# Slip-ring pin map worksheet
+# Slip-ring pin map
 
-상태: `TBD` — 아래 표를 실측하기 전에는 두 PCB의 `RAW` 신호와 `PAIR_*_TBD` 신호를 연결하지 않는다.
+상태: **문서 핀맵 확인 / continuity 실측 대기 / DO NOT FABRICATE**
 
-## 기준면과 기록 규칙
+아래 핀맵은 `Docs/[인수인계] PALA720.pptx` 슬라이드 14의 PALA720 2세대 `REV-504` 연결도를 전사해 KiCad `DRAFT 1`에 반영한 값이다. 실물 슬립링에서 측정한 continuity 결과가 아니므로 제작 승인 전에 별도 실측해야 한다.
 
-- 모든 핀 번호는 제조사 도면의 **mating face** 기준으로 기록한다.
-- 사진을 찍을 때 connector key/latch가 보이게 하고, 사진 위에 pin 1을 표시한다.
-- `Pair A/B`는 측정 지그 내부 채널 이름일 뿐이다. 실제 장비의 TX/RX 이름은 별도로 확인한다.
-- pair의 P/N 반전은 IL 크기에는 큰 영향을 주지 않지만 위상과 실제 링크 동작에는 영향을 주므로 끝까지 기록한다.
-- M12에서 사용하지 않는 네 핀을 임의로 GND 또는 종단에 연결하지 않는다.
+## 문서 핀맵
 
-## 정적 continuity
+`PAIR_TX = Ethernet TX`, `PAIR_RX = Ethernet RX`로 정의한다.
 
-저항 측정 전 슬립링이 어떤 활성 장비나 PoE에도 연결되지 않았는지 확인한다.
+| 지그 네트 | 신호 | Molex `5055650501` 하우징 핀 | 슬립링 선색 | M12 `MB12MBAFF08ST-0` 핀 |
+| --- | --- | ---: | --- | ---: |
+| `PAIR_TX_P` | Ethernet TX+ | 1 | YEL | 4 |
+| `PAIR_TX_N` | Ethernet TX− | 2 | ORN | 3 |
+| `PAIR_RX_P` | Ethernet RX+ | 3 | BRN | 2 |
+| `PAIR_RX_N` | Ethernet RX− | 4 | BLK | 1 |
+| NC | 문서상 배정 없음 | 5 | — | — |
 
-| Molex `5055680471` 핀 | M12 `MB12MBAFF08ST-0` 핀 | 정지 저항 | 판정/비고 |
-| --- | --- | ---: | --- |
-| 1 | TBD | TBD Ω | |
-| 2 | TBD | TBD Ω | |
-| 3 | TBD | TBD Ω | |
-| 4 | TBD | TBD Ω | |
+PCB측 상대물 `5055680571`은 `5055650501`의 계열·극수에 따른 **추론 후보**다. 해당 부품의 pin 1–5가 위 하우징 핀과 그대로 맞물린다는 전제는 실제 `REV-504` 체결과 제조사 mating drawing으로 검증해야 한다. 기존 KiCad 초안의 4극 `5055680471`은 제거했다.
 
-M12 잔여 핀 확인:
+## M12 5–8번의 문서상 역할
 
-| M12 핀 | Molex 1–4와 연결 | shell과 연결 | 판정/비고 |
-| --- | --- | --- | --- |
-| 1 | TBD | TBD | |
-| 2 | TBD | TBD | |
-| 3 | TBD | TBD | |
-| 4 | TBD | TBD | |
-| 5 | TBD | TBD | |
-| 6 | TBD | TBD | |
-| 7 | TBD | TBD | |
-| 8 | TBD | TBD | |
+| M12 핀 | 슬립링 선색 | PALA720 신호 | 이 VNA 지그 |
+| ---: | --- | --- | --- |
+| 5 | BLU | GPS RS232_RX | NC |
+| 6 | VIO | GPS 1PPS | NC |
+| 7 | GRY + WHT | 24VDC | NC |
+| 8 | WHT-BLK + WHT-BRN | 24VDC GND | NC |
+
+이 네 핀을 GND, shield, 50 Ω 종단 또는 서로에게 연결하지 않는다. 측정 전 DUT의 24VDC와 다른 활성 장비를 모두 분리한다.
+
+## 실물 continuity 확인표
+
+핀 번호는 각 제조사 도면의 mating-face 기준으로 기록하고, 사진에는 key와 pin 1을 표시한다. 문서 예상값과 다르면 측정을 중지하고 실물/BOM/도면을 우선해 원인을 확인한다.
+
+| 신호 | Molex 예상 핀 | M12 예상 핀 | 정지 저항 | 실측 판정 |
+| --- | ---: | ---: | ---: | --- |
+| TX+ | 1 | 4 | TBD Ω | 미측정 |
+| TX− | 2 | 3 | TBD Ω | 미측정 |
+| RX+ | 3 | 2 | TBD Ω | 미측정 |
+| RX− | 4 | 1 | TBD Ω | 미측정 |
+
+| M12 핀 | 문서상 신호 | Ethernet 1–4와 연결 | shell과 연결 | 실측 판정 |
+| ---: | --- | --- | --- | --- |
+| 5 | GPS RS232_RX | TBD | TBD | 미측정 |
+| 6 | GPS 1PPS | TBD | TBD | 미측정 |
+| 7 | 24VDC | TBD | TBD | 미측정 |
+| 8 | 24VDC GND | TBD | TBD | 미측정 |
 
 ## 회전 위치별 접촉 검사
 
-각 위치에서 확정된 네 신호의 저항을 반복 측정한다. 가능하면 최소값/최대값뿐 아니라 회전 중 순간 단선도 기록한다.
-
-| 회전 위치 | 신호 1 | 신호 2 | 신호 3 | 신호 4 | 순간 단선/변동 |
+| 회전 위치 | TX+ | TX− | RX+ | RX− | 순간 단선/변동 |
 | ---: | ---: | ---: | ---: | ---: | --- |
 | 0° | TBD | TBD | TBD | TBD | |
 | 90° | TBD | TBD | TBD | TBD | |
 | 180° | TBD | TBD | TBD | TBD | |
 | 270° | TBD | TBD | TBD | TBD | |
-| 회전 중 | TBD | TBD | TBD | TBD | |
+| 저속 회전 중 | TBD | TBD | TBD | TBD | |
 
-## 실제 pair 확인
+출하검사성적서의 두 기록값인 접촉회로 저항 241/248 mΩ 및 순간단선 양호는 해당 출하 LOT의 검사 결과일 뿐, 현재 보유한 개별 DUT와 각 핀의 실측값을 대신하지 않는다.
 
-continuity만으로는 어떤 두 선이 물리적으로 꼬인 pair인지 알 수 없다. 기존 하네스 도면, 색상, 분해 관찰 또는 VNA crosstalk 결과로 아래를 확정한다.
+## PCB 반영 상태와 남은 검증
 
-| 지그 채널 | Molex 핀 | M12 핀 | 극성 | 근거 |
-| --- | --- | --- | --- | --- |
-| Pair A P | TBD | TBD | TBD | |
-| Pair A N | TBD | TBD | TBD | |
-| Pair B P | TBD | TBD | TBD | |
-| Pair B N | TBD | TBD | TBD | |
+- Molex측: pin 1/2를 `PAIR_TX_P/N`, pin 3/4를 `PAIR_RX_P/N`에 연결하고 pin 5는 NC로 반영함
+- M12측: pin 4/3을 `PAIR_TX_P/N`, pin 2/1을 `PAIR_RX_P/N`에 연결하고 pin 5–8은 NC로 반영함
+- 두 보드 모두 shared-centerline W=0.23/G=0.22 mm 배선이며 네 쌍 모두 P/N이 F.Cu-only, signal via 0/0, 저장된 track skew 0.001 mm 미만임
+- M12 J1은 signal pin을 transformer 쪽으로 향하게 한 후면 실장 후보임; 한쪽 극성만 layer/via를 바꾸던 crossover는 제거했으나 A-key/pin-1 mating view와 패널 방향은 실물 검증 전 DNP임
+- KiCad 10 검사: 두 회로도 ERC 0, 두 PCB DRC 0, 미연결 pad 0, schematic–PCB parity 0
+- `5055680571`과 `MB12FBAFF08ST-3`의 key 방향, pin view, 1:1 출력과 실제 기구 체결은 미검증
 
-4선의 가능한 pair 묶음은 `1–2 / 3–4`, `1–3 / 2–4`, `1–4 / 2–3` 세 종류다. 최종 측정 PCB에 4×4 점퍼 매트릭스를 넣어 탐색하지 않고, 저주파 breakout 또는 별도 짧은 시험 연결로 묶음을 확인한다.
-
-## PCB 확정 시 반영할 내용
-
-- 두 보드의 `RAW` 네트와 `PAIR_A/B_*_TBD` 네트를 네 개의 짧은 고정 배선으로 연결
-- 한 pair의 P/N에 동일한 via 수, layer transition 수와 fan-out 구조 적용
-- M12 female의 정확한 MPN·suffix·패널 체결 방향 및 footprint 반영
-- M12 shell/drain이 실제로 존재할 때만 shield 연결 옵션 검토
-- 연결 후 ERC 단독 라벨 경고 제거, PCB DRC 및 schematic parity 재실행
-- 1:1 footprint 출력물에 실제 커넥터를 올려 key 방향과 pin 1 재검증
+`RS422_Cable_Assembly_Spec.pptx`는 별도 EM2 encoder용 10핀 케이블 문서이므로 이 핀맵의 근거로 사용하지 않는다.

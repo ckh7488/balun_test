@@ -1,148 +1,112 @@
 # balun_slipring
 
-회사 전용 슬립링의 100BASE-TX 전송 특성을 LibreVNA 2포트로 비교 측정하기 위한 지그 프로젝트다.
+PALA720 2세대 슬립링의 100BASE-TX 전송 특성을 LibreVNA 2포트로 비교 측정하기 위한 지그 프로젝트다.
 
-현재 `PINMAP TBD` 초안까지 진행했다. 두 보드의 공통 SMA/balun RF 코어는 배치·배선했지만, 커넥터 RAW 핀과 balun 차동 핀 사이는 의도적으로 연결하지 않았다. 핀맵과 M12 female의 정확한 부품 번호가 확정되기 전에는 제작하면 안 된다.
+`Docs/[인수인계] PALA720.pptx` 슬라이드 14에서 2세대 Ethernet 논리 핀맵을 확인하고, KiCad `DRAFT 1` 회로도와 두 PCB의 connector fan-out에 반영했다. 다만 이 표는 인수인계 문서의 전사값이며 실물 `REV-504`의 continuity 측정값은 아니다. 커넥터 기구와 SMA/stack-up도 아직 차단 항목이므로 **DO NOT FABRICATE** 상태다.
 
-## 측정 전제
+## 문서에서 확인한 2세대 핀맵
+
+슬라이드 14의 Ethernet용 5극 케이블 하우징은 Molex `5055650501`로 식별된다. PCB측 상대물 `5055680571`은 같은 Micro-Lock Plus 1.25 mm 계열과 5극 구성을 근거로 한 **추론 후보**일 뿐 문서에 직접 적힌 MPN이 아니다. 실제 `REV-504`의 라벨·BOM·체결 상태와 제조사 도면으로 확인해야 한다.
+
+| 신호 | `5055650501` 하우징 핀 | 슬립링 선색 | M12 핀 |
+| --- | ---: | --- | ---: |
+| Ethernet TX+ | 1 | YEL | 4 |
+| Ethernet TX− | 2 | ORN | 3 |
+| Ethernet RX+ | 3 | BRN | 2 |
+| Ethernet RX− | 4 | BLK | 1 |
+| 지그 NC | 5 | 문서상 배정 없음 | — |
+
+최종 지그 네트는 `PAIR_TX_* = TX`, `PAIR_RX_* = RX`로 정의한다.
+
+| 지그 네트 | Molex측 J1 | M12측 J1 |
+| --- | --- | --- |
+| `PAIR_TX_P` / TX+ | pin 1 | pin 4 |
+| `PAIR_TX_N` / TX− | pin 2 | pin 3 |
+| `PAIR_RX_P` / RX+ | pin 3 | pin 2 |
+| `PAIR_RX_N` / RX− | pin 4 | pin 1 |
+
+M12 5–8번은 빈 핀이 아니다. 같은 슬라이드에서 5번은 GPS RS232_RX, 6번은 GPS 1PPS, 7번은 24VDC, 8번은 24VDC GND로 지정된다. 이 측정 지그에서는 네 핀 모두 **NC**로 두며 GND, shield 또는 종단에 연결하지 않는다. 특히 DUT에 전원이 연결된 상태에서 VNA 지그를 체결하지 않는다.
+
+## 커넥터 판단
+
+| 위치 | 부품 번호 | 판단 |
+| --- | --- | --- |
+| REV-504 Ethernet 케이블 하우징 | Molex `5055650501` | 슬라이드 14에서 확인한 5극 하우징 |
+| Molex측 지그 PCB | Molex `5055680571` | 위 하우징의 PCB 상대물로 추론한 후보; 실물 체결·키 방향·pin 1 확인 전 DNP |
+| 슬립링 M12측 | Finecables `MB12MBAFF08ST-0` | 확인된 8핀 A-coded male DUT 부품 |
+| M12측 지그 PCB | Finecables `MB12FBAFF08ST-3` | 8핀 A-coded female 후보; suffix, 패널 구조, pin view와 구매 가능성 확인 전 DNP |
+
+기존 4극 `5055680471`은 문서 연결과 맞지 않아 KiCad에서 제거했다. 현재는 `5055680571`과 `MB12FBAFF08ST-3`의 제조사 도면 기반 로컬 후보 풋프린트를 배치·배선했지만, 둘 다 실물 체결과 1:1 출력 검증 전 DNP다.
+
+## SRS1202-12CZ 근거와 한계
+
+`Docs/05. 회전구동장치_슬립링(SRS1202-12CZ).pdf`의 SRS1202 Series 자료는 다음을 명시한다.
+
+- 6/12/18회로, 회로당 2 A, 220 VDC/240 VAC
+- precious-metal 접점, noise 50 mΩ max @ 100 rpm
+- 절연저항 1000 MΩ @ 250 VDC, 내전압 시험 누설전류 0.1 mA 미만 @ 250 VAC
+- CW/CCW 연속 회전, 정격 100 rpm, −30~80 °C
+- 30 AWG Teflon lead, rotor/stator 각 200 mm
+- 12회로형 본체 길이 `L=21 mm`, Ø24 flange, 3×Ø3.5 THRU on Ø18 PCD
+
+이 일반 자료에는 100 Ω, twisted pair, Ethernet 대역폭, insertion/return loss 또는 crosstalk 보증이 없다. 또한 일반 색상표의 11/12번 `Pink/Silver`와 2세대 조립도상의 `WHT-BLK/WHT-BRN`이 다르므로 `-12CZ` 실제 연결에는 슬라이드 14를 우선한다.
+
+`Docs/로텍_슬립링_SRS1202-12CZ_검사성적서.pdf`는 2022-11-14 출하 LOT 8 EA에 대한 외관·치수·DC 검사다. 기록된 두 시료는 절연 1.2 GΩ, 접촉회로 저항 241/248 mΩ, 순간단선 양호 및 합격이다. 이는 RF/Ethernet 성능 검증이 아니며, 접촉회로 저항과 데이터시트의 동적 noise 50 mΩ 사양은 같은 측정항목으로 해석하지 않는다.
+
+`Docs/RS422_Cable_Assembly_Spec.pptx`는 EM2 Encoder Interposer와 Control Board 사이의 별도 10핀 RS-422 케이블 문서다. 그 핀맵, 부품번호와 길이는 이 슬립링 지그의 설계 근거에서 제외한다.
+
+## 측정 및 PCB 전제
 
 - 대상 신호: 100BASE-TX, 100 Ω 차동 2페어
-- 구성: 슬립링 양 끝에 서로 다른 지그 보드 1장씩
-- 각 보드: SMA 2개 + 임피던스비 1:2 balun 2개 (`50 Ω single-ended ↔ 100 Ω balanced`)
-- 지그 손실을 비교하기 위한 동일 커넥터 조합의 REF/bypass 연결물도 별도로 준비
-- 최종 핀맵이 확인되기 전에는 차동 팬아웃을 확정하지 않는다.
+- 구성: 슬립링 양 끝에 서로 다른 balun 지그 보드 1장씩
+- 각 보드: SMA 2개와 임피던스비 1:2 `ADT2-1T+` 2개
+- 동일 커넥터와 짧은 100 Ω twisted pair로 REF/bypass를 별도 제작
+- 측정하지 않는 한 페어의 양끝 SMA 두 곳은 외부 50 Ω로 종단
+- 최종 fan-out에는 점퍼 매트릭스를 두지 않고 짧고 대칭적인 고정 배선을 사용
 
-## 현재 KiCad 초안
+센터탭 조립 기준은 다음 두 상태로 제한한다.
 
-두 프로젝트는 KiCad 10 기준의 독립 프로젝트다.
+- `CT-FLOAT` — **기본 상태**. Molex측 `RCT1/RCT2`와 M12측 `RCT1/RCT2`, 즉 양단의 네 저항을 모두 DNP로 둔다.
+- `CT-GND` — 공통모드 민감도를 확인하는 별도 진단 상태. 네 저항을 모두 0 Ω로 동시에 장착한다.
 
-| 보드 | 현재 구현 | 의도적으로 남긴 작업 |
-| --- | --- | --- |
-| [`molex_end/balun_slipring_molex.kicad_pro`](molex_end/balun_slipring_molex.kicad_pro) | `5055680471`, SMA 2개, `ADT2-1T+` 2개, RCT 0 Ω 2개, 공통 50 Ω 배선 | `MOL_RAW1..4`와 두 차동 페어 사이 매핑/배선 |
-| [`m12_end/balun_slipring_m12.kicad_pro`](m12_end/balun_slipring_m12.kicad_pro) | SMA 2개, `ADT2-1T+` 2개, RCT 0 Ω 2개, 공통 50 Ω 배선, M12 기구 예약 영역 | 정확한 female 풋프린트·위치, 사용 핀 4개와 두 차동 페어 사이 매핑/배선 |
+양끝 또는 TX/RX 사이에 RCT 상태를 섞지 않는다. 측정하지 않고 SMA를 50 Ω로 종단한 페어도 예외가 아니다. `CT-GND`에서는 양끝 secondary center tap이 LibreVNA의 공통 coax/chassis GND에 연결되어, pair 불균형과 mode conversion으로 생긴 공통모드 전류가 chassis로 빠지는 추가 경로가 생긴다. 이 때문에 insertion/return loss 또는 crosstalk가 더 좋아 보일 수 있지만, 이는 슬립링 자체가 개선된 것이 아니라 측정 경계조건이 바뀐 결과일 수 있다. REF와 DUT는 반드시 같은 CT 상태로 비교하고 상태를 결과에 기록한다.
 
-핀 실측값은 [`PINMAP.md`](PINMAP.md)에 기록하고, 현재 조달 상태는 [`balun_slipring_draft_bom.csv`](balun_slipring_draft_bom.csv)를 확인한다. REF와 LibreVNA 설정·포트 연결·파일명은 [`MEASUREMENT.md`](MEASUREMENT.md)에 기록한다.
+두 보드의 각 P/N은 `balun_eth_rj45`와 같은 shared-centerline 방식으로 생성한다. 공통 중심선에서 P/N을 각각 ±0.225 mm offset해 W=0.23 mm, center spacing=0.45 mm, edge gap=0.22 mm를 유지하고, 커넥터와 transformer 바로 앞의 짧은 fan-in/out에서만 쌍을 연다. 모든 Ethernet trace는 F.Cu이며 signal via는 네 쌍 모두 0/0이다. 선택 조립용 중앙탭 0 Ω 저항은 B.Cu에 배치해 차동 트렁크를 가로막지 않으며, `CT-FLOAT` 기본 조립에서는 비운다.
 
-현재 공개 체크포인트에는 실제 핀맵이나 측정 데이터가 없다. 이후 회사 전용 정보 추가 전에는 [`LICENSE-NOTICE.md`](LICENSE-NOTICE.md)의 공개 범위를 확인한다.
+이 구성의 2-port VNA 결과는 두 balun을 거친 single-ended 전송의 비교 proxy다. 차동·공통모드 성분을 독립적으로 분리하는 mixed-mode `Sdd/Sdc/Scd/Scc` 측정은 아니므로, `CT-GND` 결과를 본래의 differential 특성으로 해석하지 않는다. 절대 mixed-mode 특성이 필요하면 검증된 4-port 측정 또는 별도의 fixture characterization/de-embedding 절차가 필요하다.
 
-공통 보드 초안은 68 × 44 mm이며, 동일한 RF 코어 위치와 배선을 사용한다. 보드 외곽과 M3 홀은 핀맵 확정 전의 검토용 값이다. M12측은 정확한 부품 도면을 받으면 왼쪽 기구부가 달라질 수 있다.
+M12 J1은 pin 1–4가 transformer 쪽을 향하도록 **후면 실장 electrical-layout 후보**로 배치했다. 덕분에 이전의 한쪽 극성만 B.Cu/via를 쓰던 비대칭 crossover가 없어졌다. M12의 P/N은 모두 동일한 connector PTH barrel을 지나 F.Cu로 나오며, 별도 routing via는 0/0이다. 다만 실제 A-key/pin-1 mating view, 패널 너트 접근과 케이블 방향이 반대로 바뀔 수 있으므로 이 기구 결정을 실물로 확인하기 전에는 J1을 계속 DNP로 둔다.
 
-- 4층 JLCPCB `JLC04161H-7628`: 주문 두께 1.6 mm, KiCad stack model 합계 1.5862 mm
-- L1 신호, L2/L3 연속 GND plane, L4는 현재 신호 없음
-- L1/L4 blanket GND pour 없음
-- SMA측 50 Ω: 외층 폭 0.35 mm
-- 최종 차동측 100 Ω 목표: 폭 0.23 mm, gap 0.22 mm
-- 측정하지 않는 채널은 SMA에 외부 50 Ω 종단
-- 4×4 점퍼 매트릭스는 open stub와 채널별 비대칭을 만들므로 넣지 않음
+| 보드 / pair | P 길이 | N 길이 | P–N 차이 | 0.22 mm 결합 트렁크 최소 | Signal via P/N |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Molex TX | 31.082091 mm | 31.082091 mm | <0.000001 mm | 20.292153 mm | 0 / 0 |
+| Molex RX | 31.910806 mm | 31.910806 mm | <0.000001 mm | 21.120867 mm | 0 / 0 |
+| M12 TX | 27.622513 mm | 27.622513 mm | <0.000001 mm | 16.726222 mm | 0 / 0 |
+| M12 RX | 26.916536 mm | 26.916536 mm | <0.000001 mm | 16.061861 mm | 0 / 0 |
 
-`PINMAP TBD` 구역은 빈 공간으로만 예약했다. continuity 확인 후 네 개의 짧고 대칭적인 고정 배선으로 완성한다. 매트릭스나 긴 점퍼선을 최종 VNA 측정 경로에 남기지 않는다.
+생성기는 source geometry에서 skew ≤0.01 mm, 결합 트렁크 ≥16 mm와 fan-in/out ≤11 mm를 검사하고, 저장된 KiCad track에서 다시 skew ≤0.01 mm, F.Cu-only와 P/N via 0/0을 검사한다. KiCad가 꺾임에서 산출한 최대 uncoupled는 11.1474 mm이며, DRU는 gap 0.21/0.22/0.23 mm min/opt/max, uncoupled ≤11.20 mm, skew ≤0.10 mm, signal via 0개로 제한한다. 이는 기준 보드의 uncoupled 16/16.5 mm보다 더 엄격하다.
 
-검사 상태:
+두 KiCad 초안은 68 × 44 mm, 4층 JLCPCB `JLC04161H-7628` 기준이며 core εr은 기준 보드와 같은 4.36으로 통일했다. W=0.23/G=0.22 mm는 이 stack, 외층 1 oz, green soldermask, non-coplanar 조건의 nominal 100 Ω 발주 geometry다. 저장소에는 JLC field-solver 결과 원본이 없으므로 실제 주문 전 JLC impedance calculator와 impedance-control/coupon으로 다시 승인해야 한다. 현재 stack model은 1.5862 mm이고 SMA는 Amphenol `132289`로 지정되어 있으나, 이 SMA의 제조사 PCB 두께 상한 1.57 mm를 초과한다. 1.6 mm 대응 SMA로 바꾸거나 stack-up과 50/100 Ω geometry를 다시 확정해야 한다.
 
-- 두 PCB 모두 KiCad 10 DRC: 오류/경고 0개. 이는 현재 공통 RF 코어와 예약 형상에 대한 결과이며, 아직 없는 connector fan-out을 검증했다는 뜻은 아니다.
-- 두 프로젝트 모두 회로도–PCB parity: 0개
-- Molex 회로도 ERC: 오류 0개, 의도적으로 단독 보존한 RAW/PAIR 라벨 경고 8개
-- M12 회로도 ERC: 오류 0개, 의도적으로 단독 보존한 RAW/PAIR 라벨 경고 12개
-- fabrication/Gerber 파일은 생성하지 않음
+## 제작 전 차단 항목
 
-제작 전 차단 항목:
+1. `REV-504` 실물에서 Molex housing MPN, 1–4 ↔ M12 4–1 continuity, pin 1과 key 방향을 확인한다.
+2. 추론 후보 `5055680571`의 실제 체결성, pad numbering과 footprint를 확인한다.
+3. M12 female 후보 `MB12FBAFF08ST-3`의 suffix, mating view, 후면 실장 시 A-key/pin-1 방향, 패널 체결과 기구 간섭을 확인한다.
+4. SMA/PCB 두께 불일치를 해소하고 stack-up에 맞춰 임피던스를 재계산한다.
+5. 커넥터/SMA 또는 stack-up을 바꾼 뒤 ERC, DRC, schematic–PCB parity와 1:1 실물 대조를 다시 수행한다.
 
-- 현재 지정한 Amphenol `132289`의 제조사 PCB 두께 상한은 1.57 mm다. 현재 stack model 1.5862 mm가 이미 이를 0.0162 mm 초과하며, 1.6 mm 주문 공차까지 포함하면 기계적 체결을 보장할 수 없다. 최종판에서는 1.6 mm 대응 end-launch SMA로 MPN/footprint를 바꾸거나, 더 얇은 JLC stack-up과 그에 맞는 50/100 Ω geometry를 다시 확정해야 한다.
-- M12 female의 정확한 suffix·풋프린트와 슬립링 핀맵이 모두 미확정이다.
-- 위 항목이 해결되기 전에는 BOM의 `CONFIRMED`가 전기 부품 선정만 뜻하며, 전체 보드가 제작 승인됐다는 뜻이 아니다.
+현재 문서 매핑 초안은 KiCad 10에서 두 회로도 ERC 0, 두 PCB DRC 0, 미연결 pad 0, schematic–PCB parity 0을 통과했다. 이는 전기적 CAD 정합성 검사 결과이며 실물 핀 방향, 체결성 또는 RF 성능을 승인한 결과는 아니다.
 
-[`generate_pinmap_tbd_drafts.py`](generate_pinmap_tbd_drafts.py)는 이 초기 초안의 재현용이며 KiCad 번들 Python으로 실행한다.
+## 재생성과 검사
+
+역사적인 파일명은 유지했지만 [`generate_pinmap_tbd_drafts.py`](generate_pinmap_tbd_drafts.py)는 이제 문서 매핑 `DRAFT 1` 두 프로젝트와 로컬 후보 풋프린트를 재생성한다. KiCad 번들 Python으로 `--force` 실행하면 기존 검증 보고서를 무효화하므로, 뒤이어 ERC/DRC를 다시 실행해야 한다. 수동으로 후속 설계를 시작해 draft 표식을 제거하면 생성기는 덮어쓰기를 거부한다.
+
+KiCad 10 Windows의 Python zone filler가 생성기 안에서 불안정해 inner GND zone은 미충전 상태로 저장된다. PCB Editor에서 처음 열었을 때 보이는 GND ratsnest는 `B`로 zone을 채워 확인한다. 저장된 DRC 보고서는 native `kicad-cli pcb drc --refill-zones`로 별도 검사한 결과다.
 
 ```powershell
 & 'C:\Program Files\KiCad\10.0\bin\python.exe' `
-  'balun_slipring\generate_pinmap_tbd_drafts.py'
+  'balun_slipring\generate_pinmap_tbd_drafts.py' --force
 ```
 
-현재 PC의 KiCad 10 설치 경로와 형제 프로젝트 `balun_eth_rj45`를 원본으로 사용하므로 독립·이식형 생성기는 아니다. 기본 실행은 기존 파일을 덮어쓰지 않는다. `--force`도 회로도와 PCB에 `DRAFT 0` 및 `DO NOT FABRICATE` 표식이 모두 남아 있을 때만 허용되며, 재생성 후 오래된 DRC/ERC 보고서를 제거한다. 핀맵 확정 후 수동 설계를 시작하면 이 생성기를 폐기한다.
-
-## 커넥터 요약
-
-| 위치 | 부품 번호 | 현재 판단 |
-| --- | --- | --- |
-| Molex측 지그 보드 | `5055680471` | 사용자가 기존 지그 BOM에서 확인한 부품 |
-| 슬립링의 Molex측 상대 커넥터 | 정확한 MPN 미확인 | 제조사 도면상 `505565` 또는 `214526` 계열 |
-| 슬립링의 M12측 | `MB12MBAFF08ST-0` | 확인된 DUT 부품 |
-| M12측 지그 보드 | 미확정 | M12 A-coded 8핀 female 필요 |
-| 사용하지 않을 Molex 후보 | `5055700401` | 피치와 계열이 달라 현재 구성과 불일치 |
-
-## Molex측: 5055680471
-
-사용자가 기존 지그 BOM에서 확인해 제공한 정확한 부품 번호다. 이 저장소에는 그 사내 BOM 원본을 포함하지 않으며, 부품 번호를 성별에 대한 구두 표현보다 우선한다.
-
-- 계열: Molex Micro-Lock Plus
-- 피치: 1.25 mm
-- 회로 수: 4핀, 1열
-- PCB 장착: vertical SMD header
-- 제조사 표기 접점 성별: male
-- 상대물: `505565` 또는 TPA형 `214526` receptacle housing 계열
-
-회사 내부에서 이 부품을 “암 커넥터”라고 불렀더라도 제조사 분류상으로는 male header다. 실제 조립품과 체결되는 것이 확인되어 있다면 그 물리적 체결 결과와 정확한 BOM 번호를 기준으로 한다.
-
-`5055700401`은 Micro-Lock Plus 2.00 mm receptacle housing이다. `5055680471`의 1.25 mm 계열과 직접 체결되지 않으므로 이 지그의 상대 커넥터로 사용하지 않는다. 슬립링 쪽 정확한 하우징 MPN은 추후 라벨, BOM 또는 실물로 다시 확인한다.
-
-자료:
-
-- [Molex 5055680471 제품 페이지](https://www.molex.com/en-us/products/part-detail/5055680471)
-- [Molex 5055680471 도면](https://www.molex.com/content/dam/molex/molex-dot-com/products/automated/en-us/2ddrawingdxfadobe2d/505/505568/5055680471.pdf?inline=)
-- [5055680471 sales drawing 및 505565/214526 상대물 정보](https://www.molex.com/content/dam/molex/molex-dot-com/products/automated/en-us/salesdrawingpdf/505/505568/5055680471_sd.pdf)
-
-## M12측: MB12MBAFF08ST-0
-
-슬립링에 장착된 것으로 확인된 Finecables 부품이다.
-
-- 규격: M12 A-coded
-- 핀 수: 8핀
-- 성별: male
-- 형태: straight, panel-mount PCB type, front-fastened
-- 제조사 자료상 shield 없음
-- 일반 A-coded 커넥터이며, 제조사 자료에 100 Ω 차동 임피던스 보장은 없다.
-
-따라서 M12 커넥터와 그 팬아웃도 측정 기준물에 포함되는 지그 오차로 취급한다. 지그 보드에는 맞물리는 M12 A-coded 8핀 female 커넥터가 필요하다.
-
-직접 PCB 장착 후보는 Finecables `MB12FBAFF08ST-X` 계열이다. `MB12FBAFF08ST-3`가 후보로 확인됐지만, 정확한 체결 나사/패널 구조와 구매 가능 여부를 확인한 뒤 suffix와 풋프린트를 확정한다. 재고가 없으면 female field-wireable 커넥터와 매우 짧은 트위스티드 페어 피그테일을 대안으로 검토한다.
-
-자료:
-
-- [Finecables `MB12MBAFF08ST-0` male/unshielded 자료](https://www.finecables.com/uploadfiles/2022/06/260%20M12%20A_coding%20Straight%20Connector%2C%20Panel%20Mount%2C%20PCB%20Type%2C%20Front%20fastened.pdf)
-- [Finecables `MB12FBAFF08ST-2/-3` female 후보 자료](https://www.finecables.com/uploadfiles/2022/06/259%20M12%20A_coding%20Straight%20Connector%2C%20Panel%20Mount%2C%20PCB%20Type%2C%20Front%20fastened.pdf)
-- [JLCPCB 후보 MB12FBAFF08ST-3](https://jlcpcb.com/partdetail/FINECABLES-MB12FBAFF08ST3/C22378785)
-
-## 확인해야 할 핀맵
-
-핀 번호는 반드시 각 제조사 도면의 mating-face 기준으로 기록한다. 100BASE-TX의 두 페어를 임의로 `1-2`, `3-4`라고 가정하지 않는다.
-
-| Molex 5055680471 핀 | M12 핀 | 페어 | 극성 | 확인 상태 |
-| --- | --- | --- | --- | --- |
-| 1 | TBD | TBD | TBD | 미확인 |
-| 2 | TBD | TBD | TBD | 미확인 |
-| 3 | TBD | TBD | TBD | 미확인 |
-| 4 | TBD | TBD | TBD | 미확인 |
-
-추가 확인 항목:
-
-- Molex 4핀 중 실제 트위스트된 두 페어
-- M12 8핀 중 사용하는 4개 핀과 미사용 핀
-- 각 페어의 P/N 극성
-- 슬립링 회전 위치 0°, 90°, 180°, 270°에서 연속성과 접촉 불량 여부
-- M12 체결 토크가 PCB 납땜부에 전달되지 않도록 할 기계적 고정 방법
-
-## 다음 설계 단계
-
-아래 입력을 얻은 뒤 현재 두 초안을 최종화한다.
-
-1. Molex 1–4번과 M12 1–8번의 continuity 표
-2. 실제로 꼬인 두 페어의 묶음 및 P/N
-3. 사용하지 않는 M12 4핀의 NC/내부 연결 상태
-4. 지그측 M12 A-coded 8핀 female의 전체 MPN과 기구 도면
-5. M12 shell/drain의 실제 연결 여부
-6. 두 커넥터의 mating-face/key 방향 사진
-7. M12 female의 STEP, 허용 panel thickness와 front/back fastening 방향
-
-핀맵이 확정되면 RAW/PAIR 라벨 사이를 직접 연결하고, 두 차동선의 길이·비아·팬아웃을 대칭으로 맞춘 뒤 다시 ERC/DRC와 1:1 풋프린트 출력을 확인한다.
-
-측정은 먼저 두 지그 사이의 REF/bypass를 측정하고, 같은 조건에서 이를 슬립링으로 교체해 차이를 비교하는 방식으로 시작한다.
+위 항목이 끝나기 전에는 BOM의 개별 전기부품 상태와 무관하게 전체 설계는 **DO NOT FABRICATE**다. 핀맵의 근거와 실측 기록은 [`PINMAP.md`](PINMAP.md), 측정 절차는 [`MEASUREMENT.md`](MEASUREMENT.md), 조달 판단은 [`balun_slipring_draft_bom.csv`](balun_slipring_draft_bom.csv)를 따른다.
