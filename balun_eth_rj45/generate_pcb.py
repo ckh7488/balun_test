@@ -144,7 +144,8 @@ footprints["J1"] = load_footprint(
     "RJE591885401 CAT6 NO-MAGNETICS", 30.43, 57.00, 90,
     properties={
         "Manufacturer": "Amphenol Communications Solutions",
-        "MPN": "RJE591885401", "Assembly": "FIT",
+        "MPN": "RJE591885401", "LCSC Part #": "C5386678",
+        "Assembly": "FIT",
         "Datasheet": "https://www.amphenol-cs.com/product/rje591885401.html",
         "Description": "",
     },
@@ -162,18 +163,20 @@ channels = [
 ]
 for label, _pair, index, jref, tref, rref, y in channels:
     footprints[jref] = load_footprint(
-        "Connector_Coaxial", "SMA_Amphenol_132289_EdgeMount",
-        jref, f"SMA_{label}", 97.45, y,
+        "balun_eth_rj45", "SMA_MyAntenna_A-SMA-KE-16.5A_EdgeMount",
+        jref, f"SMA_{label}", 97.75, y,
         properties={
-            "Manufacturer": "Amphenol RF", "MPN": "132289", "Assembly": "FIT",
-            "Datasheet": "https://www.amphenolrf.com/132289.html",
+            "Manufacturer": "MyAntenna", "MPN": "A-SMA-KE-16.5A",
+            "LCSC Part #": "C22467617", "Assembly": "FIT; JLC C22467617; Standard PCBA / wave-solder review",
+            "Datasheet": "https://datasheet.lcsc.com/datasheet/pdf/92633ab2cf30de4413e1a152c04a3ed5.pdf?productCode=C22467617",
         },
     )
     footprints[tref] = load_footprint(
         "RF_Mini-Circuits", "Mini-Circuits_CD542_H2.84mm",
         tref, "ADT2-1T+", 65.50, y, 180,
         properties={
-            "Manufacturer": "Mini-Circuits", "MPN": "ADT2-1T+", "Assembly": "FIT",
+            "Manufacturer": "Mini-Circuits", "MPN": "ADT2-1T+",
+            "LCSC Part #": "C5223988", "Assembly": "FIT",
             "Datasheet": "https://www.minicircuits.com/pdfs/ADT2-1T+.pdf",
         },
     )
@@ -182,14 +185,15 @@ for label, _pair, index, jref, tref, rref, y in channels:
         rref, "0R", 59.00, y, flipped=(index != 2), dnp=True,
         properties={
             "Manufacturer": "ANY", "MPN": "0 ohm 0805",
+            "LCSC Part #": "C17477",
             "Assembly": "DNP DEFAULT; fit all eight only for CT-GND comparison",
         },
     )
 
 footprints["RSH1"] = load_footprint(
     "Resistor_SMD", "R_0805_2012Metric_Pad1.20x1.40mm_HandSolder",
-    "RSH1", "0R", 31.00, 46.50, 270,
-    properties={"Assembly": "FIT for direct shield bond"},
+    "RSH1", "0R", 31.00, 46.50, 270, dnp=True,
+    properties={"Assembly": "DNP DEFAULT; hand-fit on Port-1 board only", "LCSC Part #": "C17477"},
 )
 footprints["CSH1"] = load_footprint(
     "Capacitor_SMD", "C_1206_3216Metric_Pad1.33x1.80mm_HandSolder",
@@ -199,12 +203,12 @@ footprints["CSH1"] = load_footprint(
 footprints["TP1"] = load_footprint(
     "TestPoint", "TestPoint_Loop_D2.50mm_Drill1.0mm",
     "TP1", "GND_RF", 43.00, 23.50,
-    properties={"Assembly": "FIT"},
+    properties={"LCSC Part #": "C238122", "Assembly": "FIT"},
 )
 footprints["TP2"] = load_footprint(
     "TestPoint", "TestPoint_Loop_D2.50mm_Drill1.0mm",
     "TP2", "RJ45_SHIELD", 25.00, 72.00,
-    properties={"Assembly": "FIT"},
+    properties={"LCSC Part #": "C238122", "Assembly": "FIT"},
 )
 
 for index, (x, y) in enumerate(((25, 25), (25, 89), (86, 23.5), (86, 90.5)), start=1):
@@ -399,8 +403,8 @@ for net_name, y in (("/DB_P", 44.46), ("/DB_N", 49.54)):
 # 0.35 mm controlled-impedance line; widths broaden only at large pads.
 for _label, _pair, index, jref, _tref, _rref, y in channels:
     net_name = f"Net-({jref}-In)"
-    add_segment((97.45, y), (95.40, y), 0.80, pcbnew.F_Cu, net_name)
-    add_segment((95.40, y), (94.00, y), 0.55, pcbnew.F_Cu, net_name)
+    add_segment((97.75, y), (95.00, y), 0.35, pcbnew.F_Cu, net_name)
+    add_segment((95.00, y), (94.00, y), 0.35, pcbnew.F_Cu, net_name)
     add_segment((94.00, y), (91.46, y - 2.54), 0.35, pcbnew.F_Cu, net_name)
     add_segment((91.46, y - 2.54), (69.54, y - 2.54), 0.35, pcbnew.F_Cu, net_name)
     add_segment((69.54, y - 2.54), (68.04, y - 2.54), 0.55, pcbnew.F_Cu, net_name)
@@ -448,10 +452,11 @@ for y in channel_y:
     add_via(70.20, y + 2.54, "/GND")
     add_via(68.04, y + 4.40, "/GND")
     # SMA ground paddle stitching at both sides of each launch.
-    for sy in (y - 4.25, y + 4.25):
-        add_segment((94.92, sy), (93.80, sy), 0.80, pcbnew.F_Cu, "/GND")
-        add_via(93.80, sy, "/GND")
-        add_via(92.20, sy, "/GND")
+    for sy in (y - 2.825, y + 2.825):
+        add_segment((97.75, sy), (94.20, sy), 0.80, pcbnew.F_Cu, "/GND")
+        add_segment((97.75, sy), (94.20, sy), 0.80, pcbnew.B_Cu, "/GND")
+        add_via(94.20, sy, "/GND")
+        add_via(92.60, sy, "/GND")
 
 # Pair-B transition return vias.  Each GND via is 1.355 mm centre-to-centre
 # from its associated signal via, mirrored about x=60.5 and y=47.0.  Keep the

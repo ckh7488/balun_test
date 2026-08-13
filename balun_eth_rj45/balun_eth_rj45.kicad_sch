@@ -2106,6 +2106,17 @@
 				)
 			)
 		)
+		(property "LCSC Part #" "C238122"
+			(at 238.76 100.3299 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "c845e1e8-8552-4592-b6dd-9d154fb4dcc4")
 		)
@@ -2151,7 +2162,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_Coaxial:SMA_Amphenol_132289_EdgeMount"
+		(property "Footprint" "balun_eth_rj45:SMA_MyAntenna_A-SMA-KE-16.5A_EdgeMount"
 			(at 82.55 96.52 0)
 			(hide yes)
 			(show_name no)
@@ -2162,7 +2173,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://www.amphenolrf.com/132289.html"
+		(property "Datasheet" "https://datasheet.lcsc.com/datasheet/pdf/92633ab2cf30de4413e1a152c04a3ed5.pdf?productCode=C22467617"
 			(at 82.55 96.52 0)
 			(hide yes)
 			(show_name no)
@@ -2183,7 +2194,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Amphenol RF"
+		(property "Manufacturer" "MyAntenna"
 			(at 85.09 101.5999 0)
 			(hide yes)
 			(show_name no)
@@ -2194,7 +2205,7 @@
 				)
 			)
 		)
-		(property "MPN" "132289"
+		(property "MPN" "A-SMA-KE-16.5A"
 			(at 85.09 101.5999 0)
 			(hide yes)
 			(show_name no)
@@ -2205,7 +2216,7 @@
 				)
 			)
 		)
-		(property "Assembly" "FIT"
+		(property "Assembly" "FIT; JLC C22467617; Standard PCBA / wave-solder review"
 			(at 85.09 101.5999 0)
 			(hide yes)
 			(show_name no)
@@ -2215,6 +2226,13 @@
 					(size 1.27 1.27)
 				)
 			)
+		)
+		(property "LCSC Part #" "C22467617"
+			(at 0 0 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects (font (size 1.27 1.27)))
 		)
 		(pin "1"
 			(uuid "edff3b84-d4b6-47d5-93aa-5281b6aa4487")
@@ -2319,6 +2337,17 @@
 			)
 		)
 		(property "Assembly" "FIT"
+			(at 119.38 165.0999 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC Part #" "C5223988"
 			(at 119.38 165.0999 0)
 			(hide yes)
 			(show_name no)
@@ -2479,7 +2508,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_Coaxial:SMA_Amphenol_132289_EdgeMount"
+		(property "Footprint" "balun_eth_rj45:SMA_MyAntenna_A-SMA-KE-16.5A_EdgeMount"
 			(at 82.55 154.94 0)
 			(hide yes)
 			(show_name no)
@@ -2490,7 +2519,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://www.amphenolrf.com/132289.html"
+		(property "Datasheet" "https://datasheet.lcsc.com/datasheet/pdf/92633ab2cf30de4413e1a152c04a3ed5.pdf?productCode=C22467617"
 			(at 82.55 154.94 0)
 			(hide yes)
 			(show_name no)
@@ -2511,7 +2540,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Amphenol RF"
+		(property "Manufacturer" "MyAntenna"
 			(at 85.09 160.0199 0)
 			(hide yes)
 			(show_name no)
@@ -2522,7 +2551,7 @@
 				)
 			)
 		)
-		(property "MPN" "132289"
+		(property "MPN" "A-SMA-KE-16.5A"
 			(at 85.09 160.0199 0)
 			(hide yes)
 			(show_name no)
@@ -2533,7 +2562,7 @@
 				)
 			)
 		)
-		(property "Assembly" "FIT"
+		(property "Assembly" "FIT; JLC C22467617; Standard PCBA / wave-solder review"
 			(at 85.09 160.0199 0)
 			(hide yes)
 			(show_name no)
@@ -2543,6 +2572,13 @@
 					(size 1.27 1.27)
 				)
 			)
+		)
+		(property "LCSC Part #" "C22467617"
+			(at 0 0 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects (font (size 1.27 1.27)))
 		)
 		(pin "1"
 			(uuid "c242b3bf-1f94-4d45-b702-7e3f03531202")
@@ -2592,7 +2628,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_Coaxial:SMA_Amphenol_132289_EdgeMount"
+		(property "Footprint" "balun_eth_rj45:SMA_MyAntenna_A-SMA-KE-16.5A_EdgeMount"
 			(at 82.55 67.31 0)
 			(hide yes)
 			(show_name no)
@@ -2603,7 +2639,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://www.amphenolrf.com/132289.html"
+		(property "Datasheet" "https://datasheet.lcsc.com/datasheet/pdf/92633ab2cf30de4413e1a152c04a3ed5.pdf?productCode=C22467617"
 			(at 82.55 67.31 0)
 			(hide yes)
 			(show_name no)
@@ -2624,7 +2660,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Amphenol RF"
+		(property "Manufacturer" "MyAntenna"
 			(at 85.09 72.3899 0)
 			(hide yes)
 			(show_name no)
@@ -2635,7 +2671,7 @@
 				)
 			)
 		)
-		(property "MPN" "132289"
+		(property "MPN" "A-SMA-KE-16.5A"
 			(at 85.09 72.3899 0)
 			(hide yes)
 			(show_name no)
@@ -2646,7 +2682,7 @@
 				)
 			)
 		)
-		(property "Assembly" "FIT"
+		(property "Assembly" "FIT; JLC C22467617; Standard PCBA / wave-solder review"
 			(at 85.09 72.3899 0)
 			(hide yes)
 			(show_name no)
@@ -2656,6 +2692,13 @@
 					(size 1.27 1.27)
 				)
 			)
+		)
+		(property "LCSC Part #" "C22467617"
+			(at 0 0 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects (font (size 1.27 1.27)))
 		)
 		(pin "1"
 			(uuid "7be277a0-00bc-4956-b4da-304ce832405c")
@@ -2737,6 +2780,17 @@
 			)
 		)
 		(property "Assembly" "FIT"
+			(at 238.76 115.5699 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC Part #" "C238122"
 			(at 238.76 115.5699 0)
 			(hide yes)
 			(show_name no)
@@ -2856,6 +2910,17 @@
 				)
 			)
 		)
+		(property "LCSC Part #" "C17477"
+			(at 142.24 77.4699 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "1f74872e-1fea-4e7c-b23b-e8bec58a43fb")
 		)
@@ -2904,7 +2969,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_Coaxial:SMA_Amphenol_132289_EdgeMount"
+		(property "Footprint" "balun_eth_rj45:SMA_MyAntenna_A-SMA-KE-16.5A_EdgeMount"
 			(at 82.55 125.73 0)
 			(hide yes)
 			(show_name no)
@@ -2915,7 +2980,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://www.amphenolrf.com/132289.html"
+		(property "Datasheet" "https://datasheet.lcsc.com/datasheet/pdf/92633ab2cf30de4413e1a152c04a3ed5.pdf?productCode=C22467617"
 			(at 82.55 125.73 0)
 			(hide yes)
 			(show_name no)
@@ -2936,7 +3001,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "Amphenol RF"
+		(property "Manufacturer" "MyAntenna"
 			(at 85.09 130.8099 0)
 			(hide yes)
 			(show_name no)
@@ -2947,7 +3012,7 @@
 				)
 			)
 		)
-		(property "MPN" "132289"
+		(property "MPN" "A-SMA-KE-16.5A"
 			(at 85.09 130.8099 0)
 			(hide yes)
 			(show_name no)
@@ -2958,7 +3023,7 @@
 				)
 			)
 		)
-		(property "Assembly" "FIT"
+		(property "Assembly" "FIT; JLC C22467617; Standard PCBA / wave-solder review"
 			(at 85.09 130.8099 0)
 			(hide yes)
 			(show_name no)
@@ -2968,6 +3033,13 @@
 					(size 1.27 1.27)
 				)
 			)
+		)
+		(property "LCSC Part #" "C22467617"
+			(at 0 0 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects (font (size 1.27 1.27)))
 		)
 		(pin "1"
 			(uuid "51e6dea7-0a07-4909-8748-2fbe6cb2b815")
@@ -3072,6 +3144,17 @@
 			)
 		)
 		(property "Assembly" "FIT"
+			(at 45.72 121.9199 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC Part #" "C5386678"
 			(at 45.72 121.9199 0)
 			(hide yes)
 			(show_name no)
@@ -3215,6 +3298,17 @@
 				)
 			)
 		)
+		(property "LCSC Part #" "C17477"
+			(at 142.24 165.0999 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "8015c226-8754-4c27-baf9-878005ddc78f")
 		)
@@ -3318,6 +3412,17 @@
 			)
 		)
 		(property "Assembly" "FIT"
+			(at 119.38 77.4699 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC Part #" "C5223988"
 			(at 119.38 77.4699 0)
 			(hide yes)
 			(show_name no)
@@ -3452,6 +3557,17 @@
 				)
 			)
 		)
+		(property "LCSC Part #" "C17477"
+			(at 142.24 135.8899 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "e09cee45-dda1-472f-afd4-aa36f21ffb72")
 		)
@@ -3555,6 +3671,17 @@
 			)
 		)
 		(property "Assembly" "FIT"
+			(at 119.38 106.6799 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC Part #" "C5223988"
 			(at 119.38 106.6799 0)
 			(hide yes)
 			(show_name no)
@@ -3690,6 +3817,17 @@
 				)
 			)
 		)
+		(property "LCSC Part #" "C5223988"
+			(at 119.38 135.8899 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "6429f795-76ea-4da8-acb6-065b0d89844e")
 		)
@@ -3725,8 +3863,8 @@
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
+		(in_pos_files no)
+		(dnp yes)
 		(uuid "f5587d21-0f0e-4681-9d3f-ba08795220a9")
 		(property "Reference" "RSH1"
 			(at 205.74 95.25 0)
@@ -3781,7 +3919,7 @@
 				)
 			)
 		)
-		(property "Assembly" "VARIANT; default FIT on one fixture board only"
+		(property "Assembly" "DNP DEFAULT; hand-fit on Port-1 board only"
 			(at 208.28 100.3299 0)
 			(hide yes)
 			(show_name no)
@@ -3791,6 +3929,13 @@
 					(size 1.27 1.27)
 				)
 			)
+		)
+		(property "LCSC Part #" "C17477"
+			(at 0 0 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects (font (size 1.27 1.27)))
 		)
 		(pin "1"
 			(uuid "520a9a9f-84b2-4e1d-a3df-86985b0fb773")
@@ -3894,6 +4039,17 @@
 			)
 		)
 		(property "Assembly" "DNP DEFAULT; fit all eight only for CT-GND comparison"
+			(at 142.24 106.6799 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC Part #" "C17477"
 			(at 142.24 106.6799 0)
 			(hide yes)
 			(show_name no)

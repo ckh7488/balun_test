@@ -13,7 +13,7 @@ LibreVNA 2-port로 일반 Ethernet 케이블과 전용 Ethernet 슬립링을 비
 | J4 / C | 4(+)–5(-) | T3 |
 | J5 / D | 7(+)–8(-) | T4 |
 
-T1–T4는 Mini-Circuits `ADT2-1T+`다. primary pin 3은 SMA center, pin 1은 GND이며, secondary pin 6/4는 각각 pair P/N, pin 5는 RCT, pin 2는 NC다.
+T1–T4는 Mini-Circuits `ADT2-1T+`다. primary pin 3은 SMA center, pin 1은 GND이며, secondary pin 4/6은 각각 pair P/N, pin 5는 RCT, pin 2는 NC다.
 
 ## JLCPCB Rev B 기판 사양
 
@@ -38,7 +38,8 @@ T1–T4는 Mini-Circuits `ADT2-1T+`다. primary pin 3은 SMA center, pin 1은 GN
 - A/C/D는 F.Cu, B는 J1 쪽 B.Cu에서 진행한 뒤 T2 앞에서 대칭적으로 F.Cu로 전환한다.
 - T2의 기준면 전환용 GND via 네 개는 P/N 사이가 아닌 바깥쪽에 대칭 배치한다. 각 signal via와의 중심 간격은 `1.355 mm`, 동박 가장자리 간격은 `0.755 mm`다.
 - T4도 F.Cu에 둔다. B.Cu로 뒤집으면 F.Cu 전용 SMA center launch 때문에 single-ended 쪽 via가 필요하고 채널 간 fixture 대칭성이 나빠진다.
-- SMA `132289`는 0.062 inch(최대 1.57 mm) PCB용이다. 기계적으로 약 0.45 mm 헐거운 1.2 mm 적층 대신 1.6 mm급 적층을 사용한다. 다만 JLC nominal 1.5862 mm가 connector 표기보다 0.0162 mm 두꺼우므로, 전량 조립 전에 한 개를 dry-fit하고 가능하면 완성 두께를 1.57 mm 부근으로 관리할 수 있는지 JLC에 확인한다.
+- SMA는 MyAntenna `A-SMA-KE-16.5A` (`C22467617`)로 통일한다. 권장 PCB 두께 `1.6 ±0.05 mm`가 nominal 1.5862 mm 적층과 맞고, 정격은 50 Ω / DC–6 GHz다. 기존 Amphenol `132289`는 PCB 두께 상한 1.57 mm가 nominal stack보다 작아 최종 BOM에서 제외했다.
+- `A-SMA-KE-16.5A`는 JLC Standard PCBA 전용 wave-solder/high-difficulty 품목이다. 세 PCBA 작업에서 제조사 land pattern, board-edge 안착, 바깥쪽을 향한 방향, wave fixture/engineering 비고를 각각 확인하고 대체품을 승인하지 않는다.
 - 서로 다른 controlled signal 사이 최소 clearance는 `0.60 mm`; 가능하면 그 이상을 유지한다.
 - 결합 gap은 최소 `0.21 mm` / 권장 `0.22 mm`; fan-out을 포함한 uncoupled 길이는 일반 pair `16.0 mm`, split pair B `16.5 mm` 이하로 제한한다.
 - transformer 앞에서는 한쪽 선에 짧은 U자 보정을 넣지 않는다. 대신 coupled trunk의 마지막 분기점을 약 1.3 mm 이동해 부드러운 fan-out 형상으로 end-to-end 길이를 맞춘다.
@@ -60,7 +61,7 @@ KiCad의 `skew (within_diff_pairs)`는 전체 선분 합이 아니라 결합 구
 
 - T1–T4: Mini-Circuits `ADT2-1T+`, CD542.
 - J1: Amphenol `RJE591885401`, CAT6 shielded, LED/magnetics 없음.
-- J2–J5: Amphenol RF `132289` edge-mount SMA.
+- J2–J5: MyAntenna `A-SMA-KE-16.5A` edge-mount SMA, JLC/LCSC `C22467617`; JLC Standard PCBA의 wave-solder/fixture 검토 후 FIT.
 - RCT1–RCT4: 각 보드에서 기본 DNP이며, 이 `CT-FLOAT` 상태를 golden/DUT 비교의 baseline으로 사용한다.
 - `CT-GND` 영향만 별도로 비교할 때 두 보드의 RCT1–RCT4, 총 8개 위치에 0 Ω을 모두 장착한다. 보드 한쪽만 또는 일부 pair만 장착한 mixed 상태는 사용하지 않는다.
 - RSH1: 동일 PCB 두 장 중 VNA Port 1 쪽 보드에만 기본 0 Ω을 장착하고, Port 2 쪽 보드는 DNP로 둬 DUT shield의 DC 접점을 한 점으로 만든다. 어느 쪽을 접지했는지는 결과와 함께 기록한다.
@@ -69,6 +70,8 @@ KiCad의 `skew (within_diff_pairs)`는 전체 선분 합이 아니라 결합 구
 LibreVNA의 두 RF port는 공통 GND를 사용하므로 RCT 8개를 장착하면 두 fixture의 center tap에 공통모드 기준 경로가 추가된다. 따라서 `CT-GND` 결과는 케이블/슬립링 고유값이 아니라 해당 종단 조건을 포함한 비교값으로 해석한다.
 
 두 지그는 같은 PCB artwork를 사용하지만 RSH1 조립 상태는 기본적으로 서로 다르다. CT-FLOAT와 CT-GND 결과를 비교할 때는 RCT 외의 RSH1/CSH1 상태와 cable 배치를 고정하고, CT 상태를 바꾼 뒤 golden baseline부터 다시 측정한다.
+
+JLC PCBA에는 동일한 두 보드 모두 RSH1을 DNP로 넣는다. 입고 후 Port 1용 보드를 먼저 식별·표기하고 그 보드의 RSH1 한 곳만 `0805W8F0000T5E` (`C17477`) 0 Ω로 수동 장착한다. 이렇게 해야 하나의 동일-artwork 조립 작업에 서로 다른 variant를 섞지 않는다.
 
 첫 보드 조립 후 RJ45 1–8, shield tab, SMA center-to-transformer 연결을 continuity test로 확인한 다음 두 번째 보드를 조립한다.
 
@@ -99,4 +102,5 @@ coax SOLT만으로 기준면이 RJ45 접점까지 이동하지는 않는다. 또
 - [JLCPCB PCB capabilities](https://jlcpcb.com/capabilities/pcb-capabilities/)
 - [ADT2-1T+ datasheet](https://www.minicircuits.com/pdfs/ADT2-1T+.pdf)
 - [RJE591885401 product page](https://www.amphenol-cs.com/product/rje591885401.html)
-- [Amphenol 132289 product page](https://www.amphenolrf.com/en-us/part/132289/1030/)
+- [MyAntenna A-SMA-KE-16.5A / C22467617](https://jlcpcb.com/partdetail/MyAntenna-A_SMA_KE_165A/C22467617)
+- 전체 구매 수량과 발주 차단 항목은 [`../JLCPCB_FINAL_BOM.csv`](../JLCPCB_FINAL_BOM.csv)와 [`../JLCPCB_ORDER_GUIDE.md`](../JLCPCB_ORDER_GUIDE.md)를 따른다.

@@ -1,9 +1,9 @@
 """Generate the two document-mapped KiCad 10 endpoint drafts.
 
 The electrical mapping comes from slide 14 of ``Docs/[인수인계] PALA720.pptx``.
-The generated boards include the fixed 100BASE-TX fan-outs, but remain review
-artifacts rather than fabrication outputs until the connector mechanics and
-the 1.6 mm-compatible SMA choice are verified.
+The generated boards include the fixed 100BASE-TX fan-outs and the selected
+1.6 mm MyAntenna edge-launch SMA, but remain review artifacts rather than
+fabrication outputs until the endpoint connector mechanics are verified.
 
 Run this with KiCad's bundled Python, which provides the pcbnew module.  A
 forced regeneration is permitted only while every existing board and
@@ -52,6 +52,7 @@ VARIANTS = {
         ),
         "connector_manufacturer": "Molex",
         "connector_mpn": "5055680571",
+        "connector_lcsc": "C585386",
         "pin_nets": {
             1: "PAIR_TX_P",
             2: "PAIR_TX_N",
@@ -85,6 +86,7 @@ VARIANTS = {
         ),
         "connector_manufacturer": "Finecables",
         "connector_mpn": "MB12FBAFF08ST-3 (candidate; verify mechanics)",
+        "connector_lcsc": "C22378785",
         "pin_nets": {
             1: "PAIR_RX_N",
             2: "PAIR_RX_P",
@@ -347,6 +349,17 @@ def connector_instance(config: dict[str, object], root_uuid: str) -> tuple[str, 
 \t\t\t\t)
 \t\t\t)
 \t\t)
+\t\t(property "LCSC Part #" "{config['connector_lcsc']}"
+\t\t\t(at 55.88 90.17 0)
+\t\t\t(hide yes)
+\t\t\t(show_name no)
+\t\t\t(do_not_autoplace no)
+\t\t\t(effects
+\t\t\t\t(font
+\t\t\t\t\t(size 1.27 1.27)
+\t\t\t\t)
+\t\t\t)
+\t\t)
 {pin_blocks}
 \t\t(instances
 \t\t\t(project "{project}"
@@ -394,14 +407,29 @@ def write_schematic(config: dict[str, object]) -> dict[str, str]:
         block = block.replace(OLD_PROJECT, project)
         block = block.replace(old_root, root_uuid)
         if ref in ("J2", "J3"):
-            block = re.sub(
-                r'(\(property\s+"Assembly"\s+")[^"]*(")',
-                r'\1DNP UNTIL STACK/CONNECTOR DECISION\2',
-                block,
-                count=1,
-            )
-            block = block.replace("(in_pos_files yes)", "(in_pos_files no)", 1)
-            block = block.replace("(dnp no)", "(dnp yes)", 1)
+            replacements = {
+                "Footprint": "balun_slipring_common:SMA_MyAntenna_A-SMA-KE-16.5A_EdgeMount",
+                "Datasheet": "https://datasheet.lcsc.com/datasheet/pdf/92633ab2cf30de4413e1a152c04a3ed5.pdf?productCode=C22467617",
+                "Manufacturer": "MyAntenna",
+                "MPN": "A-SMA-KE-16.5A",
+                "Assembly": "FIT; JLC C22467617; Standard PCBA / wave-solder review",
+            }
+            for field, value in replacements.items():
+                block, count = re.subn(
+                    rf'(\(property\s+"{field}"\s+")[^"]*(")',
+                    rf'\g<1>{value}\g<2>', block, count=1,
+                )
+                if count != 1:
+                    raise RuntimeError(f"Could not update {ref} {field}")
+            lcsc_property = '''\t\t(property "LCSC Part #" "C22467617"
+\t\t\t(at 0 0 0)
+\t\t\t(hide yes)
+\t\t\t(show_name no)
+\t\t\t(do_not_autoplace no)
+\t\t\t(effects (font (size 1.27 1.27)))
+\t\t)'''
+            if '(property "LCSC Part #"' not in block:
+                block = block.replace('\t\t(pin "1"', lcsc_property + '\n\t\t(pin "1"', 1)
         elif ref in ("RCT1", "RCT2"):
             # The balanced winding is floating by default.  Keep the 0-ohm
             # link as an explicit all-four-links CT-GND comparison option.
@@ -421,6 +449,28 @@ def write_schematic(config: dict[str, object]) -> dict[str, str]:
             )
             if position_count != 1 or dnp_count != 1:
                 raise RuntimeError(f"Could not set {ref} native DNP flags")
+
+        lcsc_code = {
+            "J2": "C22467617", "J3": "C22467617",
+            "T1": "C5223988", "T2": "C5223988",
+            "RCT1": "C17477", "RCT2": "C17477",
+        }[ref]
+        lcsc_pattern = r'(\(property\s+"LCSC Part #"\s+")[^"]*(")'
+        if re.search(lcsc_pattern, block):
+            block = re.sub(
+                lcsc_pattern, rf'\g<1>{lcsc_code}\g<2>', block, count=1
+            )
+        else:
+            lcsc_property = f'''\t\t(property "LCSC Part #" "{lcsc_code}"
+\t\t\t(at 0 0 0)
+\t\t\t(hide yes)
+\t\t\t(show_name no)
+\t\t\t(do_not_autoplace no)
+\t\t\t(effects (font (size 1.27 1.27)))
+\t\t)'''
+            block = block.replace(
+                '\t\t(pin "1"', lcsc_property + '\n\t\t(pin "1"', 1
+            )
         instances.append(indent_block(block, 1))
         symbol_uuids[ref] = re.search(r'\(uuid\s+"([^"]+)"\)', block).group(1)
 
@@ -519,7 +569,7 @@ def write_schematic(config: dict[str, object]) -> dict[str, str]:
 \t\t(rev "DRAFT 1")
 \t\t(comment 1 "Two-channel 50 ohm single-ended to 100 ohm differential fixture core.")
 \t\t(comment 2 "Electrical map from PALA720 slide 14; TX and RX fan-outs are connected.")
-\t\t(comment 3 "REVIEW ONLY - DO NOT FABRICATE UNTIL CONTINUITY, CONNECTOR MECHANICS AND SMA STACK ARE VERIFIED.")
+\t\t(comment 3 "REVIEW ONLY - DO NOT FABRICATE UNTIL CONTINUITY AND ENDPOINT CONNECTOR MECHANICS ARE VERIFIED.")
 \t)
 \t(lib_symbols
 {lib_text}
@@ -579,9 +629,9 @@ def write_project(config: dict[str, object]) -> None:
     dru = '''(version 1)
 
 # Document-mapped DRAFT 1.  Electrical connectivity follows PALA720 slide 14.
-# Geometry follows the same provisional JLC04161H-7628 stack used by the
-# balun_eth_rj45 reference; connector and SMA mechanics remain fabrication
-# blockers and are deliberately carried as DNP candidates.
+# Geometry follows the same JLC04161H-7628 stack used by the balun_eth_rj45
+# reference.  The selected C22467617 SMA accepts 1.6+/-0.05 mm PCB; endpoint
+# connector mechanics remain fabrication blockers.
 
 (rule "Controlled traces isolated from other controlled signals"
     (condition "(A.Type == 'Track' || A.Type == 'Via') && (B.Type == 'Track' || B.Type == 'Via') && (A.hasNetclass('ETH100') || A.hasNetclass('RF50')) && (B.hasNetclass('ETH100') || B.hasNetclass('RF50')) && !AB.isCoupledDiffPair() && !A.intersectsCourtyard('T?') && !B.intersectsCourtyard('T?')")
@@ -982,7 +1032,7 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
     title.SetRevision("DRAFT 1")
     title.SetDate("2026-08-13")
     title.SetComment(0, "Electrical map from PALA720 slide 14; TX and RX pairs are routed.")
-    title.SetComment(1, "REVIEW ONLY - DO NOT FABRICATE; verify continuity, connectors and SMA stack.")
+    title.SetComment(1, "REVIEW ONLY - DO NOT FABRICATE; verify continuity and endpoint connectors.")
     title.SetComment(2, "JLC04161H-7628 draft: 50R W0.35; 100R W0.23/G0.22; L2/L3 GND.")
     if bool(config["connector_flipped"]):
         title.SetComment(3, "J1 BACK-SIDE CANDIDATE; verify A-key, pin 1 and mating face.")
@@ -1010,14 +1060,14 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
     channels = (("A", "J2", "T1", "RCT1", 31.0), ("B", "J3", "T2", "RCT2", 53.0))
     for label, jref, tref, rref, y in channels:
         footprints[jref] = load_footprint(
-            board, "Connector_Coaxial", "SMA_Amphenol_132289_EdgeMount",
-            jref, f"SMA_{label}", 85.45, y,
-            dnp=True,
+            board, "balun_slipring_common", "SMA_MyAntenna_A-SMA-KE-16.5A_EdgeMount",
+            jref, f"SMA_{label}", 85.75, y,
             symbol_uuid=symbol_uuids[jref],
             properties={
-                "Manufacturer": "Amphenol RF", "MPN": "132289",
-                "Assembly": "DNP UNTIL STACK/CONNECTOR DECISION",
-                "Datasheet": "https://www.amphenolrf.com/132289.html",
+                "Manufacturer": "MyAntenna", "MPN": "A-SMA-KE-16.5A",
+                "LCSC Part #": "C22467617",
+                "Assembly": "FIT; JLC C22467617; Standard PCBA / wave-solder review",
+                "Datasheet": "https://datasheet.lcsc.com/datasheet/pdf/92633ab2cf30de4413e1a152c04a3ed5.pdf?productCode=C22467617",
             },
         )
         footprints[tref] = load_footprint(
@@ -1025,7 +1075,8 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
             tref, "ADT2-1T+", 57.50, y, 180,
             symbol_uuid=symbol_uuids[tref],
             properties={
-                "Manufacturer": "Mini-Circuits", "MPN": "ADT2-1T+", "Assembly": "FIT",
+                "Manufacturer": "Mini-Circuits", "MPN": "ADT2-1T+",
+                "LCSC Part #": "C5223988", "Assembly": "FIT",
                 "Datasheet": "https://www.minicircuits.com/pdfs/ADT2-1T+.pdf",
             },
         )
@@ -1037,6 +1088,7 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
             symbol_uuid=symbol_uuids[rref],
             properties={
                 "Manufacturer": "ANY", "MPN": "0 ohm 0805",
+                "LCSC Part #": "C17477",
                 "Assembly": "DNP; fit all four RCTs only for controlled CT-GND comparison",
             },
         )
@@ -1053,6 +1105,7 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
         properties={
             "Manufacturer": str(config["connector_manufacturer"]),
             "MPN": str(config["connector_mpn"]),
+            "LCSC Part #": str(config["connector_lcsc"]),
             "Assembly": str(config["assembly"]),
             "Datasheet": str(config["connector_datasheet"]),
             "Description": str(config["connector_description"]),
@@ -1116,8 +1169,8 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
     # are added below and kept on F.Cu over the solid inner GND planes.
     for _label, jref, _tref, rref, y in channels:
         input_net = f"/RF_{_label}_50"
-        add_segment(board, nets, (85.45, y), (83.40, y), 0.80, pcbnew.F_Cu, input_net)
-        add_segment(board, nets, (83.40, y), (82.00, y), 0.55, pcbnew.F_Cu, input_net)
+        add_segment(board, nets, (85.75, y), (83.00, y), 0.35, pcbnew.F_Cu, input_net)
+        add_segment(board, nets, (83.00, y), (82.00, y), 0.35, pcbnew.F_Cu, input_net)
         add_segment(board, nets, (82.00, y), (79.46, y - 2.54), 0.35, pcbnew.F_Cu, input_net)
         add_segment(board, nets, (79.46, y - 2.54), (61.54, y - 2.54), 0.35, pcbnew.F_Cu, input_net)
         add_segment(board, nets, (61.54, y - 2.54), (60.04, y - 2.54), 0.55, pcbnew.F_Cu, input_net)
@@ -1139,10 +1192,11 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
         add_via(board, nets, 62.00, y + 2.54, "/GND")
         add_via(board, nets, 60.04, y + 4.35, "/GND")
 
-        for sy in (y - 4.25, y + 4.25):
-            add_segment(board, nets, (85.45, sy), (83.70, sy), 0.80, pcbnew.F_Cu, "/GND")
-            add_via(board, nets, 83.70, sy, "/GND")
-            add_via(board, nets, 81.90, sy, "/GND")
+        for sy in (y - 2.825, y + 2.825):
+            add_segment(board, nets, (85.75, sy), (82.20, sy), 0.80, pcbnew.F_Cu, "/GND")
+            add_segment(board, nets, (85.75, sy), (82.20, sy), 0.80, pcbnew.B_Cu, "/GND")
+            add_via(board, nets, 82.20, sy, "/GND")
+            add_via(board, nets, 80.60, sy, "/GND")
 
     mapped_pin = {
         str(net_name): str(pin)

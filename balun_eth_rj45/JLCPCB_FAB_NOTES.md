@@ -17,7 +17,7 @@
 | Surface finish | ENIG |
 | Impedance coupon/test | 가능한 경우 precision/paid impedance test 선택 |
 
-JLC의 주문 두께 표기는 1.6 mm이고 이 stack-up의 nominal 합계는 약 1.5862 mm다. 1.2 mm 보드보다 0.062 inch급 Amphenol `132289` edge-launch SMA에 훨씬 가깝지만, connector의 공식 PCB 최대 두께 1.57 mm보다 nominal이 0.0162 mm 두껍다. 시제품에서는 흔히 맞는 조합이지만 공차까지 포함한 보장은 아니다. 가능하면 실제 완성 두께를 1.57 mm 부근으로 관리할 수 있는지 JLC에 확인하고, 첫 connector를 dry-fit한 뒤 나머지를 조립한다.
+JLC의 주문 두께 표기는 1.6 mm이고 이 stack-up의 nominal 합계는 약 1.5862 mm다. SMA는 MyAntenna `A-SMA-KE-16.5A` (`C22467617`)로 통일했으며, 제조사 권장 PCB 두께 `1.6 ±0.05 mm`와 선정 stack이 맞는다. 기존 Amphenol `132289`는 PCB 두께 상한 1.57 mm 때문에 최종 BOM에서 제외했다. `C22467617`은 JLC Standard PCBA의 wave-solder/high-difficulty 품목이므로, 주문 시 제조사 land pattern, routed edge 안착, 바깥쪽 방향과 fixture/engineering 비고를 반드시 확인한다.
 
 ## 고정 적층
 
@@ -56,6 +56,8 @@ RJ45 PTH pin field의 `0.15 mm` neck-down은 connector 내부의 매우 짧은 e
 - pair B만 signal via를 사용하며 P/N 각각 1개다.
 - pair B signal via 주변의 GND return via 네 개는 각 signal via에서 중심 간 `1.355 mm`로 대칭 배치한다.
 - unused SMA에는 PCB 부품이 아니라 측정 시 외부 50 Ω terminator를 장착한다.
+- SMA 12개는 모두 MyAntenna `A-SMA-KE-16.5A` / `C22467617`만 사용하고 자동 대체를 허용하지 않는다.
+- `C22467617`의 패드가 board edge에 맞닿고 connector body가 보드 밖쪽을 향하는지 JLC placement/DFM 화면에서 확인한다.
 - fabrication ZIP 이름에 `Rev A` 또는 `HOLD`가 있으면 발주하지 않는다.
 
 주문 업로드 후 JLC engineering이 stack-up, 선폭 또는 간격 변경을 제안하면 자동 승인하지 않는다. 변경된 수치를 JLC impedance calculator로 다시 계산한 뒤 KiCad 규칙과 배선을 함께 갱신해야 한다.

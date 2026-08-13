@@ -12,6 +12,7 @@ import json
 import math
 import re
 import shutil
+import subprocess
 import sys
 import uuid
 from datetime import datetime
@@ -19,6 +20,7 @@ from pathlib import Path
 
 
 PROJECT_BASENAME = "balun_eth_rj45"
+KICAD_PYTHON = Path(r"C:\Program Files\KiCad\10.0\bin\python.exe")
 ETH_NETS = {
     "/DA_P", "/DA_N", "/DB_P", "/DB_N",
     "/DC_P", "/DC_N", "/DD_P", "/DD_N",
@@ -261,19 +263,20 @@ def _local_ground_objects(newline: str) -> str:
             f"\t)"
         )
 
-    # The edge SMA footprint has separate top and bottom ground paddles.  The
-    # top paddles already reach these vias; mirror the short connection on B.Cu.
+    # The selected C22467617 edge SMA has separate top and bottom ground
+    # paddles at +/-2.825 mm.  The dedicated migration below replaces these
+    # provisional objects with the exact idempotent local launch.
     for ref, y in (
-        ("J2A", 24.75), ("J2B", 33.25),
-        ("J3A", 42.75), ("J3B", 51.25),
-        ("J4A", 60.75), ("J4B", 69.25),
-        ("J5A", 78.75), ("J5B", 87.25),
+        ("J2A", 26.175), ("J2B", 31.825),
+        ("J3A", 44.175), ("J3B", 49.825),
+        ("J4A", 62.175), ("J4B", 67.825),
+        ("J5A", 80.175), ("J5B", 85.825),
     ):
         y_text = f"{y:g}"
         objects.append(
             f"(segment{newline}"
-            f"\t\t(start 94.92 {y_text}){newline}"
-            f"\t\t(end 93.8 {y_text}){newline}"
+            f"\t\t(start 97.75 {y_text}){newline}"
+            f"\t\t(end 94.2 {y_text}){newline}"
             f"\t\t(width 0.8){newline}"
             f"\t\t(layer \"B.Cu\"){newline}"
             f"\t\t(net \"/GND\"){newline}"
@@ -897,6 +900,14 @@ def update_local_footprint(project_dir: Path) -> None:
     footprint.write_text(text.replace("(size 1.6 1.6)", "(size 1.3 1.3)"), encoding="utf-8")
 
 
+def run_sma_migration(project_dir: Path) -> None:
+    """Finish either Rev-B path with the exact C22467617 footprint/launch."""
+    updater = project_dir / "update_sma_c22467617.py"
+    if not KICAD_PYTHON.exists() or not updater.exists():
+        raise RuntimeError("KiCad Python or update_sma_c22467617.py is missing")
+    subprocess.run([str(KICAD_PYTHON), str(updater)], cwd=project_dir, check=True)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--project-dir", type=Path, default=Path(__file__).resolve().parent)
@@ -928,6 +939,7 @@ def main() -> int:
             print(f"Backup: {backup}")
         for key, value in stats.items():
             print(f"{key}: {value}")
+        run_sma_migration(project_dir)
         return 0
 
     backup = None if args.no_backup else make_backup(project_dir)
@@ -940,6 +952,7 @@ def main() -> int:
         print(f"Backup: {backup}")
     for key, value in stats.items():
         print(f"{key}: {value}")
+    run_sma_migration(project_dir)
     return 0
 
 

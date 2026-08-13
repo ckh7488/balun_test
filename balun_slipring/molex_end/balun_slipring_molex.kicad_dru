@@ -1,9 +1,9 @@
 (version 1)
 
 # Document-mapped DRAFT 1.  Electrical connectivity follows PALA720 slide 14.
-# Geometry follows the same provisional JLC04161H-7628 stack used by the
-# balun_eth_rj45 reference; connector and SMA mechanics remain fabrication
-# blockers and are deliberately carried as DNP candidates.
+# Geometry follows the same JLC04161H-7628 stack used by the balun_eth_rj45
+# reference.  The selected C22467617 SMA accepts 1.6+/-0.05 mm PCB; endpoint
+# connector mechanics remain fabrication blockers.
 
 (rule "Controlled traces isolated from other controlled signals"
     (condition "(A.Type == 'Track' || A.Type == 'Via') && (B.Type == 'Track' || B.Type == 'Via') && (A.hasNetclass('ETH100') || A.hasNetclass('RF50')) && (B.hasNetclass('ETH100') || B.hasNetclass('RF50')) && !AB.isCoupledDiffPair() && !A.intersectsCourtyard('T?') && !B.intersectsCourtyard('T?')")

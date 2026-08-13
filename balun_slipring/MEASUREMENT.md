@@ -1,6 +1,6 @@
 # Slip-ring comparison measurement worksheet
 
-상태: `DRAFT` — 문서 핀맵은 확인했지만 continuity, 커넥터 기구와 SMA stack이 미검증이므로 아직 제작하거나 측정에 사용하지 않는다.
+상태: `DRAFT` — 문서 핀맵과 SMA land pattern은 반영했지만 REV-504 continuity, endpoint connector 기구, M12 실장 방향과 JLC wave-solder 승인이 미검증이므로 아직 제작하거나 측정에 사용하지 않는다.
 
 ## DUT와 안전 조건
 
@@ -28,10 +28,12 @@ SRS1202 일반 자료의 정격은 100 rpm, 회로당 2 A, 동적 noise 50 mΩ m
 | REV-504 Ethernet housing | Molex `5055650501` 문서 확인; 실물 재확인 TBD |
 | Molex PCB mate | `5055680571` 추론 후보; 체결 확인 TBD |
 | M12 female | Finecables `MB12FBAFF08ST-3` 후면 실장 후보; suffix, mating view, A-key/pin-1 및 패널 기구 확인 TBD |
-| 총 연결 길이 | TBD mm |
-| Pair A 선재/꼬임 | TBD |
-| Pair B 선재/꼬임 | TBD |
-| shield/drain 처리 | TBD; 확인 전 연결 금지 |
+| REF Molex cable housing / contact | Molex `5055650501` (`C564750`) 1개 + matte-tin `5054311000` (`C385112`) 4개; 전용 압착 후 pull/continuity 검사 |
+| REF M12 cable plug | NorComp `858FA08-103RAU1`, A-code 8-pin male, 4–6 mm cable gland; 실물 pin-1/key mating 확인 전 HOLD |
+| REF cable | LAPP `2170284`, 2×2×AWG26/7, nominal 100 Ω Cat.5e SF/UTP; 완성 길이는 DUT connector-to-connector 실측 후 확정 |
+| conductor/crimp 적합성 | cable core Ø 약 0.95 mm(최신 자료 max 1.04 mm), terminal 허용 Ø0.78–1.02 mm이므로 양산 전 실선 4가닥 압착·pull test 필수 |
+| Pair A / Pair B | cable의 두 twisted pair를 각각 하나의 pair로 사용; connector 앞에서 필요한 최소 길이만 untwist |
+| shield/drain 처리 | `CT-FLOAT` baseline에서 양단 모두 미접속·절연; 임의 chassis 연결 금지 |
 | 제작물 식별번호 | TBD |
 
 REF는 슬립링과 같은 양끝 커넥터 조합을 사용하고, 가운데는 알려진 짧은 100 Ω twisted pair로 직접 연결한다. 커넥터와 pin view를 실물로 확인하기 전에는 REF도 제작하지 않는다.
@@ -46,10 +48,14 @@ REF는 슬립링과 같은 양끝 커넥터 조합을 사용하고, 가운데는
 | source power | TBD dBm |
 | averaging | TBD |
 | calibration kit / calibration 파일 | TBD |
-| coax cable 식별번호 | TBD |
-| 외부 50 Ω terminator 식별번호 | TBD |
+| coax cable 식별번호 | Mini-Circuits `CBL-2FT-SMSM+` 2개 또는 동급으로 검증된 동일 케이블 2개; 개별 ID TBD |
+| 외부 50 Ω terminator 식별번호 | Mini-Circuits `ANNE-50+` 동일품 6개 공용 세트; LOAD-01–LOAD-06 실물 ID 부여 |
 
 한 번 정한 설정은 REF, 정지 위치별 DUT와 회전 중 DUT 측정에 동일하게 적용한다.
+
+RJ45 두 보드는 총 SMA 8개 중 VNA가 2개를 쓰므로 미사용 포트 종단용 `ANNE-50+`가 6개 필요하다. 슬립링 두 endpoint는 총 SMA 4개 중 2개만 미사용하므로 같은 6개 세트를 공유한다. 기존 종단기가 정확히 같은 정품 `ANNE-50+`로 확인되고 손상 없이 검증된 경우에만 신규 5개를 사고, 그 외에는 신규 동일품 6개를 구매해 미확인품을 측정 세트에 섞지 않는다.
+
+NEXT/FEXT에서는 두 coax의 상호 결합이 측정 바닥값처럼 보일 수 있다. 두 케이블의 간격, 굽힘, 고정 위치와 connector torque를 REF/DUT 사이에 바꾸지 않는다. 구매 수량과 최신 조달 상태는 [`../JLCPCB_FINAL_BOM.csv`](../JLCPCB_FINAL_BOM.csv)를 따른다.
 
 ## Center-tap 조립 상태
 
@@ -95,6 +101,7 @@ YYYYMMDD_<REF|DUT>_<CTFLOAT|CTGND>_<A|B|AtoB|BtoA>_<ILRL|NEXT|FEXT>_<000|090|180
 - 두 커넥터의 실제 MPN, key/pin view와 기구 체결 확인
 - REF의 실제 MPN·길이·배선·사진 기록
 - 각 측정에서 미사용 SMA 두 곳을 50 Ω로 종단
+- `ANNE-50+` LOAD ID와 사용 포트를 기록하고 REF/DUT 사이에 같은 종단 배치를 유지
 - calibration과 sweep 설정 저장, REF와 DUT에 동일 설정 적용
 - 원본 Touchstone 파일을 수정하지 않고 별도 분석본 생성
 

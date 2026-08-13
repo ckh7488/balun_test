@@ -86,14 +86,14 @@ M12 J1은 pin 1–4가 transformer 쪽을 향하도록 **후면 실장 electrica
 
 생성기는 source geometry에서 skew ≤0.01 mm, 결합 트렁크 ≥16 mm와 fan-in/out ≤11 mm를 검사하고, 저장된 KiCad track에서 다시 skew ≤0.01 mm, F.Cu-only와 P/N via 0/0을 검사한다. KiCad가 꺾임에서 산출한 최대 uncoupled는 11.1474 mm이며, DRU는 gap 0.21/0.22/0.23 mm min/opt/max, uncoupled ≤11.20 mm, skew ≤0.10 mm, signal via 0개로 제한한다. 이는 기준 보드의 uncoupled 16/16.5 mm보다 더 엄격하다.
 
-두 KiCad 초안은 68 × 44 mm, 4층 JLCPCB `JLC04161H-7628` 기준이며 core εr은 기준 보드와 같은 4.36으로 통일했다. W=0.23/G=0.22 mm는 이 stack, 외층 1 oz, green soldermask, non-coplanar 조건의 nominal 100 Ω 발주 geometry다. 저장소에는 JLC field-solver 결과 원본이 없으므로 실제 주문 전 JLC impedance calculator와 impedance-control/coupon으로 다시 승인해야 한다. 현재 stack model은 1.5862 mm이고 SMA는 Amphenol `132289`로 지정되어 있으나, 이 SMA의 제조사 PCB 두께 상한 1.57 mm를 초과한다. 1.6 mm 대응 SMA로 바꾸거나 stack-up과 50/100 Ω geometry를 다시 확정해야 한다.
+두 KiCad 초안은 68 × 44 mm, 4층 JLCPCB `JLC04161H-7628` 기준이며 core εr은 기준 보드와 같은 4.36으로 통일했다. W=0.23/G=0.22 mm는 이 stack, 외층 1 oz, green soldermask, non-coplanar 조건의 nominal 100 Ω 발주 geometry다. 저장소에는 JLC field-solver 결과 원본이 없으므로 실제 주문 전 JLC impedance calculator와 impedance-control/coupon으로 다시 승인해야 한다. SMA는 1.6 ±0.05 mm 권장 두께의 MyAntenna `A-SMA-KE-16.5A` (`C22467617`, 50 Ω / DC–6 GHz)로 통일한다. 기존 Amphenol `132289`는 1.57 mm 두께 상한 때문에 최종 BOM에서 제외했다. 새 SMA는 JLC Standard PCBA 전용 wave-solder/high-difficulty 품목이므로 두 endpoint 작업에서 land pattern, board-edge 안착, 방향과 fixture/engineering 비고를 각각 승인해야 한다.
 
 ## 제작 전 차단 항목
 
 1. `REV-504` 실물에서 Molex housing MPN, 1–4 ↔ M12 4–1 continuity, pin 1과 key 방향을 확인한다.
 2. 추론 후보 `5055680571`의 실제 체결성, pad numbering과 footprint를 확인한다.
 3. M12 female 후보 `MB12FBAFF08ST-3`의 suffix, mating view, 후면 실장 시 A-key/pin-1 방향, 패널 체결과 기구 간섭을 확인한다.
-4. SMA/PCB 두께 불일치를 해소하고 stack-up에 맞춰 임피던스를 재계산한다.
+4. 새 SMA `A-SMA-KE-16.5A`의 제조사 land pattern과 board-edge 안착, 바깥쪽 방향, JLC wave-solder fixture/engineering 비고를 두 보드에서 확인한다.
 5. 커넥터/SMA 또는 stack-up을 바꾼 뒤 ERC, DRC, schematic–PCB parity와 1:1 실물 대조를 다시 수행한다.
 
 현재 문서 매핑 초안은 KiCad 10에서 두 회로도 ERC 0, 두 PCB DRC 0, 미연결 pad 0, schematic–PCB parity 0을 통과했다. 이는 전기적 CAD 정합성 검사 결과이며 실물 핀 방향, 체결성 또는 RF 성능을 승인한 결과는 아니다.
@@ -109,4 +109,4 @@ KiCad 10 Windows의 Python zone filler가 생성기 안에서 불안정해 inner
   'balun_slipring\generate_pinmap_tbd_drafts.py' --force
 ```
 
-위 항목이 끝나기 전에는 BOM의 개별 전기부품 상태와 무관하게 전체 설계는 **DO NOT FABRICATE**다. 핀맵의 근거와 실측 기록은 [`PINMAP.md`](PINMAP.md), 측정 절차는 [`MEASUREMENT.md`](MEASUREMENT.md), 조달 판단은 [`balun_slipring_draft_bom.csv`](balun_slipring_draft_bom.csv)를 따른다.
+위 항목이 끝나기 전에는 BOM의 개별 전기부품 상태와 무관하게 전체 설계는 **DO NOT FABRICATE**다. 핀맵의 근거와 실측 기록은 [`PINMAP.md`](PINMAP.md), 측정 절차는 [`MEASUREMENT.md`](MEASUREMENT.md), 보드별 조달 판단은 [`balun_slipring_draft_bom.csv`](balun_slipring_draft_bom.csv), 전체 구매 수량은 [`../JLCPCB_FINAL_BOM.csv`](../JLCPCB_FINAL_BOM.csv)와 [`../JLCPCB_ORDER_GUIDE.md`](../JLCPCB_ORDER_GUIDE.md)를 따른다.
