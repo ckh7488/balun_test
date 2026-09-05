@@ -33,7 +33,7 @@ JLC의 [공개 stack-up](https://jlcpcb.com/impedance)과 [계산기 안내](htt
 | J2 | m12_slipring | Finecables MB12FBAFF08ST-3 | 1 | THT, 수동 또는 업체 삽입·납땜 |
 | J2 | m12_llc | Finecables MB12MBAFF08ST-3 | 1 | THT, 수동 또는 업체 삽입·납땜 |
 | J2 | molex_slipring | Molex 5055680571 | 1 | SMT, reflow 권장 |
-| TP1 | 공통 | shield solder point | — | PCB 동박/홀, 별도 부품 없음 |
+| TP1 | M12 두 종류 | shield solder point | — | PCB 동박/홀, 별도 부품 없음; Molex에는 없음 |
 | H1–H4 | 공통 | Ø3.2 mm mounting hole | — | 별도 브래킷/standoff |
 
 J2는 해당 보드의 한 행만 사용한다. JLC 공급 가능 여부/재고는 확인 완료 상태가 아니다. M12를 직접 조달해 bare PCB에 손납땜하거나, JLC의 해당 부품 조달/위탁 지원을 확인한다. Molex까지 포함한 PCBA는 SMT+THT 혼합 조립 조건으로 견적을 받는다. 승인 없이 같은 외관의 다른 부품으로 대체하지 않는다.
@@ -44,7 +44,7 @@ J2는 해당 보드의 한 행만 사용한다. JLC 공급 가능 여부/재고�
 
 1. 커넥터 샘플 또는 제조사 치수도로 정확한 suffix, 성별, component-side pin 번호, finished hole과 핀 길이를 확인한다. 사내 DUT에 실제 체결하고 continuity를 확인한다.
 2. M12는 F면 수직 장착 + PG9 패널 고정이다. 패널 두께/홀 형상, connector seating 높이와 nut 공간, PCB standoff 높이는 실제 부품 도면으로 결정한다. PCB 4개 장착홀만으로 mating 토크를 신호 핀에 가하지 않는다.
-3. shield patch cable과 TP1↔M12 body/패널 접속 여부를 결정한다. 선택한 상태는 OSL/thru/DUT에 동일하게 유지한다.
+3. M12는 shield patch cable과 TP1↔M12 body/패널 접속 여부를 결정하고 OSL/thru/DUT에서 동일하게 유지한다. Molex는 RJ45 SH와 내층 plane까지만 연결하고 DUT 측 shield bond는 두지 않는다.
 4. 현재 공식 계산기 결과는 CAD에 반영했고 DRC/ERC/parity를 통과했다. 주문 CAM이 적층·geometry 변경을 제안하면 재계산하고 CAD 검사도 다시 수행한다.
 5. KiCad에서 zone을 refill/save한 후 Gerber와 PTH/NPTH drill을 export한다. F.Cu/In1.Cu/In2.Cu/B.Cu, mask, silk, Edge.Cuts를 포함하고 내층 plane fill과 drill map을 CAM에서 확인한다.
 6. JLC DFM/placement 화면에서 RJ45 방향, M12 성별·key, Molex pin 1을 확인한다. 첫 샘플은 continuity 및 보정 검증 뒤 평가용으로 사용한다.

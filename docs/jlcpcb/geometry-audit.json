@@ -261,43 +261,43 @@
     "via_pad_audit_limit": "Copper-edge distance; rectangular bounding box for non-circle/oval pads. Confirm mask/CAM plug eligibility with manufacturer."
   },
   "adapters/molex_slipring/molex_slipring": {
-    "sha256": "e3c22ec099047fc1ec5f05eeb7f2d5029768bcc9e01d814df1de1f5e3c3f0452",
+    "sha256": "aee00e3d4bd44119c0a27f62821efeeaac1fc9a48be129c80d4de2c292039c1c",
     "track_width_counts": {
       "/PAIR_A_P": {
-        "0.234": 5,
-        "0.15": 1
+        "0.15": 4,
+        "0.234": 4
       },
       "/PAIR_A_N": {
-        "0.234": 5,
-        "0.15": 1
+        "0.234": 4,
+        "0.15": 4
       },
       "/PAIR_B_P": {
-        "0.234": 5,
-        "0.15": 1
+        "0.234": 7,
+        "0.15": 3
       },
       "/PAIR_B_N": {
-        "0.234": 5,
-        "0.15": 1
+        "0.234": 7,
+        "0.15": 4
       }
     },
     "track_lengths_mm": {
-      "/PAIR_A_P": 29.88663915251882,
-      "/PAIR_A_N": 29.886639110788614,
-      "/PAIR_B_P": 29.96260081201085,
-      "/PAIR_B_N": 29.962599647778823
+      "/PAIR_A_P": 30.737594513539335,
+      "/PAIR_A_N": 29.349224022578362,
+      "/PAIR_B_P": 31.79798123321446,
+      "/PAIR_B_N": 30.045504320004433
     },
     "parallel_trunks": [
       {
         "net": "/PAIR_A_P",
         "layer": "F.Cu",
-        "overlap_mm": 12.0,
+        "overlap_mm": 22.949999,
         "center_pitch_mm": 0.45,
         "edge_gap_mm": 0.216
       },
       {
         "net": "/PAIR_B_P",
-        "layer": "B.Cu",
-        "overlap_mm": 12.0,
+        "layer": "F.Cu",
+        "overlap_mm": 18.663604,
         "center_pitch_mm": 0.45,
         "edge_gap_mm": 0.216
       }

@@ -106,16 +106,16 @@ UnknownThru는 상호성 `S21 = S12`와 충분한 전달을 전제로 한다. �
 | 기존 공통 RJ45 Rev B 재사용 | balun 설계를 공유하고 커넥터별 변경 비용 감소 | 실제 balun 대역·손실·balance·fixture coupling |
 | RJ45 jack + 공장제 patch | 손제작 plug보다 연결/고정 방식 반복 가능 | 추가 접점·patch 손실과 재체결 변화; 표준/DUT 취득 시 고정 |
 | 수동 어댑터 3종, 고정 핀맵 | 움직이는 untwist를 PCB 형상으로 고정, 설정 착오 감소 | PCB용 M12와 보유 커넥터 호환; 범용 M12 핀맵으로 오해 금지 |
-| 66 × 40 mm, 4층, A/B 외층 분리 | 반복 가능한 배선과 각 신호층의 인접 reference plane | 더 작은 보드/짧은 fanout의 장점과 조립 공간 비교 |
-| L2/L3 SHIELD, TP1 body/패널 접속점 | shield 경계 설정 가능 | common balun GND plane과 동일 조건이 아님; floating/bonded 조건과 접점 모델 |
+| 66 × 40 mm, 4층, M12 A/B 외층 분리·Molex F.Cu 통합 | 반복 가능한 배선과 각 신호층의 인접 reference plane | 더 작은 보드/짧은 fanout의 장점과 조립 공간 비교 |
+| L2/L3 SHIELD, M12에만 TP1 body/패널 접속점 | M12 shield 경계 설정 가능; Molex는 DUT-side bond 없음 | common balun GND plane과 동일 조건이 아님; floating/bonded 조건과 접점 모델 |
 | W 0.234 / gap 0.216 mm trunk | 공식 JLC 역산 결과를 반영한 100Ω 목표 치수 | 생산 CAM/coupon; escape/fanout은 목표 보장 범위 밖 |
-| P/N track 합계 길이 일치 | 배선 skew 감소 의도 | 커넥터 내부 길이·via·실제 전기적 대칭까지 보장하지 않음 |
+| M12 P/N track 합계 일치, Molex는 짧고 결합된 배선 우선 | M12 배선 skew 감소; Molex의 큰 loop·signal via 제거 | 커넥터 내부 길이·실제 전기적 대칭까지 보장하지 않음; Molex PCB skew 약 1.39/1.75 mm |
 | M12 THT + 패널 지지 | 손납땜 접근성과 체결 하중 분리 | 부품 높이, PG9 panel, nut 접근, standoff, hole 공차 |
 | Molex 1.25 mm SMT | 기존 공개 케이블 후보와 연결 | 실제 mating과 pin 1, 납땜 접근성; reflow 권장 선택지 |
 
-**fanout은 우선 검토 항목이다.** 현재 길이 보정에 넓게 벌어진 절선이 있으며, 특히 M12 LLC의 pair A에서 “track 길이 동일”을 얻는 대신 pair 간격과 loop가 커질 수 있다. 이 형태가 작은 skew를 허용한 더 짧고 밀접한 배선보다 낫다고 검증하지 않았다. 기존 CAD를 방어하기보다 uncoupled 길이·loop·plane에 대한 대칭을 함께 비교해 수정안을 제시한다. 현재 DRC와 길이 표만으로 mode conversion이나 100 Ω을 입증하지 않는다.
+**fanout은 우선 검토 항목이다.** Molex는 큰 길이보정 절선과 B-pair signal via를 제거하고 두 pair를 F.Cu의 긴 결합 구간으로 수정했다. M12 LLC의 pair A에는 여전히 “track 길이 동일”을 얻는 대신 pair 간격과 loop가 커질 수 있는 절선이 남아 있다. 기존 CAD를 방어하기보다 uncoupled 길이·loop·plane에 대한 대칭을 함께 비교한다. 현재 DRC와 길이 표만으로 mode conversion이나 100 Ω을 입증하지 않는다.
 
-기본 CT-FLOAT 및 한쪽 shield bond는 초기 시험 조건이다. 새 어댑터 내층, patch shield, M12 body/패널을 포함한 실제 경계를 명시해야 한다. “SHIELD라는 net 이름이 있으므로 적절히 접지된다”거나 “기준면 보정이므로 shield 상태는 무관하다”는 해석은 부정확하다.
+기본 CT-FLOAT 및 M12의 선택적 한쪽 shield bond는 초기 시험 조건이다. Molex는 DUT-side shield bond를 두지 않는다. 새 어댑터 내층, patch shield, M12 body/패널을 포함한 실제 경계를 명시해야 한다. “SHIELD라는 net 이름이 있으므로 적절히 접지된다”거나 “기준면 보정이므로 shield 상태는 무관하다”는 해석은 부정확하다.
 
 ## 7. 완료한 검증과 아직 없는 증거
 

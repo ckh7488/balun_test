@@ -47,11 +47,11 @@ Molex 케이블 housing은 기존 문서의 `5055650501` 후보와 실제 체결
 | stack-up | 4층 `JLC04161H-7628`, 주문 1.6 mm, nominal 1.5862 mm |
 | 동박 | 외층 1 oz, 내층 0.5 oz |
 | reference planes | L2/L3 SHIELD plane, stitch via 연결; 내층 신호 배선 없음 |
-| pair A / pair B | 주 배선은 각각 F.Cu / B.Cu |
+| pair A / pair B | M12 두 종류는 각각 F.Cu / B.Cu; Molex는 두 pair 모두 F.Cu |
 | coupled trunk | 100 Ω 목표, W 0.234 mm / edge gap 0.216 mm |
 | RJ45 pad escape | W 0.15 mm의 짧은 neckdown; 100 Ω trunk로 간주하지 않음 |
-| signal via | M12 두 종류 0개; Molex B의 각 선에 0.60/0.30 mm via 1개 |
-| shield 접속 | RJ45 SH ↔ 내층 plane ↔ TP1 solder point |
+| signal via | 세 어댑터 모두 0개 |
+| shield 접속 | RJ45 SH ↔ 내층 plane; TP1은 M12 두 종류에만 있고 Molex에는 DUT-side bond 없음 |
 | M12 body | PCB 신호 핀에 shell 접속 없음; 패널/TP1 연결 여부를 별도 정의·기록 |
 
 모든 부품 몸체는 F면이다. LLC M12는 부품 기준 180° 회전이며 도면/PCB의 A-key와 pin 1 표시를 따른다. M12 체결 토크를 신호 핀 납땜부에 맡기지 않는다. M3 head/washer는 OD 7 mm 이하의 기구 검토 범위이며, M12 panel 높이·nut 접근·실제 connector seating은 실물 도면으로 맞춘다.
@@ -60,17 +60,17 @@ Molex 케이블 housing은 기존 문서의 `5055650501` 후보와 실제 체결
 | --- | ---: | ---: |
 | M12 슬립링 | 29.208 / 29.208 mm | 33.169 / 33.167 mm |
 | M12 LLC | 36.659 / 36.659 mm | 28.514 / 28.514 mm |
-| Molex 슬립링 | 29.887 / 29.887 mm | 29.963 / 29.963 mm |
+| Molex 슬립링 | 30.738 / 29.349 mm | 31.798 / 30.046 mm |
 
 M12 슬립링 B+는 폭 변경 후 clearance 확보를 위해 fanout을 0.05 mm 이동했고 P/N 길이 차이는 약 0.002 mm다. [계산·검증 상세](../docs/jlcpcb/IMPEDANCE.md)를 참고한다.
 
-길이는 track 중심선 합계이며 커넥터 내부 핀 길이와 via 전기 길이를 포함하지 않는다. pair별 via 수는 대칭이다. fanout 길이 보정은 넓은 절선으로 처리했으며 그 구간 전체가 일정한 100 Ω pair인 것은 아니다. 최종 mode conversion이나 정확한 임피던스는 이 표만으로 보장하지 않는다.
+길이는 track 중심선 합계이며 커넥터 내부 핀 길이와 via 전기 길이를 포함하지 않는다. Molex는 큰 길이보정 우회로와 B-pair signal via를 제거하고 두 pair의 긴 결합 구간을 F.Cu에 배치했다. 그 결과 PCB track 길이 차이는 A 약 1.39 mm, B 약 1.75 mm이며, 큰 loop를 다시 추가하기보다 짧고 밀접한 배선을 우선한 의도적 절충이다. 최종 mode conversion이나 정확한 임피던스는 이 표만으로 보장하지 않는다.
 
 **RF 재검토 우선 항목:** 특히 M12 LLC pair A의 넓은 fanout이 작은 skew를 허용한 더 짧고 밀접한 배선보다 유리한지 확인해야 한다. track 합계 길이 일치에 앞서 uncoupled 길이, loop 면적, 기준면에 대한 대칭을 함께 비교한다. 현재 형상의 우월성을 EM 해석이나 실측으로 검증하지 않았다.
 
 ## 레이아웃
 
-빨강 F.Cu, 파랑 B.Cu. 교차처럼 보이는 다른 색의 선은 서로 다른 외층이며 사이에 두 reference plane이 있다. `planes.svg`에서 채워진 내층 plane도 확인할 수 있다.
+빨강 F.Cu, 파랑 B.Cu. M12의 교차처럼 보이는 다른 색 선은 서로 다른 외층이며 사이에 두 reference plane이 있다. Molex의 두 pair는 모두 빨강 F.Cu다. `planes.svg`에서 채워진 내층 plane도 확인할 수 있다.
 
 ### M12 슬립링용 암
 

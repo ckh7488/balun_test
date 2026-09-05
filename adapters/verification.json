@@ -1,5 +1,5 @@
 {
-  "kicad_version": "10.0.6",
+  "kicad_version": "10.0.0",
   "boards": {
     "m12_slipring": {
       "drc": 0,
@@ -43,9 +43,9 @@
         "6": "4"
       },
       "sha256": {
-        "molex_slipring.kicad_pcb": "e3c22ec099047fc1ec5f05eeb7f2d5029768bcc9e01d814df1de1f5e3c3f0452",
-        "molex_slipring.kicad_sch": "a2d63cd5cc2902191eda48a302753a0f799bac4fcc8ac9f807238daee3d506cc",
-        "molex_slipring.kicad_pro": "0451b848c0e58915db34c93b2acdbc4a4779c8fce892383c84306fffb8762be0",
+        "molex_slipring.kicad_pcb": "aee00e3d4bd44119c0a27f62821efeeaac1fc9a48be129c80d4de2c292039c1c",
+        "molex_slipring.kicad_sch": "ebe6f5a592b2abcc548c0c0cb47510d088193c8bc67d1d4a03c244eda2d6b61d",
+        "molex_slipring.kicad_pro": "76fa1dd5586b527fbdc3a0a213db6edc45dd421cbb7b5f3e772572b5edb4f0b4",
         "molex_slipring.kicad_dru": "9f7b9d534590ae09b89965801ba8921301d04e4ff950ae0dfec6bf470368573d"
       }
     }

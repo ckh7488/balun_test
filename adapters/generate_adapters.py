@@ -23,13 +23,16 @@ RJ45 = "RJ45_Amphenol_RJE59-188-5401"
 VARIANTS = {
     "m12_slipring": {"footprint": "Finecables_MB12FBAFF08ST-3", "mpn": "MB12FBAFF08ST-3", "pins": 8,
                      "map": {"4": "A_P", "3": "A_N", "2": "B_P", "1": "B_N"}, "rotation": 0,
-                     "note": "M12 FEMALE / SLIPRING; 5-8 NC; VERIFY MATE", "gender": "female"},
+                     "note": "M12 FEMALE / SLIPRING; 5-8 NC; VERIFY MATE", "gender": "female",
+                     "shield_testpoint": True},
     "m12_llc": {"footprint": "Finecables_MB12MBAFF08ST-3", "mpn": "MB12MBAFF08ST-3", "pins": 8,
                 "map": {"8": "A_P", "2": "A_N", "3": "B_P", "4": "B_N"}, "rotation": 180,
-                "note": "M12 MALE / LLC; 1,5,6,7 NC; VERIFY MATE", "gender": "male"},
+                "note": "M12 MALE / LLC; 1,5,6,7 NC; VERIFY MATE", "gender": "male",
+                "shield_testpoint": True},
     "molex_slipring": {"footprint": "Molex_5055680571", "mpn": "5055680571", "pins": 5,
                        "map": {"1": "A_P", "2": "A_N", "3": "B_P", "4": "B_N"}, "rotation": 90,
-                       "note": "MOLEX 5P / SLIPRING; PIN 5 NC; VERIFY HOUSING", "gender": "male"},
+                       "note": "MOLEX 5P / SLIPRING; PIN 5 NC; VERIFY HOUSING", "gender": "male",
+                       "shield_testpoint": False},
 }
 
 
@@ -79,7 +82,11 @@ def add_track(b, net, a, z, layer, width=.234):
 def via(b, net, at):
     v = pcb.PCB_VIA(b)
     v.SetPosition(point(*at)); v.SetWidth(pcb.FromMM(.6)); v.SetDrill(pcb.FromMM(.3))
-    v.SetViaType(pcb.VIATYPE_THROUGH); v.SetLayerPair(pcb.F_Cu, pcb.B_Cu); v.SetNet(net)
+    # PCB_VIA defaults to through-hole; some KiCad 10 Python builds do not
+    # expose the VIATYPE_THROUGH enum even though SetLayerPair is available.
+    if hasattr(pcb, "VIATYPE_THROUGH"):
+        v.SetViaType(pcb.VIATYPE_THROUGH)
+    v.SetLayerPair(pcb.F_Cu, pcb.B_Cu); v.SetNet(net)
     b.Add(v)
 
 
@@ -126,11 +133,13 @@ def schematic(path, name, cfg):
     definitions += symbol_definition("DUT" + str(cfg["pins"]), [str(n) for n in range(1, cfg["pins"] + 1)])
     definitions += symbol_definition("Shield", ["1"])
     parts = []
-    for ref, sym, x, count, fp, mapping in (
+    components = [
         ("J1", "RJ45", 71.12, 9, RJ45, {"1": "A_P", "2": "A_N", "3": "B_P", "6": "B_N", "SH": "SHIELD"}),
         ("J2", "DUT" + str(cfg["pins"]), 152.4, cfg["pins"], cfg["footprint"], cfg["map"]),
-        ("TP1", "Shield", 111.76, 1, "Shield_SolderPoint", {"1": "SHIELD"}),
-    ):
+    ]
+    if cfg["shield_testpoint"]:
+        components.append(("TP1", "Shield", 111.76, 1, "Shield_SolderPoint", {"1": "SHIELD"}))
+    for ref, sym, x, count, fp, mapping in components:
         fp_source = (HERE / "adapter.pretty" / (fp + ".kicad_mod")).read_text()
         match = re.search(r'\(property "Datasheet" "([^"]*)"', fp_source)
         datasheet = match.group(1) if match else ""
@@ -154,10 +163,16 @@ def schematic(path, name, cfg):
                 parts.append(f'(label "{net}" (at {x-25.4} {y} 0) (effects (font (size 1.27 1.27)) (justify left bottom)) (uuid "{uid(name+ref+pin+"label")}"))')
             else:
                 parts.append(f'(no_connect (at {x-7.62} {y}) (uuid "{uid(name+ref+pin+"nc")}"))')
+    shield_note = ("Inner SHIELD planes connect to RJ45 shield; no DUT-side shield bond."
+                   if name == "molex_slipring" else
+                   "Inner SHIELD planes connect to RJ45 shield. M12 body bond is mechanical/external.")
+    mechanical_note = ("Molex housing and actual mating/pin numbering require sample verification."
+                       if name == "molex_slipring" else
+                       "M12 mounting bracket and actual mating/pin numbering require sample verification.")
     for i, note in enumerate((cfg["note"], "Passive two-pair adapter; no magnetics, no PoE, no active Ethernet.",
                               "100 ohm pair trunks; JLC04161H-7628; 4 layers; 1.6 mm nominal.",
-                              "Inner SHIELD planes connect to RJ45 shield. M12 body bond is mechanical/external.",
-                              "M12 mounting bracket and actual mating/pin numbering require sample verification.",
+                              shield_note,
+                              mechanical_note,
                               "Calibration reference plane: DUT connector mating plane after this adapter.")):
         parts.append(f'(text "{note}" (at 30 {112+i*6} 0) (effects (font (size 1.27 1.27)) (justify left)) (uuid "{uid(name+note)}"))')
     path.write_text(f'''(kicad_sch (version 20260306) (generator "eeschema") (generator_version "10.0")
@@ -181,11 +196,13 @@ def board(directory, name, cfg):
         b.Add(n); nets[label] = n
     j1 = footprint(b, RJ45, "J1", (12, 20), 90,
                    {"1": nets["A_P"], "2": nets["A_N"], "3": nets["B_P"], "6": nets["B_N"], "SH": nets["SHIELD"]}, name)
-    j2 = footprint(b, cfg["footprint"], "J2", (48, 20), cfg["rotation"],
+    j2_at = (48.24, 18.7) if name == "molex_slipring" else (48, 20)
+    j2 = footprint(b, cfg["footprint"], "J2", j2_at, cfg["rotation"],
                    {pin: nets[net] for pin, net in cfg["map"].items()}, name)
     j1.SetValue("RJ45 RJE591885401"); j2.SetValue(cfg["mpn"])
-    tp = footprint(b, "Shield_SolderPoint", "TP1", (35, 28), 0, {"1": nets["SHIELD"]}, name)
-    tp.Reference().SetPosition(point(35, 30.5))
+    if cfg["shield_testpoint"]:
+        tp = footprint(b, "Shield_SolderPoint", "TP1", (35, 28), 0, {"1": nets["SHIELD"]}, name)
+        tp.Reference().SetPosition(point(35, 30.5))
     j1.Reference().SetPosition(point(12, 9)); j2.Reference().SetPosition(point(48, 9))
     starts = {"A_P": xy(j1.FindPadByNumber("1")), "A_N": xy(j1.FindPadByNumber("2")),
               "B_P": xy(j1.FindPadByNumber("3")), "B_N": xy(j1.FindPadByNumber("6"))}
@@ -199,43 +216,59 @@ def board(directory, name, cfg):
                  "B_P": [(42, 20.0), (43.5, 19.5)], "B_N": [(42, 20.45), (43.5, 22.4)]}
         levels = {"A_P": 14.55, "A_N": 15, "B_P": 20.0, "B_N": 20.45}
     else:
-        tails = {"A_P": [(42, 17.5), (44, 17.5)], "A_N": [(42, 17.95), (44, 18.75)],
-                 "B_P": [(42, 20), (44, 20)], "B_N": [(42, 20.45), (44, 21.25)]}
-        levels = {"A_P": 17.5, "A_N": 17.95, "B_P": 20, "B_N": 20.45}
-    routes = {}
-    for net, start in starts.items():
-        ymid = (start[1] + levels[net]) / 2
-        routes[net] = [start, (22, start[1]), (26, ymid), (30, levels[net])] + tails[net] + [ends[net]]
+        # Molex pin pitch permits both pairs to stay on F.Cu. These routes keep
+        # long, tightly coupled trunks and avoid the former B-pair layer changes.
+        routes = {
+            "A_P": [starts["A_P"], (17.01, 16.4), (17.45, 16.4), (17.975, 15.875),
+                    (22.075, 15.875), (22.8, 16.6), (45.75, 16.6), (46.15, 16.2), ends["A_P"]],
+            "A_N": [starts["A_N"], (19.03, 16.845), (19.65, 16.225), (21.525, 16.225),
+                    (21.975, 16.675), (22.35, 17.05), (45.75, 17.05), (46.15, 17.45), ends["A_N"]],
+            "B_P": [starts["B_P"], (19.805, 18.43), (20.35, 18.975), (21.275, 18.975),
+                    (22.943198, 18.975), (24.643198, 20.675), (43.306802, 20.675),
+                    (44.881802, 19.1), (45.75, 19.1), (46.15, 18.7), ends["B_P"]],
+            "B_N": [starts["B_N"], (19.97, 20.55), (19.975, 20.55), (20.675, 19.85),
+                    (21.325, 19.85), (23.181802, 19.85), (24.456802, 21.125),
+                    (43.493198, 21.125), (45.068198, 19.55), (45.75, 19.55),
+                    (46.15, 19.95), ends["B_N"]],
+        }
+        narrow_segments = {"A_P": 4, "A_N": 4, "B_P": 3, "B_N": 4}
+    if name != "molex_slipring":
+        routes = {}
+        for net, start in starts.items():
+            ymid = (start[1] + levels[net]) / 2
+            routes[net] = [start, (22, start[1]), (26, ymid), (30, levels[net])] + tails[net] + [ends[net]]
     length = lambda route: sum(math.dist(a, z) for a, z in zip(route, route[1:]))
-    # Broad outward fanout adjustment, not a tightly packed serpentine.
-    for pair in ("A", "B"):
-        a, z = pair + "_P", pair + "_N"
-        short = a if length(routes[a]) < length(routes[z]) else z
-        target = max(length(routes[a]), length(routes[z]))
-        base_y = routes[short][2][1]
-        sign = -1 if short.endswith("P") else 1
-        low, high = 0.0, 8.0
-        for _ in range(55):
-            mid = (low + high) / 2
-            routes[short][2] = (26, base_y + sign * mid)
-            if length(routes[short]) < target:
-                low = mid
-            else:
-                high = mid
-    # With the verified 0.234 mm width, extend this trunk by 50 um
-    # before the fanout to retain the existing 0.20 mm clearance. The resulting
-    # sub-0.01 mm pair skew is preferable to another long tuning detour.
-    if name == "m12_slipring":
-        routes["B_P"][-3] = (42.05, 22.7)
+    if name != "molex_slipring":
+        # Broad outward fanout adjustment, not a tightly packed serpentine.
+        for pair in ("A", "B"):
+            a, z = pair + "_P", pair + "_N"
+            short = a if length(routes[a]) < length(routes[z]) else z
+            target = max(length(routes[a]), length(routes[z]))
+            base_y = routes[short][2][1]
+            sign = -1 if short.endswith("P") else 1
+            low, high = 0.0, 8.0
+            for _ in range(55):
+                mid = (low + high) / 2
+                routes[short][2] = (26, base_y + sign * mid)
+                if length(routes[short]) < target:
+                    low = mid
+                else:
+                    high = mid
+        # With the verified 0.234 mm width, extend this trunk by 50 um
+        # before the fanout to retain the existing 0.20 mm clearance. The resulting
+        # sub-0.01 mm pair skew is preferable to another long tuning detour.
+        if name == "m12_slipring":
+            routes["B_P"][-3] = (42.05, 22.7)
     for net, route in routes.items():
-        layer = pcb.F_Cu if net.startswith("A") else pcb.B_Cu
+        layer = pcb.F_Cu if net.startswith("A") or name == "molex_slipring" else pcb.B_Cu
         for i, (a, z) in enumerate(zip(route, route[1:])):
-            # Molex B pair uses one symmetric signal via per conductor.
-            if name == "molex_slipring" and net.startswith("B") and i == len(route) - 2:
-                via(b, nets[net], a); layer = pcb.F_Cu
-            add_track(b, nets[net], a, z, layer, .15 if i == 0 else .234)
-    for at in ((4, 4), (62, 4), (62, 36), (4, 36)):
-        hole = pcb.FOOTPRINT(b); hole.SetReference("H" + str(len(list(b.GetFootprints())) - 2))
+            if name == "molex_slipring":
+                width = .15 if i < narrow_segments[net] else .234
+            else:
+                width = .15 if i == 0 else .234
+            add_track(b, nets[net], a, z, layer, width)
+    for index, at in enumerate(((4, 4), (62, 4), (62, 36), (4, 36)), start=1):
+        hole = pcb.FOOTPRINT(b); hole.SetReference(f"H{index}")
         hole.SetAttributes(pcb.FP_BOARD_ONLY | pcb.FP_EXCLUDE_FROM_BOM | pcb.FP_EXCLUDE_FROM_POS_FILES)
         hole.SetPosition(point(*at)); hole.Reference().SetVisible(False); hole.Value().SetVisible(False)
         pad = pcb.PAD(hole); pad.SetAttribute(pcb.PAD_ATTRIB_NPTH); pad.SetShape(pcb.PAD_SHAPE_CIRCLE)
@@ -260,11 +293,11 @@ def board(directory, name, cfg):
         zone.Outline().NewOutline()
         for x, y in corners[:-1]: zone.Outline().Append(pcb.FromMM(x), pcb.FromMM(y))
         b.Add(zone)
-    for at in ((9, 7), (20, 7), (35, 7), (57, 7), (6, 32), (20, 32), (35, 32), (57, 32), (43, 16), (43, 25)):
+    shield_vias = [(9, 7), (20, 7), (35, 7), (57, 7), (6, 32), (20, 32), (35, 32), (57, 32)]
+    if name != "molex_slipring":
+        shield_vias += [(43, 16), (43, 25)]
+    for at in shield_vias:
         via(b, nets["SHIELD"], at)
-    if name == "molex_slipring":
-        for at in ((43, 19.3), (43, 22.25)):
-            via(b, nets["SHIELD"], at)
     text(b, name.upper().replace("_", " "), (33, 2), size=1.2)
     text(b, "100BASE-TX / PASSIVE ONLY", (33, 34), size=1)
     text(b, "A-DRAFT / VERIFY MATE + CAM", (33, 37), size=.8)
@@ -272,7 +305,7 @@ def board(directory, name, cfg):
     title.SetDate("2026-09-05"); title.SetComment(0, cfg["note"])
     title.SetComment(1, "JLC04161H-7628 / 100R trunk W0.234 G0.216 / verify manufacturer mating")
     pcb.SaveBoard(str(path), b)
-    return {k: {"length_mm": length(v), "signal_vias": int(name == "molex_slipring" and k.startswith("B")),
+    return {k: {"length_mm": length(v), "signal_vias": 0,
                 "vertices_mm": v} for k, v in routes.items()}
 
 
@@ -283,12 +316,18 @@ def generate(output):
     project["board"]["design_settings"]["drc_exclusions"] = []
     for name, cfg in VARIANTS.items():
         directory = output / name; directory.mkdir()
+        variant_project = json.loads(json.dumps(project))
+        if name == "molex_slipring":
+            # SHIELD intentionally terminates at the single RJ45 shell pin; the
+            # copper planes do not appear as schematic pins.
+            variant_project["erc"]["rule_severities"]["isolated_pin_label"] = "ignore"
         (directory / "fp-lib-table").write_text('(fp_lib_table (version 7) (lib (name "adapter")(type "KiCad")(uri "${KIPRJMOD}/../adapter.pretty")(options "")(descr "Project-local reviewed connector footprints")))\n')
         (directory / "sym-lib-table").write_text('(sym_lib_table (version 7) (lib (name "Adapter")(type "KiCad")(uri "${KIPRJMOD}/../adapter.kicad_sym")(options "")(descr "Passive adapter symbols")))\n')
-        (directory / (name + ".kicad_pro")).write_text(json.dumps(project, indent=2) + "\n")
+        (directory / (name + ".kicad_pro")).write_text(json.dumps(variant_project, indent=2) + "\n")
         schematic(directory / (name + ".kicad_sch"), name, cfg)
         metrics = board(directory, name, cfg)
-        (directory / "design.json").write_text(json.dumps({"status": "ELECTRICAL_CAD_DRAFT", **cfg, "routing": metrics}, indent=2) + "\n")
+        documented_cfg = {key: value for key, value in cfg.items() if key != "shield_testpoint"}
+        (directory / "design.json").write_text(json.dumps({"status": "ELECTRICAL_CAD_DRAFT", **documented_cfg, "routing": metrics}, indent=2) + "\n")
         (directory / (name + ".kicad_dru")).write_text('''(version 1)
 (rule "Board edge" (constraint edge_clearance (min 0.30mm)))
 (rule "Inner planes only" (layer inner) (constraint disallow track))

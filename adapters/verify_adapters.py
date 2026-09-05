@@ -43,7 +43,7 @@ def main():
             expected = {("J1", source), ("J2", target)}
             if expected not in nets:
                 raise ValueError(f"{name}: missing exact pair net {expected}")
-        if {("J1", "SH"), ("TP1", "1")} not in nets:
+        if name != "molex_slipring" and {("J1", "SH"), ("TP1", "1")} not in nets:
             raise ValueError(f"{name}: missing shield solder-point connection")
         for net in nets:
             for ref, pin in net:
@@ -54,7 +54,8 @@ def main():
             run(args.kicad_cli, "pcb", "export", "svg", "--layers", layers, "--mode-single", "--fit-page-to-board",
                 "--exclude-drawing-sheet", "--output", d / f"{label}.svg", pcb)
             svg = d / f"{label}.svg"
-            svg.write_text(svg.read_text().replace('</desc>', '</desc>\n<rect width="100%" height="100%" fill="#111827"/>', 1))
+            content = svg.read_text().replace('</desc>', '</desc>\n<rect width="100%" height="100%" fill="#111827"/>', 1)
+            svg.write_text("\n".join(line.rstrip() for line in content.splitlines()) + "\n")
         run(args.kicad_cli, "sch", "export", "svg", "--output", str(d / "schematic_svg") + "/", sch)
         counts = {}
         for kind in ("drc", "erc"):
