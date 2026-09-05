@@ -22,7 +22,7 @@ ROOT = HERE.parent
 RJ45 = "RJ45_Amphenol_RJE59-188-5401"
 VARIANTS = {
     "m12_slipring": {"footprint": "Finecables_MB12FBAFF08ST-3", "mpn": "MB12FBAFF08ST-3", "pins": 8,
-                     "map": {"4": "A_P", "3": "A_N", "2": "B_P", "1": "B_N"}, "rotation": 0,
+                     "map": {"4": "A_P", "3": "A_N", "2": "B_P", "1": "B_N"}, "rotation": -30,
                      "note": "M12 FEMALE / SLIPRING; 5-8 NC; VERIFY MATE", "gender": "female",
                      "shield_testpoint": True},
     "m12_llc": {"footprint": "Finecables_MB12MBAFF08ST-3", "mpn": "MB12MBAFF08ST-3", "pins": 8,
@@ -201,16 +201,31 @@ def board(directory, name, cfg):
                    {pin: nets[net] for pin, net in cfg["map"].items()}, name)
     j1.SetValue("RJ45 RJE591885401"); j2.SetValue(cfg["mpn"])
     if cfg["shield_testpoint"]:
-        tp = footprint(b, "Shield_SolderPoint", "TP1", (35, 28), 0, {"1": nets["SHIELD"]}, name)
-        tp.Reference().SetPosition(point(35, 30.5))
+        tp_at = (37.125, 29.1) if name == "m12_slipring" else (35, 28)
+        tp = footprint(b, "Shield_SolderPoint", "TP1", tp_at, 0, {"1": nets["SHIELD"]}, name)
+        tp.Reference().SetPosition(point(tp_at[0], tp_at[1] + 2.5))
     j1.Reference().SetPosition(point(12, 9)); j2.Reference().SetPosition(point(48, 9))
     starts = {"A_P": xy(j1.FindPadByNumber("1")), "A_N": xy(j1.FindPadByNumber("2")),
               "B_P": xy(j1.FindPadByNumber("3")), "B_N": xy(j1.FindPadByNumber("6"))}
     ends = {net: xy(j2.FindPadByNumber(pin)) for pin, net in cfg["map"].items()}
     if name == "m12_slipring":
-        tails = {"A_P": [(42, 17.2), (44, 17.2)], "A_N": [(42, 17.65), (43.5, 19.8)],
-                 "B_P": [(42, 22.7), (46.502243, 24)], "B_N": [(42, 23.15), (44, 24.45), (49.497757, 24.45)]}
-        levels = {"A_P": 17.2, "A_N": 17.65, "B_P": 22.7, "B_N": 23.15}
+        # Rotate the keyed M12 body and keep both pairs on F.Cu. The paired
+        # trunks retain the calculated W0.234/G0.216 geometry without vias.
+        routes = {
+            "A_P": [starts["A_P"], (17.165, 16.225), (18.156802, 16.225),
+                    (19.415901, 14.965901), (20.731802, 13.65), (42.018619, 13.65),
+                    (45.768443, 17.399824), ends["A_P"]],
+            "A_N": [starts["A_N"], (18.45, 16.83), (18.45, 16.568198),
+                    (19.734099, 15.284099), (20.918198, 14.1), (41.832221, 14.1),
+                    (45.450244, 17.718023), ends["A_N"]],
+            "B_P": [starts["B_P"], (20.955, 18.43), (21, 18.475),
+                    (23.618198, 18.475), (28.618198, 23.475), (44.502765, 23.475),
+                    (45.549733, 22.428032), ends["B_P"]],
+            "B_N": [starts["B_N"], (19.03, 21.47), (20.45, 20.05), (20.45, 19.475),
+                    (21, 18.925), (23.431802, 18.925), (28.431802, 23.925),
+                    (44.689163, 23.925), (45.867932, 22.746231), ends["B_N"]],
+        }
+        narrow_segments = {"A_P": 3, "A_N": 3, "B_P": 2, "B_N": 4}
     elif name == "m12_llc":
         tails = {"A_P": [(41, 14.55), (48, 14.55)], "A_N": [(41, 15), (46.502243, 15)],
                  "B_P": [(42, 20.0), (43.5, 19.5)], "B_N": [(42, 20.45), (43.5, 22.4)]}
@@ -232,13 +247,13 @@ def board(directory, name, cfg):
                     (46.15, 19.95), ends["B_N"]],
         }
         narrow_segments = {"A_P": 4, "A_N": 4, "B_P": 3, "B_N": 4}
-    if name != "molex_slipring":
+    if name == "m12_llc":
         routes = {}
         for net, start in starts.items():
             ymid = (start[1] + levels[net]) / 2
             routes[net] = [start, (22, start[1]), (26, ymid), (30, levels[net])] + tails[net] + [ends[net]]
     length = lambda route: sum(math.dist(a, z) for a, z in zip(route, route[1:]))
-    if name != "molex_slipring":
+    if name == "m12_llc":
         # Broad outward fanout adjustment, not a tightly packed serpentine.
         for pair in ("A", "B"):
             a, z = pair + "_P", pair + "_N"
@@ -254,15 +269,10 @@ def board(directory, name, cfg):
                     low = mid
                 else:
                     high = mid
-        # With the verified 0.234 mm width, extend this trunk by 50 um
-        # before the fanout to retain the existing 0.20 mm clearance. The resulting
-        # sub-0.01 mm pair skew is preferable to another long tuning detour.
-        if name == "m12_slipring":
-            routes["B_P"][-3] = (42.05, 22.7)
     for net, route in routes.items():
-        layer = pcb.F_Cu if net.startswith("A") or name == "molex_slipring" else pcb.B_Cu
+        layer = pcb.F_Cu if net.startswith("A") or name != "m12_llc" else pcb.B_Cu
         for i, (a, z) in enumerate(zip(route, route[1:])):
-            if name == "molex_slipring":
+            if name != "m12_llc":
                 width = .15 if i < narrow_segments[net] else .234
             else:
                 width = .15 if i == 0 else .234
@@ -294,7 +304,7 @@ def board(directory, name, cfg):
         for x, y in corners[:-1]: zone.Outline().Append(pcb.FromMM(x), pcb.FromMM(y))
         b.Add(zone)
     shield_vias = [(9, 7), (20, 7), (35, 7), (57, 7), (6, 32), (20, 32), (35, 32), (57, 32)]
-    if name != "molex_slipring":
+    if name == "m12_llc":
         shield_vias += [(43, 16), (43, 25)]
     for at in shield_vias:
         via(b, nets["SHIELD"], at)
@@ -312,6 +322,10 @@ def board(directory, name, cfg):
 def generate(output):
     output.mkdir(parents=True, exist_ok=False)
     project = json.loads((ROOT / "balun_eth_rj45/balun_eth_rj45.kicad_pro").read_text())
+    eth100 = next(item for item in project["net_settings"]["classes"] if item["name"] == "ETH100")
+    eth100.update({"clearance": 0.20, "track_width": 0.234, "diff_pair_width": 0.234,
+                   "diff_pair_gap": 0.216, "diff_pair_via_gap": 0.30,
+                   "via_diameter": 0.60, "via_drill": 0.30})
     project["net_settings"]["netclass_patterns"] = [{"netclass": "ETH100", "pattern": "/PAIR_*"}]
     project["board"]["design_settings"]["drc_exclusions"] = []
     for name, cfg in VARIANTS.items():
@@ -333,6 +347,8 @@ def generate(output):
 (rule "Inner planes only" (layer inner) (constraint disallow track))
 (rule "Differential trace width" (layer outer) (condition "A.Type == 'Track' && A.hasNetclass('ETH100')") (constraint track_width (min 0.233mm) (opt 0.234mm) (max 0.235mm)))
 (rule "RJ45 pin escape" (condition "A.Type == 'Track' && A.hasNetclass('ETH100') && A.intersectsCourtyard('J1')") (constraint track_width (min 0.14mm) (opt 0.15mm) (max 0.235mm)))
+(rule "Differential coupled gap" (layer outer) (condition "A.Type == 'Track' && A.hasNetclass('ETH100') && !A.intersectsCourtyard('J1') && !A.intersectsCourtyard('J2')") (constraint diff_pair_gap (min 0.21mm) (opt 0.216mm)))
+(rule "Differential pair topology" (condition "A.hasNetclass('ETH100')") (constraint skew (max 2.00mm) (within_diff_pairs)) (constraint via_count (max 0)) (constraint diff_pair_uncoupled (max 16.60mm)))
 (rule "Signal vias" (condition "A.Type == 'Via' && A.hasNetclass('ETH100')") (constraint via_diameter (min 0.60mm)) (constraint hole_size (min 0.30mm)))
 ''')
     shutil.copytree(HERE / "adapter.pretty", output / "adapter.pretty")

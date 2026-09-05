@@ -10,11 +10,17 @@
         "3": "2",
         "6": "1"
       },
+      "diff_pair_settings_verified": {
+        "track_width": 0.234,
+        "diff_pair_width": 0.234,
+        "diff_pair_gap": 0.216,
+        "diff_pair_via_gap": 0.3
+      },
       "sha256": {
-        "m12_slipring.kicad_pcb": "9e13c8c6d584bdbfd5511c421ceaeae2302da6911df7d3042db5fcfaae11a489",
+        "m12_slipring.kicad_pcb": "57e0b22c3448d399533e9b65d72fb06f751e910c5aead4815f22827d7c123f6f",
         "m12_slipring.kicad_sch": "df638c2a6391e27db3a463d30bcc662e6c0894a2fe6735786919880f33c1cd43",
         "m12_slipring.kicad_pro": "65bcab58a9316411e4e1d7b6f45b751ee660d75982ecd0ec5dc88fa6ab4176fd",
-        "m12_slipring.kicad_dru": "9f7b9d534590ae09b89965801ba8921301d04e4ff950ae0dfec6bf470368573d"
+        "m12_slipring.kicad_dru": "0820a04d914b8a932a3f251c17a37b14620398f2dca23e6d4e973698a5cdb2c2"
       }
     },
     "m12_llc": {
@@ -26,11 +32,17 @@
         "3": "3",
         "6": "4"
       },
+      "diff_pair_settings_verified": {
+        "track_width": 0.234,
+        "diff_pair_width": 0.234,
+        "diff_pair_gap": 0.216,
+        "diff_pair_via_gap": 0.3
+      },
       "sha256": {
         "m12_llc.kicad_pcb": "4bc74d3ed1ca7854b2aa0ed3d8effa824be8cda9ba3e66bb36da7b5c913d1961",
         "m12_llc.kicad_sch": "2497776ca118b81b9d326f668fe16652e3cb76eaeb328b7aca86f789969e6de3",
         "m12_llc.kicad_pro": "79cba13e4f7772d2413015d0612188712891152e49b417b584c4edbaea9dc523",
-        "m12_llc.kicad_dru": "9f7b9d534590ae09b89965801ba8921301d04e4ff950ae0dfec6bf470368573d"
+        "m12_llc.kicad_dru": "0820a04d914b8a932a3f251c17a37b14620398f2dca23e6d4e973698a5cdb2c2"
       }
     },
     "molex_slipring": {
@@ -42,11 +54,17 @@
         "3": "3",
         "6": "4"
       },
+      "diff_pair_settings_verified": {
+        "track_width": 0.234,
+        "diff_pair_width": 0.234,
+        "diff_pair_gap": 0.216,
+        "diff_pair_via_gap": 0.3
+      },
       "sha256": {
-        "molex_slipring.kicad_pcb": "aee00e3d4bd44119c0a27f62821efeeaac1fc9a48be129c80d4de2c292039c1c",
+        "molex_slipring.kicad_pcb": "28d735d43cfe107e1e322e378bd7a9f2c253025c3b6e26a3867c1dbf168f4125",
         "molex_slipring.kicad_sch": "ebe6f5a592b2abcc548c0c0cb47510d088193c8bc67d1d4a03c244eda2d6b61d",
         "molex_slipring.kicad_pro": "76fa1dd5586b527fbdc3a0a213db6edc45dd421cbb7b5f3e772572b5edb4f0b4",
-        "molex_slipring.kicad_dru": "9f7b9d534590ae09b89965801ba8921301d04e4ff950ae0dfec6bf470368573d"
+        "molex_slipring.kicad_dru": "0820a04d914b8a932a3f251c17a37b14620398f2dca23e6d4e973698a5cdb2c2"
       }
     }
   },

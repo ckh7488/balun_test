@@ -16,13 +16,30 @@ EXPECTED = {
     "m12_llc": {"1": "8", "2": "2", "3": "3", "6": "4"},
     "molex_slipring": {"1": "1", "2": "2", "3": "3", "6": "4"},
 }
+EXPECTED_DIFF_PAIR_SETTINGS = {
+    "track_width": 0.234,
+    "diff_pair_width": 0.234,
+    "diff_pair_gap": 0.216,
+    "diff_pair_via_gap": 0.30,
+}
 
 
 def run(cli, *args):
-    result = subprocess.run([cli, *map(str, args)], capture_output=True, text=True)
+    # KiCad CLI writes UTF-8 even when Windows' active ANSI code page is CP949.
+    # Decode explicitly so verification is reproducible on Korean Windows hosts.
+    result = subprocess.run(
+        [cli, *map(str, args)], capture_output=True, text=True,
+        encoding="utf-8", errors="replace",
+    )
     if result.returncode:
         raise RuntimeError(result.stdout + result.stderr)
     return result.stdout.strip()
+
+
+def canonical_text_sha256(path):
+    """Hash the LF-normalized text that Git stores for the CAD sources."""
+    content = path.read_bytes().replace(b"\r\n", b"\n")
+    return hashlib.sha256(content).hexdigest()
 
 
 def main():
@@ -33,6 +50,13 @@ def main():
     for name, pinmap in EXPECTED.items():
         d = HERE / name
         pcb, sch = d / f"{name}.kicad_pcb", d / f"{name}.kicad_sch"
+        project = json.loads((d / f"{name}.kicad_pro").read_text())
+        eth100 = next(item for item in project["net_settings"]["classes"] if item["name"] == "ETH100")
+        for key, expected in EXPECTED_DIFF_PAIR_SETTINGS.items():
+            if abs(eth100[key] - expected) > 1e-9:
+                raise ValueError(f"{name}: ETH100 {key} is {eth100[key]}, expected {expected}")
+        if {"netclass": "ETH100", "pattern": "/PAIR_*"} not in project["net_settings"]["netclass_patterns"]:
+            raise ValueError(f"{name}: /PAIR_* is not assigned to ETH100")
         run(args.kicad_cli, "pcb", "drc", "--refill-zones", "--save-board", "--schematic-parity",
             "--exit-code-violations", "--format", "json", "--output", d / "drc.json", pcb)
         run(args.kicad_cli, "sch", "erc", "--exit-code-violations", "--format", "json", "--output", d / "erc.json", sch)
@@ -71,9 +95,12 @@ def main():
         # The generated netlist is an intermediate; native parity and explicit
         # assertions above are retained in the signed-by-hash verification file.
         (d / "netlist.xml").unlink()
-        hashes = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in (pcb, sch, d / f"{name}.kicad_pro", d / f"{name}.kicad_dru")}
-        summary["boards"][name] = {**counts, "exact_pinmap_verified": pinmap, "sha256": hashes}
-        print(f"{name}: DRC/ERC/parity 0; pinmap and isolated NC pins verified")
+        hashes = {p.name: canonical_text_sha256(p) for p in
+                  (pcb, sch, d / f"{name}.kicad_pro", d / f"{name}.kicad_dru")}
+        summary["boards"][name] = {**counts, "exact_pinmap_verified": pinmap,
+                                   "diff_pair_settings_verified": EXPECTED_DIFF_PAIR_SETTINGS,
+                                   "sha256": hashes}
+        print(f"{name}: DRC/ERC/parity 0; pinmap, NC pins and differential-pair settings verified")
     summary["not_verified"] = ["Actual DUT connector mating and continuity", "Mechanical panel fit",
                                "Manufacturer-controlled impedance", "RF performance and calibration accuracy"]
     (HERE / "verification.json").write_text(json.dumps(summary, indent=2) + "\n")

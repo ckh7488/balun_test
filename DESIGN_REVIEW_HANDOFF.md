@@ -106,14 +106,14 @@ UnknownThru는 상호성 `S21 = S12`와 충분한 전달을 전제로 한다. �
 | 기존 공통 RJ45 Rev B 재사용 | balun 설계를 공유하고 커넥터별 변경 비용 감소 | 실제 balun 대역·손실·balance·fixture coupling |
 | RJ45 jack + 공장제 patch | 손제작 plug보다 연결/고정 방식 반복 가능 | 추가 접점·patch 손실과 재체결 변화; 표준/DUT 취득 시 고정 |
 | 수동 어댑터 3종, 고정 핀맵 | 움직이는 untwist를 PCB 형상으로 고정, 설정 착오 감소 | PCB용 M12와 보유 커넥터 호환; 범용 M12 핀맵으로 오해 금지 |
-| 66 × 40 mm, 4층, M12 A/B 외층 분리·Molex F.Cu 통합 | 반복 가능한 배선과 각 신호층의 인접 reference plane | 더 작은 보드/짧은 fanout의 장점과 조립 공간 비교 |
+| 66 × 40 mm, 4층, M12 슬립링·Molex F.Cu 통합, M12 LLC A/B 외층 분리 | 반복 가능한 배선과 각 신호층의 인접 reference plane | 더 작은 보드/짧은 fanout의 장점과 조립 공간 비교 |
 | L2/L3 SHIELD, M12에만 TP1 body/패널 접속점 | M12 shield 경계 설정 가능; Molex는 DUT-side bond 없음 | common balun GND plane과 동일 조건이 아님; floating/bonded 조건과 접점 모델 |
 | W 0.234 / gap 0.216 mm trunk | 공식 JLC 역산 결과를 반영한 100Ω 목표 치수 | 생산 CAM/coupon; escape/fanout은 목표 보장 범위 밖 |
-| M12 P/N track 합계 일치, Molex는 짧고 결합된 배선 우선 | M12 배선 skew 감소; Molex의 큰 loop·signal via 제거 | 커넥터 내부 길이·실제 전기적 대칭까지 보장하지 않음; Molex PCB skew 약 1.39/1.75 mm |
+| M12 슬립링·Molex는 짧고 결합된 배선 우선 | 큰 loop·layer change·signal via 감소 | 커넥터 내부 길이·실제 전기적 대칭까지 보장하지 않음; PCB skew M12 약 0.94/0.83 mm, Molex 약 1.39/1.75 mm |
 | M12 THT + 패널 지지 | 손납땜 접근성과 체결 하중 분리 | 부품 높이, PG9 panel, nut 접근, standoff, hole 공차 |
 | Molex 1.25 mm SMT | 기존 공개 케이블 후보와 연결 | 실제 mating과 pin 1, 납땜 접근성; reflow 권장 선택지 |
 
-**fanout은 우선 검토 항목이다.** Molex는 큰 길이보정 절선과 B-pair signal via를 제거하고 두 pair를 F.Cu의 긴 결합 구간으로 수정했다. M12 LLC의 pair A에는 여전히 “track 길이 동일”을 얻는 대신 pair 간격과 loop가 커질 수 있는 절선이 남아 있다. 기존 CAD를 방어하기보다 uncoupled 길이·loop·plane에 대한 대칭을 함께 비교한다. 현재 DRC와 길이 표만으로 mode conversion이나 100 Ω을 입증하지 않는다.
+**fanout은 우선 검토 항목이다.** Molex와 M12 슬립링은 큰 길이보정 절선과 B-pair layer change를 없애고 두 pair를 F.Cu의 긴 결합 구간으로 수정했다. M12 LLC의 pair A에는 여전히 “track 길이 동일”을 얻는 대신 pair 간격과 loop가 커질 수 있는 절선이 남아 있다. 기존 CAD를 방어하기보다 uncoupled 길이·loop·plane에 대한 대칭을 함께 비교한다. 현재 DRC와 길이 표만으로 mode conversion이나 100 Ω을 입증하지 않는다.
 
 기본 CT-FLOAT 및 M12의 선택적 한쪽 shield bond는 초기 시험 조건이다. Molex는 DUT-side shield bond를 두지 않는다. 새 어댑터 내층, patch shield, M12 body/패널을 포함한 실제 경계를 명시해야 한다. “SHIELD라는 net 이름이 있으므로 적절히 접지된다”거나 “기준면 보정이므로 shield 상태는 무관하다”는 해석은 부정확하다.
 
@@ -130,7 +130,7 @@ UnknownThru는 상호성 `S21 = S12`와 충분한 전달을 전제로 한다. �
 | 어댑터 3종 | [verification.json](adapters/verification.json): native DRC/ERC/parity 0, 결선/NC 확인, CAD SHA-256 | 제조사 도면의 해석·실물 mating·최종 임피던스 |
 | 육안 CAD 검토 | 각 어댑터 layout/plane SVG와 native 회로도 | EM 해석 또는 제조 샘플 검증 |
 
-DRC 0은 저장된 검사 설정에서의 결과다. 각 `drc.json`의 `ignored_checks`도 함께 검토한다. SHA-256은 검사한 파일과의 일치 확인용이며, 별도 제3자 인증이나 전자서명을 의미하지 않는다.
+DRC 0은 저장된 검사 설정에서의 결과다. 각 `drc.json`의 `ignored_checks`도 함께 검토한다. CAD 텍스트의 SHA-256은 Git에 저장되는 LF 줄바꿈으로 정규화해 계산하며, 검사한 파일과의 일치 확인용이지 별도 제3자 인증이나 전자서명을 의미하지 않는다.
 
 아직 없는 산출물은 **전용 O/S/L/T 표준 PCB, 실제 표준 모델의 측정/추정 근거, 불확도 예산, 실측 DUT 결과, JLC 생산 CAM/coupon, 패널 제작 도면, 새 구성의 통합 구매 수량표와 어댑터 제조 release**다. 기존 `export_jlc_release.ps1`는 새 `adapters/`를 export하지 않는다.
 
@@ -164,7 +164,7 @@ python -m analysis.m12_cal apply measurements/review_demo/cal.npz measurements/r
 
 출력은 예제의 `expected_dut_100ohm.s2p`와 비교한다. 도구는 기존 파일을 덮어쓰지 않으므로 재실행 때 새 출력 경로를 사용한다.
 
-KiCad 검증은 **검토용 별도 checkout**에서 KiCad 10.0.6과 필요한 라이브러리를 사용한다. 아래 스크립트는 zone refill/save와 보고서·SVG 갱신을 수행하므로 읽기 전용 검사가 아니다.
+KiCad 검증은 **검토용 별도 checkout**에서 KiCad 10.0.x와 필요한 라이브러리를 사용한다. 정확한 실행 버전은 `adapters/verification.json`에 기록한다. 아래 스크립트는 zone refill/save와 보고서·SVG 갱신을 수행하므로 읽기 전용 검사가 아니다.
 
 ```bash
 python adapters/verify_adapters.py --kicad-cli /path/to/kicad-cli

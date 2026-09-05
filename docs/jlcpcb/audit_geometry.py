@@ -6,6 +6,10 @@ import pcbnew as p
 ROOT=Path(__file__).resolve().parents[2]
 BOARDS=['balun_eth_rj45/balun_eth_rj45']+[f'adapters/{n}/{n}' for n in ['m12_slipring','m12_llc','molex_slipring']]
 out={}
+def canonical_text_sha256(path):
+    """Hash the LF-normalized text that Git stores for the CAD sources."""
+    return hashlib.sha256(path.read_bytes().replace(b'\r\n', b'\n')).hexdigest()
+
 for stem in BOARDS:
     path=ROOT/(stem+'.kicad_pcb'); b=p.LoadBoard(str(path))
     widths=defaultdict(Counter); lengths=defaultdict(float); close=[]; trunks=[]
@@ -52,5 +56,5 @@ for stem in BOARDS:
                 else: dist=math.hypot(max(abs(x)-sx,0),max(abs(y)-sy,0))
                 gap=dist-vr
                 if gap<.35-1e-6: close.append({'ref':f.GetReference(),'pad':pad.GetNumber(),'via_mm':[p.ToMM(v.GetPosition().x),p.ToMM(v.GetPosition().y)],'copper_edge_gap_mm':round(gap,4)})
-    out[stem]={'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'track_width_counts':dict(widths),'track_lengths_mm':dict(lengths),'parallel_trunks':trunks,'via_pad_gap_under_0_35_mm':close,'via_pad_audit_limit':'Copper-edge distance; rectangular bounding box for non-circle/oval pads. Confirm mask/CAM plug eligibility with manufacturer.'}
+    out[stem]={'sha256':canonical_text_sha256(path),'track_width_counts':dict(widths),'track_lengths_mm':dict(lengths),'parallel_trunks':trunks,'via_pad_gap_under_0_35_mm':close,'via_pad_audit_limit':'Copper-edge distance; rectangular bounding box for non-circle/oval pads. Confirm mask/CAM plug eligibility with manufacturer.'}
 print(json.dumps(out,indent=2))

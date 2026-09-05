@@ -164,43 +164,57 @@
     "via_pad_audit_limit": "Copper-edge distance; rectangular bounding box for non-circle/oval pads. Confirm mask/CAM plug eligibility with manufacturer."
   },
   "adapters/m12_slipring/m12_slipring": {
-    "sha256": "9e13c8c6d584bdbfd5511c421ceaeae2302da6911df7d3042db5fcfaae11a489",
+    "sha256": "57e0b22c3448d399533e9b65d72fb06f751e910c5aead4815f22827d7c123f6f",
     "track_width_counts": {
       "/PAIR_A_P": {
-        "0.234": 5,
-        "0.15": 1
+        "0.15": 3,
+        "0.234": 4
       },
       "/PAIR_A_N": {
-        "0.234": 5,
-        "0.15": 1
+        "0.15": 3,
+        "0.234": 4
       },
       "/PAIR_B_P": {
         "0.234": 5,
-        "0.15": 1
+        "0.15": 2
       },
       "/PAIR_B_N": {
-        "0.234": 6,
-        "0.15": 1
+        "0.234": 5,
+        "0.15": 4
       }
     },
     "track_lengths_mm": {
-      "/PAIR_A_P": 29.20783089484562,
-      "/PAIR_A_N": 29.207830507331234,
-      "/PAIR_B_P": 33.16917896483395,
-      "/PAIR_B_N": 33.167195114806056
+      "/PAIR_A_P": 32.79286011821441,
+      "/PAIR_A_N": 31.855094147976338,
+      "/PAIR_B_P": 32.2526667671429,
+      "/PAIR_B_N": 33.08425363644544
     },
     "parallel_trunks": [
       {
         "net": "/PAIR_A_P",
         "layer": "F.Cu",
-        "overlap_mm": 12.0,
+        "overlap_mm": 5.116657,
+        "center_pitch_mm": 0.450001,
+        "edge_gap_mm": 0.216001
+      },
+      {
+        "net": "/PAIR_A_P",
+        "layer": "F.Cu",
+        "overlap_mm": 20.914023,
         "center_pitch_mm": 0.45,
         "edge_gap_mm": 0.216
       },
       {
         "net": "/PAIR_B_P",
-        "layer": "B.Cu",
-        "overlap_mm": 12.0,
+        "layer": "F.Cu",
+        "overlap_mm": 6.884672,
+        "center_pitch_mm": 0.45,
+        "edge_gap_mm": 0.216
+      },
+      {
+        "net": "/PAIR_B_P",
+        "layer": "F.Cu",
+        "overlap_mm": 15.884567,
         "center_pitch_mm": 0.45,
         "edge_gap_mm": 0.216
       }
@@ -261,7 +275,7 @@
     "via_pad_audit_limit": "Copper-edge distance; rectangular bounding box for non-circle/oval pads. Confirm mask/CAM plug eligibility with manufacturer."
   },
   "adapters/molex_slipring/molex_slipring": {
-    "sha256": "aee00e3d4bd44119c0a27f62821efeeaac1fc9a48be129c80d4de2c292039c1c",
+    "sha256": "28d735d43cfe107e1e322e378bd7a9f2c253025c3b6e26a3867c1dbf168f4125",
     "track_width_counts": {
       "/PAIR_A_P": {
         "0.15": 4,
