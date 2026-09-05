@@ -1,0 +1,67 @@
+{
+  "base_commit": "acf822565702fcede400a967594e16c81a13b017",
+  "before": {
+    "pcb_sha256": "28d735d43cfe107e1e322e378bd7a9f2c253025c3b6e26a3867c1dbf168f4125",
+    "track_length_mm": {
+      "/PAIR_A_P": 30.737594513539335,
+      "/PAIR_A_N": 29.349224022578362,
+      "/PAIR_B_P": 31.79798123321446,
+      "/PAIR_B_N": 30.045504320004433
+    },
+    "narrow_track_length_mm": {
+      "/PAIR_A_P": 5.296604255869606,
+      "/PAIR_A_N": 3.953208511739212,
+      "/PAIR_B_P": 4.500746391493337,
+      "/PAIR_B_N": 2.9743102422918763
+    },
+    "skew_mm": {
+      "A": 1.3883704909609733,
+      "B": 1.7524769132100282
+    },
+    "signal_vias": 0,
+    "shield_vias": 8,
+    "signal_layers": [
+      "F.Cu"
+    ],
+    "signal_widths_mm": [
+      0.15,
+      0.234
+    ],
+    "minimum_interpair_track_edge_gap_mm": 0.8699999999999996,
+    "scope": "Planar non-intersecting trace geometry; pad-to-pad spacing, connector pin lengths, electrical delay and RF response excluded."
+  },
+  "after": {
+    "pcb_sha256": "45c57edfea13155bd2c32587dc7dea7c2a3861e31c891bd453f55a5bf86b8e81",
+    "track_length_mm": {
+      "/PAIR_A_P": 31.247077195258242,
+      "/PAIR_A_N": 30.454873734152915,
+      "/PAIR_B_P": 30.410365799264593,
+      "/PAIR_B_N": 29.423574311003808
+    },
+    "narrow_track_length_mm": {
+      "/PAIR_A_P": 0.0,
+      "/PAIR_A_N": 0.0,
+      "/PAIR_B_P": 0.0,
+      "/PAIR_B_N": 0.0
+    },
+    "skew_mm": {
+      "A": 0.792203461105327,
+      "B": 0.9867914882607849
+    },
+    "signal_vias": 0,
+    "shield_vias": 8,
+    "signal_layers": [
+      "F.Cu"
+    ],
+    "signal_widths_mm": [
+      0.234
+    ],
+    "minimum_interpair_track_edge_gap_mm": 0.7859999999999996,
+    "scope": "Planar non-intersecting trace geometry; pad-to-pad spacing, connector pin lengths, electrical delay and RF response excluded."
+  },
+  "checks": {
+    "generator_track_geometry_matches": true,
+    "pad_nets_dimensions_and_footprint_placement_unchanged": true,
+    "drc_erc_parity": "See adapters/verification.json and the native reports"
+  }
+}

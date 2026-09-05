@@ -2,7 +2,6 @@
 (rule "Board edge" (constraint edge_clearance (min 0.30mm)))
 (rule "Inner planes only" (layer inner) (constraint disallow track))
 (rule "Differential trace width" (layer outer) (condition "A.Type == 'Track' && A.hasNetclass('ETH100')") (constraint track_width (min 0.233mm) (opt 0.234mm) (max 0.235mm)))
-(rule "RJ45 pin escape" (condition "A.Type == 'Track' && A.hasNetclass('ETH100') && A.intersectsCourtyard('J1')") (constraint track_width (min 0.14mm) (opt 0.15mm) (max 0.235mm)))
 (rule "Differential coupled gap" (layer outer) (condition "A.Type == 'Track' && A.hasNetclass('ETH100') && !A.intersectsCourtyard('J1') && !A.intersectsCourtyard('J2')") (constraint diff_pair_gap (min 0.21mm) (opt 0.216mm)))
 (rule "Differential pair topology" (condition "A.hasNetclass('ETH100')") (constraint skew (max 2.00mm) (within_diff_pairs)) (constraint via_count (max 0)) (constraint diff_pair_uncoupled (max 16.60mm)))
 (rule "Signal vias" (condition "A.Type == 'Via' && A.hasNetclass('ETH100')") (constraint via_diameter (min 0.60mm)) (constraint hole_size (min 0.30mm)))

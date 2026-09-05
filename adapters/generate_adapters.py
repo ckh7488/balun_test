@@ -233,20 +233,15 @@ def board(directory, name, cfg):
     else:
         # Molex pin pitch permits both pairs to stay on F.Cu. These routes keep
         # long, tightly coupled trunks and avoid the former B-pair layer changes.
+        # Keep full 0.234 mm width through the RJ45 escape. The short A
+        # approach and B trunk position balance sub-1 mm centerline skew with
+        # coupling and inter-pair clearance, without adding signal vias.
         routes = {
-            "A_P": [starts["A_P"], (17.01, 16.4), (17.45, 16.4), (17.975, 15.875),
-                    (22.075, 15.875), (22.8, 16.6), (45.75, 16.6), (46.15, 16.2), ends["A_P"]],
-            "A_N": [starts["A_N"], (19.03, 16.845), (19.65, 16.225), (21.525, 16.225),
-                    (21.975, 16.675), (22.35, 17.05), (45.75, 17.05), (46.15, 17.45), ends["A_N"]],
-            "B_P": [starts["B_P"], (19.805, 18.43), (20.35, 18.975), (21.275, 18.975),
-                    (22.943198, 18.975), (24.643198, 20.675), (43.306802, 20.675),
-                    (44.881802, 19.1), (45.75, 19.1), (46.15, 18.7), ends["B_P"]],
-            "B_N": [starts["B_N"], (19.97, 20.55), (19.975, 20.55), (20.675, 19.85),
-                    (21.325, 19.85), (23.181802, 19.85), (24.456802, 21.125),
-                    (43.493198, 21.125), (45.068198, 19.55), (45.75, 19.55),
-                    (46.15, 19.95), ends["B_N"]],
+            "A_P": [starts["A_P"], (18.14, 15.25), (20, 15.25), (21.35, 16.6), (45.75, 16.6), (46.15, 16.2), ends["A_P"]],
+            "A_N": [starts["A_N"], (19.03, 15.7), (19.813604, 15.7), (21.163604, 17.05), (45.75, 17.05), (46.15, 17.45), ends["A_N"]],
+            "B_P": [starts["B_P"], (20, 18.43), (20.57, 19.0), (45.75, 19.0), (46.05, 18.7), ends["B_P"]],
+            "B_N": [starts["B_N"], (19.03, 20.89), (20.47, 19.45), (45.75, 19.45), (46.25, 19.95), ends["B_N"]],
         }
-        narrow_segments = {"A_P": 4, "A_N": 4, "B_P": 3, "B_N": 4}
     if name == "m12_llc":
         routes = {}
         for net, start in starts.items():
@@ -272,7 +267,9 @@ def board(directory, name, cfg):
     for net, route in routes.items():
         layer = pcb.F_Cu if net.startswith("A") or name != "m12_llc" else pcb.B_Cu
         for i, (a, z) in enumerate(zip(route, route[1:])):
-            if name != "m12_llc":
+            if name == "molex_slipring":
+                width = .234
+            elif name == "m12_slipring":
                 width = .15 if i < narrow_segments[net] else .234
             else:
                 width = .15 if i == 0 else .234
@@ -342,7 +339,7 @@ def generate(output):
         metrics = board(directory, name, cfg)
         documented_cfg = {key: value for key, value in cfg.items() if key != "shield_testpoint"}
         (directory / "design.json").write_text(json.dumps({"status": "ELECTRICAL_CAD_DRAFT", **documented_cfg, "routing": metrics}, indent=2) + "\n")
-        (directory / (name + ".kicad_dru")).write_text('''(version 1)
+        rules = '''(version 1)
 (rule "Board edge" (constraint edge_clearance (min 0.30mm)))
 (rule "Inner planes only" (layer inner) (constraint disallow track))
 (rule "Differential trace width" (layer outer) (condition "A.Type == 'Track' && A.hasNetclass('ETH100')") (constraint track_width (min 0.233mm) (opt 0.234mm) (max 0.235mm)))
@@ -350,7 +347,10 @@ def generate(output):
 (rule "Differential coupled gap" (layer outer) (condition "A.Type == 'Track' && A.hasNetclass('ETH100') && !A.intersectsCourtyard('J1') && !A.intersectsCourtyard('J2')") (constraint diff_pair_gap (min 0.21mm) (opt 0.216mm)))
 (rule "Differential pair topology" (condition "A.hasNetclass('ETH100')") (constraint skew (max 2.00mm) (within_diff_pairs)) (constraint via_count (max 0)) (constraint diff_pair_uncoupled (max 16.60mm)))
 (rule "Signal vias" (condition "A.Type == 'Via' && A.hasNetclass('ETH100')") (constraint via_diameter (min 0.60mm)) (constraint hole_size (min 0.30mm)))
-''')
+'''
+        if name == "molex_slipring":
+            rules = "\n".join(line for line in rules.splitlines() if not line.startswith('(rule "RJ45 pin escape"')) + "\n"
+        (directory / (name + ".kicad_dru")).write_text(rules)
     shutil.copytree(HERE / "adapter.pretty", output / "adapter.pretty")
     definitions = symbol_definition("RJ45", [str(n) for n in range(1, 9)] + ["SH"])
     definitions += symbol_definition("DUT8", [str(n) for n in range(1, 9)])

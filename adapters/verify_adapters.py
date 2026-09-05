@@ -45,9 +45,18 @@ def canonical_text_sha256(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--kicad-cli", default="kicad-cli")
+    parser.add_argument("--board", choices=tuple(EXPECTED), help="Verify one board; preserve other board reports")
     args = parser.parse_args()
-    summary = {"kicad_version": run(args.kicad_cli, "version"), "boards": {}}
-    for name, pinmap in EXPECTED.items():
+    version = run(args.kicad_cli, "version")
+    report = HERE / "verification.json"
+    summary = (json.loads(report.read_text()) if args.board and report.exists()
+               else {"kicad_version": version, "boards": {}})
+    selected = [args.board] if args.board else list(EXPECTED)
+    # Root version is retained for a partial run; per-board/last_run identify
+    # the current tools without implying that untouched boards were rechecked.
+    summary["last_run"] = {"kicad_version": version, "boards": selected}
+    for name in selected:
+        pinmap = EXPECTED[name]
         d = HERE / name
         pcb, sch = d / f"{name}.kicad_pcb", d / f"{name}.kicad_sch"
         project = json.loads((d / f"{name}.kicad_pro").read_text())
@@ -97,7 +106,7 @@ def main():
         (d / "netlist.xml").unlink()
         hashes = {p.name: canonical_text_sha256(p) for p in
                   (pcb, sch, d / f"{name}.kicad_pro", d / f"{name}.kicad_dru")}
-        summary["boards"][name] = {**counts, "exact_pinmap_verified": pinmap,
+        summary["boards"][name] = {"kicad_version": version, **counts, "exact_pinmap_verified": pinmap,
                                    "diff_pair_settings_verified": EXPECTED_DIFF_PAIR_SETTINGS,
                                    "sha256": hashes}
         print(f"{name}: DRC/ERC/parity 0; pinmap, NC pins and differential-pair settings verified")

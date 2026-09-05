@@ -128,7 +128,7 @@ SMA connector PCB thickness requirement: 1.60 +/-0.05 mm;
 please confirm achievable finished thickness separately.
 ```
 
-어댑터용은 50Ω 항목, 네 근접 비아 좌표, SMA 두께 요구를 빼고 **100Ω 항목과 나머지 공통 조건**을 유지한다. 실제 비고를 제출할 때 보드 이름과 revision/hash도 함께 명시한다.
+어댑터용은 50Ω 항목, 네 근접 비아 좌표, SMA 두께 요구를 빼고 **100Ω 항목과 나머지 공통 조건**을 유지한다. **Molex는 후속 배선 개선으로 0.15 mm 구간이 없으므로 그 문구도 제외**하고 connector fanout 예외만 남긴다. 실제 비고를 제출할 때 보드 이름과 revision/hash도 함께 명시한다.
 
 ## 7. 업로드 전과 생산 승인 시 확인
 

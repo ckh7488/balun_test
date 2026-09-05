@@ -23,7 +23,7 @@
 
 JLC의 [공개 stack-up](https://jlcpcb.com/impedance)과 [계산기 안내](https://jlcpcb.com/help/article/user-guide-to-the-jlcpcb-impedance-calculator)를 확인했다. 해당 적층의 outer dielectric 0.2104 mm, inner Cu 0.0152 mm, core 1.065 mm를 CAD에 넣었다. **0.234/0.216 mm는 2026-09-05 공식 계산기의 100Ω 목표 결과를 반올림해 적용한 치수다.** [실제 계산 화면·CAD 검증](../docs/jlcpcb/IMPEDANCE.md)과 [주문 옵션 전체/이유](../docs/jlcpcb/README.md)를 따른다. 100Ω 제조 공차는 현재 화면의 ±10% 옵션을 선택하고 CAM 및 coupon/성적서 제공을 확인한다.
 
-다른 stack-up을 선택하면서 선폭/간격을 그대로 쓰지 않는다. 0.15 mm RJ45 escape, 커넥터 pin field와 넓은 fanout은 일정한 controlled trunk로 표시하지 않는다. coupon의 100 Ω 결과가 커넥터 전체의 100 Ω이나 RF 합격을 의미하지 않는다.
+다른 stack-up을 선택하면서 선폭/간격을 그대로 쓰지 않는다. M12의 0.15 mm RJ45 escape(Molex는 후속 개선으로 전 구간 0.234 mm), 커넥터 pin field와 넓은 fanout은 일정한 controlled trunk로 표시하지 않는다. coupon의 100 Ω 결과가 커넥터 전체의 100 Ω이나 RF 합격을 의미하지 않는다.
 
 ## 어댑터 한 장당 BOM
 

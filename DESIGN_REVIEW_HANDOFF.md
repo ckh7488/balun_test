@@ -4,6 +4,10 @@
 
 현재 성숙도는 **Python 합성 검증 + 배선된 어댑터 CAD 검증**이다. 공식 JLC 계산기 결과는 후속 패치로 반영했으나 실물 RF 정확도, 커넥터 호환·패널 기구, 생산 CAM/coupon은 미검증이며, O/S/L/T 표준의 전용 PCB도 아직 없다.
 
+## Molex 탈출 배선 후속 개선
+
+사용자의 `acf8225` 수정(신호 비아 제거/F.Cu 통합/TP 제거)을 유지하고, RJ45 쪽 0.15 mm 배선을 전부 0.234 mm로 바꾸는 경로로 정리했다. A/B skew는 **0.792/0.987 mm**, 긴 결합 구간은 **24.40/25.18 mm**다. A 선로는 조금 길어지고 B는 A에 더 가까워지는 절충이 있어, [전후 수치·이유·검증](docs/molex-routing/README.md)을 함께 검토한다. 1.27 mm를 유일한 합격 기준으로 삼거나 큰 루프/신호 비아를 되살리지 않았다. 변경은 Molex 보드와 관련 생성·검증·문서에 한정한다.
+
 ## 2026-09-05 후속 패치: 공식 계산기와 실제 주문 조건
 
 이번 추가 요청은 “JLC 적층 기준 100Ω 여부를 검사·확정하고, 주문 옵션 전체와 이유를 실제 화면으로 남기기”다. [계산 증거](docs/jlcpcb/IMPEDANCE.md)와 [주문 가이드](docs/jlcpcb/README.md)가 이 패치의 기준이다.
@@ -109,7 +113,7 @@ UnknownThru는 상호성 `S21 = S12`와 충분한 전달을 전제로 한다. �
 | 66 × 40 mm, 4층, M12 슬립링·Molex F.Cu 통합, M12 LLC A/B 외층 분리 | 반복 가능한 배선과 각 신호층의 인접 reference plane | 더 작은 보드/짧은 fanout의 장점과 조립 공간 비교 |
 | L2/L3 SHIELD, M12에만 TP1 body/패널 접속점 | M12 shield 경계 설정 가능; Molex는 DUT-side bond 없음 | common balun GND plane과 동일 조건이 아님; floating/bonded 조건과 접점 모델 |
 | W 0.234 / gap 0.216 mm trunk | 공식 JLC 역산 결과를 반영한 100Ω 목표 치수 | 생산 CAM/coupon; escape/fanout은 목표 보장 범위 밖 |
-| M12 슬립링·Molex는 짧고 결합된 배선 우선 | 큰 loop·layer change·signal via 감소 | 커넥터 내부 길이·실제 전기적 대칭까지 보장하지 않음; PCB skew M12 약 0.94/0.83 mm, Molex 약 1.39/1.75 mm |
+| M12 슬립링·Molex는 짧고 결합된 배선 우선 | 큰 loop·layer change·signal via 감소 | 커넥터 내부 길이·실제 전기적 대칭까지 보장하지 않음; PCB skew M12 약 0.94/0.83 mm, Molex 약 0.79/0.99 mm |
 | M12 THT + 패널 지지 | 손납땜 접근성과 체결 하중 분리 | 부품 높이, PG9 panel, nut 접근, standoff, hole 공차 |
 | Molex 1.25 mm SMT | 기존 공개 케이블 후보와 연결 | 실제 mating과 pin 1, 납땜 접근성; reflow 권장 선택지 |
 

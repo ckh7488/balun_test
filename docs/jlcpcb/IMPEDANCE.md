@@ -53,7 +53,7 @@ JLC [계산기 안내](https://jlcpcb.com/help/article/user-guide-to-the-jlcpcb-
 ## CAD 변경과 검사
 
 - 네 프로젝트의 ETH100 netclass 폭/간격, 실제 trunk, 사용자 DRC rule 및 생성 스크립트를 함께 수정했다. 공통 RF50도 0.357 mm로 변경했다.
-- 기존 0.15 mm RJ45 escape는 유지한다. pad/connector/balun fanout은 균일 100Ω 구간으로 표시하지 않는다.
+- 이 임피던스 패치 당시 0.15 mm RJ45 escape는 유지했다. 이후 [Molex 탈출부 개선](../molex-routing/README.md)에서 Molex만 0.234 mm로 통일했다. pad/connector/balun fanout은 균일 100Ω 구간으로 표시하지 않는다.
 - 폭 증가 후 M12 슬립링 pair B fanout에서 기존 0.20 mm clearance보다 작은 0.1983 mm 간격이 검출됐다. B+ trunk 끝 X를 **42.00→42.05 mm**로 연장해 해결했다. 규칙을 낮춰 통과시키지 않았다. 이로 인한 B+/B− 길이는 약 **33.169/33.167 mm**, skew 약 0.002 mm다.
 - 기존 부품·핀맵·적층과 외형을 유지한다. 일반 trunk 중심선은 유지하며 위 국소 fanout 지점만 이동했다.
 - 공통 지그: KiCad 10.0.6 zone refill 후 **DRC 0 / 미연결 0 / schematic parity 0**, [보고서](../../adapters/fixture_drc.json).

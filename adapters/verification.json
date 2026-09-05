@@ -46,6 +46,7 @@
       }
     },
     "molex_slipring": {
+      "kicad_version": "10.0.6",
       "drc": 0,
       "erc": 0,
       "exact_pinmap_verified": {
@@ -61,10 +62,10 @@
         "diff_pair_via_gap": 0.3
       },
       "sha256": {
-        "molex_slipring.kicad_pcb": "28d735d43cfe107e1e322e378bd7a9f2c253025c3b6e26a3867c1dbf168f4125",
+        "molex_slipring.kicad_pcb": "45c57edfea13155bd2c32587dc7dea7c2a3861e31c891bd453f55a5bf86b8e81",
         "molex_slipring.kicad_sch": "ebe6f5a592b2abcc548c0c0cb47510d088193c8bc67d1d4a03c244eda2d6b61d",
         "molex_slipring.kicad_pro": "76fa1dd5586b527fbdc3a0a213db6edc45dd421cbb7b5f3e772572b5edb4f0b4",
-        "molex_slipring.kicad_dru": "0820a04d914b8a932a3f251c17a37b14620398f2dca23e6d4e973698a5cdb2c2"
+        "molex_slipring.kicad_dru": "6c5001b0704d503e866c8a68374595fd8760eddf8b24f7aa6b6aae4b25240d3f"
       }
     }
   },
@@ -73,5 +74,11 @@
     "Mechanical panel fit",
     "Manufacturer-controlled impedance",
     "RF performance and calibration accuracy"
-  ]
+  ],
+  "last_run": {
+    "kicad_version": "10.0.6",
+    "boards": [
+      "molex_slipring"
+    ]
+  }
 }

@@ -50,7 +50,7 @@ Molex 케이블 housing은 기존 문서의 `5055650501` 후보와 실제 체결
 | pair A / pair B | M12 슬립링·Molex는 두 pair 모두 F.Cu; M12 LLC만 각각 F.Cu / B.Cu |
 | coupled trunk | 100 Ω 목표, W 0.234 mm / edge gap 0.216 mm |
 | KiCad differential pair 설정 | `ETH100`: width 0.234 mm / gap 0.216 mm; `/PAIR_*` 자동 할당 |
-| RJ45 pad escape | W 0.15 mm의 짧은 neckdown; 100 Ω trunk로 간주하지 않음 |
+| RJ45 pad escape | M12는 W 0.15 mm neckdown; **Molex는 전 구간 W 0.234 mm**. 팬아웃 전체의 100Ω 보장을 의미하지 않음 |
 | signal via | 세 어댑터 모두 0개 |
 | shield 접속 | RJ45 SH ↔ 내층 plane; TP1은 M12 두 종류에만 있고 Molex에는 DUT-side bond 없음 |
 | M12 body | PCB 신호 핀에 shell 접속 없음; 패널/TP1 연결 여부를 별도 정의·기록 |
@@ -61,11 +61,11 @@ Molex 케이블 housing은 기존 문서의 `5055650501` 후보와 실제 체결
 | --- | ---: | ---: |
 | M12 슬립링 | 32.793 / 31.855 mm | 32.253 / 33.084 mm |
 | M12 LLC | 36.659 / 36.659 mm | 28.514 / 28.514 mm |
-| Molex 슬립링 | 30.738 / 29.349 mm | 31.798 / 30.046 mm |
+| Molex 슬립링 | 31.247 / 30.455 mm | 30.410 / 29.424 mm |
 
 M12 슬립링은 M12 body를 −30° 회전하고 두 pair를 F.Cu에 배치했다. PCB track 길이 차이는 A 약 0.94 mm, B 약 0.83 mm이며 signal via는 없다. [계산·검증 상세](../docs/jlcpcb/IMPEDANCE.md)를 참고한다.
 
-길이는 track 중심선 합계이며 커넥터 내부 핀 길이와 via 전기 길이를 포함하지 않는다. M12 슬립링과 Molex는 큰 길이보정 우회로·layer change보다 짧고 밀접한 배선을 우선했다. Molex의 PCB track 길이 차이는 A 약 1.39 mm, B 약 1.75 mm다. 최종 mode conversion이나 정확한 임피던스는 이 표만으로 보장하지 않는다.
+길이는 track 중심선 합계이며 커넥터 내부 핀 길이와 via 전기 길이를 포함하지 않는다. M12 슬립링과 Molex는 큰 길이보정 우회로·layer change보다 짧고 밀접한 배선을 우선했다. Molex는 후속 RJ45 탈출부 개선으로 0.15 mm 구간을 제거했고, PCB track 길이 차이는 **A 0.792 mm / B 0.987 mm**다. 긴 결합 구간과 페어 간격을 함께 고려했으며 [수정 의도·전후 비교](../docs/molex-routing/README.md)를 참고한다. 최종 mode conversion이나 정확한 임피던스는 이 표만으로 보장하지 않는다.
 
 **RF 재검토 우선 항목:** 특히 M12 LLC pair A의 넓은 fanout이 작은 skew를 허용한 더 짧고 밀접한 배선보다 유리한지 확인해야 한다. track 합계 길이 일치에 앞서 uncoupled 길이, loop 면적, 기준면에 대한 대칭을 함께 비교한다. 현재 형상의 우월성을 EM 해석이나 실측으로 검증하지 않았다.
 
