@@ -32,3 +32,12 @@ _*.kicad_prl
 fabrication/
 *_fabrication_HOLD.zip
 /release_jlc/
+
+# Local measurement sessions and reproducible analysis outputs
+.venv/
+.pytest_cache/
+/measurements/
+/results/
+
+# Regenerate detailed schematic vector previews with verify_adapters.py
+/adapters/*/schematic_svg/

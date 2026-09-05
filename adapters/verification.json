@@ -1,0 +1,59 @@
+{
+  "kicad_version": "10.0.6",
+  "boards": {
+    "m12_slipring": {
+      "drc": 0,
+      "erc": 0,
+      "exact_pinmap_verified": {
+        "1": "4",
+        "2": "3",
+        "3": "2",
+        "6": "1"
+      },
+      "sha256": {
+        "m12_slipring.kicad_pcb": "ce2ef0ec09a3d0a7e156226e1379834625559e3069fb4f9cf6840ebdd1eb97b0",
+        "m12_slipring.kicad_sch": "ffcdd7cf9602c797451a429b77d7afeabe33f84a3bad3dc6a8884d71f51e8499",
+        "m12_slipring.kicad_pro": "1c2043c1fffb6f89b5783aa3255db4d23725e5e1335de76b83e213c7a5225603",
+        "m12_slipring.kicad_dru": "6dc1b52b9c0ffdddafec9d34146e37c2358a653d9a8c56718c8cb7bbc75b28a0"
+      }
+    },
+    "m12_llc": {
+      "drc": 0,
+      "erc": 0,
+      "exact_pinmap_verified": {
+        "1": "8",
+        "2": "2",
+        "3": "3",
+        "6": "4"
+      },
+      "sha256": {
+        "m12_llc.kicad_pcb": "444024465f6ab74779714d073b071521decf3cf41c722096897a34f26f51c357",
+        "m12_llc.kicad_sch": "9da5971ab5a3b4a794092b8d9d452b9efe78bb868c518b2ec17d4dbff43b5c98",
+        "m12_llc.kicad_pro": "7ee864f527908c8e09b6b310d307014b8fdc5362b51875ad36ff97a6f9dae959",
+        "m12_llc.kicad_dru": "6dc1b52b9c0ffdddafec9d34146e37c2358a653d9a8c56718c8cb7bbc75b28a0"
+      }
+    },
+    "molex_slipring": {
+      "drc": 0,
+      "erc": 0,
+      "exact_pinmap_verified": {
+        "1": "1",
+        "2": "2",
+        "3": "3",
+        "6": "4"
+      },
+      "sha256": {
+        "molex_slipring.kicad_pcb": "d0c60ebdad5c28b379ba6b3eab8dac17bc480a2d74ed9965c457ec8648a70d79",
+        "molex_slipring.kicad_sch": "21c52d3f0ef0882bbf2607c86d41e2de449d6c78eeb0d3d4488d128ee39ac8aa",
+        "molex_slipring.kicad_pro": "c4bf2b3b85545e83d634ad41f90bed47a25298b0f082534854fdc3740e448ead",
+        "molex_slipring.kicad_dru": "6dc1b52b9c0ffdddafec9d34146e37c2358a653d9a8c56718c8cb7bbc75b28a0"
+      }
+    }
+  },
+  "not_verified": [
+    "Actual DUT connector mating and continuity",
+    "Mechanical panel fit",
+    "Manufacturer-controlled impedance",
+    "RF performance and calibration accuracy"
+  ]
+}

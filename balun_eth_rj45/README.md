@@ -6,7 +6,7 @@ LibreVNA 2-port로 일반 Ethernet 케이블과 전용 Ethernet 슬립링을 비
 
 > 수동 DUT 전용이다. PoE나 동작 중인 Ethernet 장비에는 연결하지 않는다.
 
-LLC-13M-1 케이블은 [LLC 전용 M12 지그](../balun_llc16/README.md)와 이 보드 1장을 조합해 A/B 채널을 측정하는 구성을 계획한다. C/D SMA도 50 Ω 종단을 유지하며 이때 필요한 외부 load는 총 4개다. LLC 실물 핀맵 확인이 선행되어야 하며, 기존 RJ45 4장을 공유하므로 현재 전체 발주 계획은 PCBA 10장이다.
+현재 기본안은 이 공통 PCB 두 장과 교체형 RJ45–M12/Molex 어댑터다. 최종 기준면은 어댑터 뒤 DUT 접속면으로 두며 [공통 측정 계획](../VNA_TEST_PLAN.md)과 [어댑터 설계](../adapters/README.md)를 따른다. 기존 LLC/M12 전용 balun PCB와 PCBA 10장 계획은 이전 설계 선택지로 보존한다.
 
 ## 채널 구성
 
@@ -83,16 +83,14 @@ LibreVNA의 두 RF port는 공통 GND를 사용하므로 RCT 8개를 장착하�
 
 ## 측정 순서
 
-1. VNA coax cable 끝에서 일반 coax SOLT를 수행한다. 이 보드는 SOLT 기준면 뒤의 fixture로 남는다.
-2. RCT 8개가 모두 DNP인 `CT-FLOAT` 상태에서 동일 지그 두 장과 golden RJ45 cable을 연결하고, 선택하지 않은 SMA 세 개씩에는 50 Ω terminator를 단다.
-3. 동일 sweep 조건으로 golden baseline과 DUT를 측정한다.
-4. S11/S22(return loss), S21(insertion loss), phase/group delay를 baseline 대비 비교한다.
-5. NEXT는 같은 쪽 aggressor↔victim, FEXT는 한쪽 aggressor↔반대쪽 victim SMA를 연결하고 나머지 6개 SMA를 모두 50 Ω로 종단해 각 조합의 S21로 측정한다. 2-port VNA라 방향을 바꾼 모든 조합을 순차 측정해야 한다.
-6. `CT-FLOAT` 또는 `CT-GND(all 8 FIT)` 상태, shield 조립 상태, terminator, VNA power, IFBW, averaging, point 수를 결과와 함께 기록한다.
+1. 두 coax 끝에서 50 Ω full 2-port SOLT를 수행하고 활성화한다.
+2. 이 보드와 선택한 어댑터·RJ45 연결을 고정한다. 각 보드의 미사용 SMA를 50 Ω으로 종단한다.
+3. 어댑터 뒤 DUT 접속면에서 Port 1 O/S/L 3개, Port 2 O/S/L 3개, reciprocal 자작 thru 1개를 측정해 저장한다.
+4. [Python 도구](../analysis/README.md)로 커넥터 끝 UnknownThru 보정계수를 만든다.
+5. 같은 SMA 보정 상태에서 DUT를 측정하고 저장된 계수로 보정한 100 Ω 결과를 분석한다.
+6. pair·어댑터·포트 할당·CT/shield 상태가 달라지면 해당 구성의 보정을 새로 만든다.
 
-coax SOLT만으로 기준면이 RJ45 접점까지 이동하지는 않는다. 또한 이 2-port balun back-to-back 결과는 differential IL/RL과 NEXT/FEXT의 비교용 proxy이며, `Sdd/Sdc/Scd/Scc`를 분리하거나 정식 CMRR을 나타내지 않는다. 절대적인 mixed-mode S-parameter가 필요하면 4-port 측정과 검증된 de-embedding 절차가 추가로 필요하다. 이 지그의 우선 목적은 같은 CT/shield 상태의 동일 fixture를 사용해 golden cable과 slip ring의 차이를 안정적으로 찾는 것이다.
-
-주파수/point/IFBW/power/averaging과 IL/RL/NEXT/FEXT·회전 변동의 수치 limit가 확정되기 전에는 이 결과를 정식 100BASE-TX `PASS/FAIL`로 표시하지 않는다. 공통 설정과 판정값은 [`../balun_slipring/MEASUREMENT.md`](../balun_slipring/MEASUREMENT.md)에 고정한다.
+SMA SOLT만 적용한 원본에는 지그가 포함된다. Python 결과는 표준 모델과 고정된 두 error box 가정 아래 커넥터 기준면으로 이동한 balanced effective two-port다. full mixed-mode Sdd/Sdc/Scd/Scc나 산업 환경 적합 판정을 뜻하지 않는다. NEXT/FEXT는 별도 연결별 보정 및 fixture 누설 검증이 필요하다. 최신 설정과 결과 해석은 [VNA_TEST_PLAN.md](../VNA_TEST_PLAN.md)를 따른다.
 
 ## 파일과 재생성 주의
 

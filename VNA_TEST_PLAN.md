@@ -1,208 +1,136 @@
-# Balun fixture VNA test plan
+# 산업용 100BASE-TX 정적 평가와 커넥터 끝 보정
 
-상태: `CHARACTERIZATION PLAN` — 이 절차는 2-port LibreVNA와 balun fixture로 golden REF와 DUT의 차이를 비교하기 위한 것이다. 적용 표준, 수치 limit와 검증된 fixture de-embedding이 확정되기 전에는 정식 Ethernet qualification 또는 `PASS/FAIL` 절차로 사용하지 않는다.
+상태: **구현 및 합성 검증 단계 / 실제 지그·표준 정확도 검증 전**. 우선 목적은 정상 케이블과 사내 커넥터·슬립링 조립체의 정적 전송 품질을 확인하는 것이다. 산업현장 사용 가능성의 1차 평가이며, 정식 인증이나 동적 신뢰성 시험을 대신하지 않는다.
 
-## 핵심 결론
+## 1. 기준면과 구성
 
-- ADT2-1T+의 nominal impedance ratio는 1:2다. SMA primary를 50 Ω로 종단하면 balanced secondary에서는 이상적으로 100 Ω differential termination으로 보인다. 따라서 사용자가 RJ45, Molex 또는 M12 쪽에 100 Ω 종단기를 자작할 필요가 없다.
-- calibration kit의 Open, Short, 50 Ω Load는 각각 한 개만 있어도 양쪽 cable end에서 순차 재사용할 수 있다. 단, full 2-port calibration에는 두 cable end를 잇는 SMA female-female thru가 필요하며 LibreVNA에서 thru measurement를 포함한 `SOLT_12`를 활성화해야 한다.
-- slip-ring endpoint fixture에는 측정 중 외부 50 Ω terminator 2개가 동시에 필요하고, RJ45 fixture에는 6개가 동시에 필요하다. 동일한 SMA-male 50 Ω terminator 6개를 공용 세트로 사용한다.
-- 측정값은 coax reference plane 뒤의 balun, PCB routing, connector와 DUT를 모두 포함한 differential-mode proxy다. 절대 `Sdd/Sdc/Scd/Scc` 또는 정식 cable-certifier 결과가 아니다.
+공통 `SMA–ADT2-1T+–RJ45` PCB 두 장을 사용한다. DUT 종류에 맞춰 RJ45–M12/Molex 어댑터를 교체한다. PCB 어댑터의 RJ45 jack까지 잇는 짧은 공장제 patch cable도 고정 fixture에 포함된다.
 
-ADT2-1T+의 catalog 범위는 0.4–450 MHz지만 1 dB insertion-loss band는 1–200 MHz다. 기본 characterization 대역은 1–200 MHz로 두고 200–450 MHz는 fixture floor와 반복성을 먼저 검증한 exploratory 대역으로 분리한다.
+| 단계 | 포함되는 것 | 기준면 |
+| --- | --- | --- |
+| LibreVNA full 2-port SOLT | VNA와 두 coax 오차 보정 | 50 Ω coax 끝 |
+| M12 등에서 표준 측정 | balun PCB, RJ45 연결, 어댑터를 통과한 O/S/L/T 데이터 | 아직 SMA 기준 데이터 |
+| Python UnknownThru 적용 | 고정된 두 fixture의 오차를 표준 모델로 추정·제거 | 어댑터 뒤 DUT 접속면 |
+| 최종 출력 | 그 사이 DUT의 유효 차동 two-port | 100 Ω balanced |
 
-공식 참고자료:
+양끝이 서로 다른 커넥터여도 된다. 일반 RJ45 케이블은 RJ45 접속면에서 표준을 측정한다. **커넥터별 표준을 바꾸지 않고 어댑터만 교체해 같은 보정값을 쓰면 안 된다.**
+
+측정하려는 커넥터가 보정 기준면보다 fixture 쪽에 있으면 그 특성도 보정에 흡수된다. 특정 커넥터 자체를 평가하려면 DUT 안에 그 커넥터/체결부를 포함하고, 기준면은 그 바깥에 둔다. 체결 접점의 fixture/DUT 경계는 표준 정의와 함께 기록한다. 케이블 포함 조립체 측정과 커넥터 단품 손실 분리를 혼동하지 않는다.
+
+## 2. O/S/L과 자작 thru
+
+O/S/L은 한 **차동 pair의 두 선 사이** 표준이다. SMA 외부 50 Ω load와 용도가 다르다.
+
+| 표준 | M12 암 어댑터의 예 | 모델/제작에서 중요한 것 |
+| --- | --- | --- |
+| O | 어댑터를 비워 둔 상태 | 개방단 C와 주변 금속/손/다른 핀; 덮개·배치 고정 |
+| S | mating 수 커넥터의 해당 pair를 최대한 짧게 연결 | 핀 길이, loop 면적, 직렬 L/R, 기준면에서의 지연 |
+| L | 같은 pair 사이에 100 Ω 저항 | 짧은 SMD 저항 접속, 실측 저항값, lead/pad의 L/C |
+| T | 양 어댑터에 맞는 mating 커넥터를 짧은 pair로 연결 | reciprocal, 충분한 전달, P/N 극성과 대략적인 편도 지연 |
+
+Short나 Load를 shell/GND로 연결하지 않는다. 사용하지 않는 신호·전원 핀은 DUT 핀맵에 맞게 분리한다. 전원이 포함된 사내 케이블은 전원·활성 장비를 분리하고 무전압을 확인한 수동 상태에서 측정한다.
+
+Open은 별도 부품 없이 가능하다. 다만 빈 암 Open과 수 플러그 끝에서 만든 S/L은 전기적 길이가 다를 수 있다. 이를 모델의 offset/기생성분에 반영한다. OSL 자체의 오차는 그 OSL을 사용한 보정으로 사라지지 않는다.
+
+자작 thru의 전체 S-parameter를 미리 알아야 하는 일반 SOLT 대신 **UnknownThru/SOLR**를 사용한다. reciprocal 특성과 대략적인 위상/극성으로 전달 부호를 정한다. 180°로 떨어진 두 해를 구분할 수 있도록 예상 위상 오차를 90°보다 충분히 작게 유지한다. 모델 입력은 [analysis/README.md](analysis/README.md)를 따른다.
+
+### 표준 오차의 크기 감각
+
+다음은 100 Ω 기준의 단순 예시이며 실제 M12 기생성분 측정값이 아니다.
+
+| 가정 | 100 MHz에서 표준 자체의 영향 |
+| --- | --- |
+| Load가 실제 101 Ω 순저항 | reflection 약 0.005, RL 약 46 dB |
+| 100 Ω Load에 직렬 10 nH | 표준 RL 약 30 dB |
+| Short에 직렬 10 nH | 이상적 Short와 반사 위상 약 7.2° 차이 |
+| Open에 병렬 1 pF | 이상적 Open과 반사 위상 약 7.2° 차이 |
+
+이 수치를 최종 DUT의 오차 막대와 동일시하지 않는다. 모델을 달리했을 때의 DUT 변화와 독립 검증 표준으로 신뢰 범위를 판단한다.
+
+## 3. 어댑터 2 cm untwist는 보정되는가
+
+항상 같은 형상의 선형·안정된 two-port로 보이는 반사, 지연과 손실은 커넥터 끝 보정에 포함될 수 있다. 3–4 cm 커넥터 몸체나 2 cm untwist만으로 불가능하다고 판단하지 않는다. 그러나 다음은 별개다.
+
+- 움직이거나 다시 체결해 형상이 달라진 부분은 저장된 보정과 달라진다.
+- 손실이 크면 보정 후에도 signal-to-noise와 dynamic range가 복구되지 않는다.
+- pair 간 누설과 differential↔common-mode 변환은 단순 두 error box에서 완전히 제거되지 않는다.
+
+양선 간격·길이 대칭, 작은 loop, strain relief와 기계 고정이 중요하다. 반복 측정용으로는 **PCB 어댑터를 우선** 검토한다. 임피던스 제어는 일정한 pair 구간을 개선하며 커넥터 pin field나 solder fillet까지 정확히 100 Ω으로 만들지는 않는다.
+
+## 4. 실제 데이터 취득 순서
+
+1. warm-up 뒤 실제 측정할 두 coax 끝에서 O/S/L과 알려진 SMA thru로 full 2-port SOLT를 수행한다. LibreVNA에서는 `SOLT_12` 등 실제 활성화된 양방향 보정을 확인한다. 포트별 SOL 두 개로 대체하지 않는다.
+2. 두 포트에서 독립 50 Ω load/짧은 thru를 확인하고 VNA 설정·calibration 파일을 보관한다.
+3. balun PCB와 patch cable, 어댑터, 미사용 SMA 50 Ω load, CT/shield 상태를 고정한다.
+4. Port 1 O/S/L 3개, Port 2 O/S/L 3개, 자작 thru 1개를 complex Touchstone으로 저장한다. 한 O/S/L 세트를 순차 재사용해도 각 포트 측정 파일은 따로 필요하다.
+5. Python으로 **7개 입력만** 사용해 `cal.npz`를 만든다.
+6. 같은 full SMA SOLT를 켠 채 DUT를 연결해 `.s2p`를 저장한다. Python으로 `cal.npz`를 적용한다.
+7. DUT를 바꿀 때마다 6번을 반복한다. 초기 검증 후에도 독립 check standard를 재측정한다.
+
+모든 취득은 같은 frequency grid를 사용한다. 지그/adapter/coax 접속·배치·포트/pair·CT/shield·부하 상태 변경, SMA 재보정 또는 유의한 drift가 있으면 해당 구성의 표준 측정을 다시 한다. DUT 교체만 했어도 접속 반복성이 허용범위인지 확인한다.
+
+## 5. 권장 초기 sweep
+
+| 항목 | 시작값 |
+| --- | --- |
+| 주 평가 대역 | 1–100 MHz |
+| 확장 관찰 | 100–200 MHz; 같은 sweep에서 분리 해석 가능 |
+| points | 1001 또는 1601; 세션 전체 동일 |
+| source | −10 dBm; 최초 −20 dBm과 비교하여 선형성 확인 |
+| IFBW / 평균 | IL/RL 100 Hz / 8; 누설은 필요 시 더 좁은 IFBW와 반복 |
+| CT / shield | CT-FLOAT 기본, 선택한 shield 경계를 표준·DUT 모두 동일하게 유지 |
+
+이는 시험 시작 조건이며 Ethernet 표준 합격선을 정의하지 않는다. ADT2-1T+ 대역과 실제 fixture 특성을 함께 확인한다.
+
+## 6. 정적 평가 항목
+
+| 항목 | 보는 문제 / 결과 |
+| --- | --- |
+| continuity, 각 선 DC 저항과 pair 불균형 | 핀맵 오류, 납땜/접촉 불량; VNA 전에 확인 |
+| pair A/B 각각 S11/S22 | 양쪽 반사, 임피던스 불연속 |
+| S21/S12 | 삽입손실, notch, 방향 대칭성 |
+| 전달 위상/group delay | 이상 지연·분산; 기준면과 thru 부호 모델에 의존 |
+| 반복 체결·고정 재측정 | fixture와 커넥터 반복성 |
+| 실제 전체 길이 조립체 | 사용 길이의 손실·반사 누적 |
+| 필요 시 정지 각도별 반복 | 슬립링 접촉 상태의 각도 의존성 |
+| NEXT/FEXT | 두 pair 사이 결합; 별도 연결과 누설 검증 |
+
+적용할 커넥터/케이블/채널 규격, 길이, 주파수별 limit와 불확도를 정한 후 판단한다. 단일 `RL > 20 dB` 같은 임의 기준을 산업용 합격선으로 쓰지 않는다. 정상 REF 비교는 유용하지만 REF 차이를 dB로 빼는 것이 RL de-embedding은 아니다.
+
+### NEXT/FEXT 연결과 제한
+
+2-pair의 네 logical port `A_L, B_L, A_R, B_R`에 대해 아래 여섯 연결을 사용한다. S12를 얻으려고 같은 연결을 물리적으로 뒤집을 필요는 없다.
+
+| 연결 | Port 1 | Port 2 |
+| --- | --- | --- |
+| A transmission | A_L | A_R |
+| B transmission | B_L | B_R |
+| NEXT_L | A_L | B_L |
+| NEXT_R | A_R | B_R |
+| FEXT_1 | A_L | B_R |
+| FEXT_2 | B_L | A_R |
+
+공통 4-pair RJ45 PCB 두 장은 VNA가 SMA 2개를 쓰고 나머지 **6개**에 외부 50 Ω load가 필요하다. 이 load는 nominally 100 Ω balanced 종단을 제공하는 용도이며 **DUT 접속면 OSL의 100 Ω Load 표준을 대체하지 않는다.**
+
+각 연결의 error box 조합이 달라지므로 IL/RL pair A용 `cal.npz`를 NEXT/FEXT에 그대로 적용하지 않는다. 각 연결별 OSL/전달 경로 보정과 fixture floor를 확보한다. 다른 pair와 common mode가 강하게 결합하면 2-port 모델로 부족하다. 현재 Python 도구는 한 연결의 correction을 제공하며 전체 crosstalk matrix나 규격 판정을 자동화하지 않는다.
+
+4-pair 케이블은 through 4개와 pair 조합 6개 × NEXT/FEXT 4개 = 총 28개 연결이다. 모든 미사용 포트가 nominally matched라는 조건에서의 pairwise 취득이다.
+
+누설은 complex vector로 상쇄될 수 있다. fixture+REF floor와 가까운 결과에는 수치 합격을 부여하지 말고 floor-limited로 기록한다. floor보다 DUT 결합이 10–20 dB 큰 것은 실무상 유용한 여유지만 엄밀한 불확도 계산이나 보장된 upper bound를 대신하지 않는다.
+
+## 7. 보정 후 확인
+
+- 독립적으로 만든 다른 저항/선로를 확인한다. 보정에 쓴 O/S/L을 다시 이상적으로 만드는 것만으로 정확도를 입증하지 않는다.
+- 자작 thru와 DUT의 방향/극성, 유효 대역 reciprocity와 passivity를 확인한다.
+- 반복 탈착 분산, drift, 표준 모델 민감도를 기록한다.
+- SMA 원본과 보정 후 결과를 함께 보존한다. 기준면과 출력 100 Ω reference를 확인한다.
+
+balun 기반 two-port는 full mixed-mode Sdd/Sdc/Scd/Scc나 TCL/ELTCTL을 독립 측정하지 못한다. 이는 산업 EMI 관점에서 남는 항목이다. 정적 결과 이후 실제 PHY 트래픽·오류율, 회전 중 순간단선, 온도/진동/EMC 시험으로 연결한다. swept VNA가 짧은 dropout을 모두 검출한다고 가정하지 않는다.
+
+## 근거와 이력
 
 - [Mini-Circuits ADT2-1T+](https://www.minicircuits.com/pdfs/ADT2-1T%2B.pdf)
-- [LibreVNA 양 포트 SOLT 설명](https://github.com/jankae/LibreVNA/discussions/237)
-- [Rohde & Schwarz balanced/NEXT/FEXT measurement note](https://scdn.rohde-schwarz.com/ur/pws/dl_downloads/dl_application/application_notes/1ez53/1EZ53_0E.pdf)
-- [Keysight fixture de-embedding note](https://www.keysight.com/zz/en/assets/7018-06806/application-notes/5980-2784.pdf)
-
-## Calibration과 준비물
-
-### 가진 O/S/L 한 세트 사용법
-
-1. LibreVNA와 coax cable을 충분히 warm-up한다.
-2. 실제 측정에 사용할 두 coax의 최종 cable end를 움직이지 않을 위치에 고정한다.
-3. Port 1 cable end에서 같은 Open, Short, Load를 순차 측정한다.
-4. Port 2 cable end에서 같은 Open, Short, Load를 순차 측정한다.
-5. 두 cable end를 SMA female-female thru로 연결해 thru를 측정한다. 사용한 thru의 성별과 식별번호를 기록한다.
-6. LibreVNA에서 `SOLT_12`를 활성화하고 calibration을 저장한다. Port 1/2에 각각 별도 SOL만 켠 상태는 full 2-port calibration이 아니다.
-7. 검증용 50 Ω load를 각 port에 연결했을 때 Smith chart 중심과 양호한 return loss를 보이는지 확인한다.
-8. thru 재연결 시 S21/S12가 0 dB 부근에서 매끄럽고 reciprocity가 양호한지 확인한다.
-
-O/S/L은 순차 calibration에 재사용할 수 있지만, DUT의 unused port는 측정 중 동시에 종단되어야 한다. 따라서 calibration load 한 개만으로 실제 측정을 진행할 수는 없다.
-
-### 최소 추가품
-
-| 품목 | 최소 수량 | 요구사항 |
-| --- | ---: | --- |
-| 외부 50 Ω terminator | 6 | SMA-male, 동일 모델, 최소 DC–500 MHz/권장 DC–1 GHz 이상, 1–200 MHz return loss 25–30 dB 이상 |
-| Calibration thru | 1 | 두 coax 끝이 SMA male이면 SMA female-female, 식별번호 기록 |
-| SMA torque wrench | 1 | 모든 calibration/fixture connection에 동일 torque 적용 |
-| Coax 고정구 | 1 set | NEXT/FEXT에서 cable 간격·굽힘·위치를 고정 |
-
-입고 후 6개 terminator의 S11을 같은 cable end에서 각각 측정해 불량과 편차를 확인한다. `LOAD-01`–`LOAD-06`으로 표기하고, REF와 DUT 사이에는 같은 physical port에 같은 load를 유지한다.
-
-## S-parameter와 표시값
-
-LibreVNA는 한 번의 2-port 연결에서 source 방향을 전환해 `S11`, `S21`, `S12`, `S22`를 모두 측정한다. 매 구성마다 네 complex trace가 들어 있는 원본 `.s2p`를 저장한다.
-
-| 표시값 | 정의 |
-| --- | --- |
-| Port 1 return loss | `RL1 = -20 log10(|S11|)` dB |
-| Port 2 return loss | `RL2 = -20 log10(|S22|)` dB |
-| Forward insertion loss | `IL21 = -20 log10(|S21|)` dB |
-| Reverse insertion loss | `IL12 = -20 log10(|S12|)` dB |
-| NEXT/FEXT coupling loss | `XT = -20 log10(|Scoupled|)` dB; S21 또는 S12 사용 |
-| Reciprocity error | complex `S21-S12` 또는 magnitude/phase 차이 |
-
-FEXT는 raw IO-FEXT와 aggressor through loss를 제거한 ELFEXT를 함께 기록한다.
-
-```text
-IO_FEXT_loss = -20 log10(|S_coupled|)
-aggressor_IL = -20 log10(|S_aggressor_through|)
-ELFEXT_loss  = IO_FEXT_loss - aggressor_IL
-```
-
-예를 들어 FEXT trace가 −60 dB이고 같은 방향 aggressor through가 −10 dB이면 IO-FEXT loss는 60 dB, ELFEXT loss는 50 dB다. Trace math로는 `S_coupled / S_aggressor_through`의 magnitude를 loss 부호로 변환한 값과 같다.
-
-## Slip-ring endpoint: 전체 6개 연결
-
-`M`은 Molex endpoint, `C`는 M12 endpoint, `A`는 TX pair, `B`는 RX pair다. 네 logical differential port는 `A_M`, `B_M`, `A_C`, `B_C`이며, 네 port에서 가능한 모든 unordered port-pair는 `C(4,2)=6`개다.
-
-| ID | VNA Port 1 | VNA Port 2 | 외부 50 Ω terminator | 해석 |
-| --- | --- | --- | --- | --- |
-| `A_THRU` | `A_M` | `A_C` | `B_M`, `B_C` | A의 S11/S22/S21/S12, phase, group delay |
-| `B_THRU` | `B_M` | `B_C` | `A_M`, `A_C` | B의 S11/S22/S21/S12, phase, group delay |
-| `NEXT_M` | `A_M` | `B_M` | `A_C`, `B_C` | Molex 쪽 NEXT; S21=A→B, S12=B→A |
-| `NEXT_C` | `A_C` | `B_C` | `A_M`, `B_M` | M12 쪽 NEXT; S21=A→B, S12=B→A |
-| `FEXT_ACROSS_1` | `A_M` | `B_C` | `A_C`, `B_M` | A_M→B_C와 reverse diagonal FEXT |
-| `FEXT_ACROSS_2` | `B_M` | `A_C` | `B_C`, `A_M` | B_M→A_C와 reverse diagonal FEXT |
-
-S12를 얻기 위해 cable을 물리적으로 뒤집지 않는다. 한 연결의 S21/S12는 같은 두 physical port 사이의 양방향 결과다. 위 여섯 연결이 네 logical port의 모든 pairwise 조합을 완전히 덮는다.
-
-## RJ45 4-pair fixture: 전체 28개 연결
-
-RJ45 pair와 SMA 이름은 다음과 같다.
-
-| Pair | SMA | RJ45 pins |
-| --- | --- | --- |
-| A | J2 | 1–2 |
-| B | J3 | 3–6 |
-| C | J4 | 4–5 |
-| D | J5 | 7–8 |
-
-두 fixture의 side를 `L`과 `R`로 부르면 logical port는 `A_L`…`D_L`, `A_R`…`D_R` 총 8개다. 각 연결에서 VNA가 두 port를 쓰고 나머지 여섯 port에는 50 Ω terminator를 장착한다.
-
-### 4개 through 연결
-
-```text
-A_L ↔ A_R
-B_L ↔ B_R
-C_L ↔ C_R
-D_L ↔ D_R
-```
-
-### 24개 crosstalk 연결
-
-unordered pair 조합 `AB`, `AC`, `AD`, `BC`, `BD`, `CD` 각각에 대해 아래 네 연결을 수행한다. `X`, `Y`는 해당 pair 조합의 두 pair다.
-
-```text
-NEXT_L:       X_L ↔ Y_L
-NEXT_R:       X_R ↔ Y_R
-FEXT_DIAG_1:  X_L ↔ Y_R
-FEXT_DIAG_2:  Y_L ↔ X_R
-```
-
-따라서 `4 through + C(4,2) × 4 crosstalk = 4 + 24 = 28`개의 `.s2p` 연결이 된다. 각 파일은 S11/S21/S12/S22를 모두 포함한다. 이 28개는 나머지 port가 nominally matched되어 있다는 조건에서 8 logical differential-proxy port의 모든 unordered port-pair를 덮는다.
-
-## REF, fixture floor와 신뢰 가능한 dynamic range
-
-Coax SOLT 기준면은 cable end이며 RJ45/Molex/M12 접점까지 이동하지 않는다. 따라서 보드, balun, connector와 fan-out이 측정에 포함된다.
-
-1. 두 coax에 50 Ω load를 직접 연결하고 실제 측정과 같은 cable 위치에서 instrument+cable isolation floor를 저장한다.
-2. 두 fixture 사이에 high-isolation golden REF/bypass를 연결하고 모든 unused port를 종단한 뒤 같은 6개 또는 28개 연결을 저장한다.
-3. cable 위치, 굽힘, board 방향, connector torque와 load assignment를 바꾸지 않고 DUT로 교체한다.
-4. DUT crosstalk가 fixture+REF floor보다 최소 10 dB, 가능하면 20 dB 이상 큰 경우에만 수치 결과로 보고한다.
-5. margin이 10 dB 미만이면 `measurement-floor limited`, 6 dB 이내이면 수치 대신 upper bound로 표시한다.
-
-NEXT/FEXT는 fixture와 DUT의 coupling이 complex vector로 더해져 상쇄될 수도 있다. 따라서 REF와 DUT의 crosstalk dB를 단순 감산하지 않는다. 원본 complex Touchstone을 보존하고, 반복 탈착과 cable-layout 반복으로 위상·magnitude 안정성을 확인한다.
-
-LibreVNA의 optional isolation calibration은 움직이지 않은 setup에서 floor를 낮출 수 있지만 cable이나 fixture를 조금만 움직여도 개선분이 사라질 수 있다. 기본 결과는 물리적 floor 측정과 반복성으로 검증하고 isolation correction에만 의존하지 않는다.
-
-Insertion loss는 REF 대비 complex normalization 또는 dB 차이가 실용적인 1차 비교가 된다. 반면 return loss는 fixture와 DUT 사이 multiple reflection 때문에 REF의 dB를 단순히 빼서 de-embed할 수 없다. 절대 balanced reference-plane 결과가 필요하면 검증된 2x-thru/fixture model과 vector de-embedding이 필요하다.
-
-## 지그 자체의 확인된 한계
-
-- ADT2-1T+ 단품의 typical insertion loss / input return loss는 100 MHz에서 약 `0.48 / 18.91 dB`, 200 MHz에서 `0.69 / 13.40 dB`, 400 MHz에서 `1.25 / 8.18 dB`다. Through 측정에는 balun 두 개가 들어가므로 PCB와 DUT 전부터 typical loss가 약 `0.96 dB @100 MHz`, `1.38 dB @200 MHz` 누적될 수 있고, 고주파 return-loss ripple도 커진다.
-- RJ45 connector 바로 앞에는 0.15 mm neckdown이 약 3.04/5.07 mm 존재한다. 국부 impedance는 약 141–144 Ω지만 1–200 MHz에서는 전기적으로 짧아 단독으로 치명적이라고 보지는 않는다. pair 내 비대칭과 connector pin field는 mode conversion 및 crosstalk floor에 포함된다.
-- 같은 층의 서로 다른 pair 사이 최소 동박 간격은 RJ45 약 0.67 mm, Molex 약 1.02 mm, M12 약 2.05 mm다. Transformer, connector fan-out, coax 두 개의 배치가 낮은 NEXT/FEXT의 측정 바닥값이 될 수 있다.
-- 현재 보드에는 SMA launch와 balun만 분리 검증하는 true 2x-thru/isolation coupon이 없다. 따라서 당장은 각 연결별 golden REF와 반복 탈착 측정이 authority다.
-
-추가 주문을 허용한다면 별도 `fixture_qa` coupon을 만드는 것이 가장 직접적이다. 한 채널은 `SMA → ADT2 → 짧은 100 Ω pair → ADT2 → SMA`로 balun/launch baseline을 만들고, 다른 두 채널은 secondary를 JLC 조립 100 Ω 정밀저항으로 종단해 board-level isolation floor를 확인한다. 이는 유용하지만 새 PCB와 조립비가 드는 설계 확장이므로 현재 release에 자동 포함하지 않는다.
-
-## 측정 가능한 항목과 한계
-
-### 현재 fixture로 가능한 것
-
-- 각 pair의 S11/S22 return-loss proxy
-- S21/S12 insertion loss, phase, group delay와 reciprocity
-- matched unused-port 조건의 NEXT/FEXT 및 ELFEXT proxy
-- golden REF 대비 slip-ring 열화
-- 0°/90°/180°/270° 등 정지 각도별 변화
-- RJ45 4-pair의 전체 28개 pairwise proxy matrix
-
-### 비교 또는 proxy로만 해석할 것
-
-- 절대 differential insertion/return loss
-- 절대 NEXT/FEXT
-- 100 Ω differential impedance profile
-- connector reference plane에서의 phase/group delay
-
-### 현재 2-port balun 구성으로 측정할 수 없는 것
-
-- mixed-mode `Sdd/Sdc/Scd/Scc`의 독립 분리
-- differential↔common-mode conversion, TCL/LCL/TCTL/LCTL
-- common-mode return loss와 common-mode impedance
-- 정식 Ethernet cable-certifier compliance
-- swept VNA보다 짧은 순간단선/dropout의 보장된 검출
-
-Balun secondary center tap을 float하면 common mode가 open에 가깝고, 0 Ω로 접지하면 common mode를 short하는 별도 경계조건이 된다. `CT-FLOAT`와 `CT-GND`는 같은 상태의 REF/DUT끼리만 비교하며, CT-GND 결과가 좋아진 것을 DUT 자체 개선으로 해석하지 않는다.
-
-## 권장 공통 sweep 설정
-
-| 항목 | 기본 IL/RL | NEXT/FEXT |
-| --- | --- | --- |
-| 주파수 | 1–200 MHz | 1–200 MHz |
-| Point 수 | 1001 또는 1601 | 1001 또는 1601 |
-| Source power | −10 dBm | −10 dBm |
-| IFBW | 100 Hz | 10–30 Hz |
-| Averaging | 8 | 16–64 |
-| Calibration | cable end `SOLT_12` | 동일 calibration |
-
-첫 측정에서 source를 −20 dBm으로 낮춘 결과도 한 번 저장해 선형성과 leakage floor를 확인한다. 이후 REF와 모든 DUT sweep에서는 설정을 고정한다. 200–450 MHz는 별도 파일명과 exploratory 표식을 사용한다.
-
-## 회전 중 측정
-
-Full frequency sweep 중에는 주파수와 회전 각도가 동시에 변하므로 한 sweep의 notch를 특정 각도나 순간단선으로 직접 해석할 수 없다.
-
-- full S-parameter는 0°/90°/180°/270° 또는 더 촘촘한 정지 각도에서 측정한다.
-- 회전 중에는 10/31.25/62.5/100 MHz 등 미리 정한 대표 주파수에서 fixed-frequency/time trace를 별도로 취득한다. 최종 주파수 목록은 실제 spectrum과 REF 결과에 따라 확정한다.
-- LibreVNA의 update interval보다 짧은 dropout은 놓칠 수 있다. 짧은 순간단선 qualification에는 Ethernet BERT, oscilloscope/TDR 또는 별도 continuity transient detector가 필요하다.
-- 회전 속도, 방향, trigger/update rate와 최소 검출 가능 dropout 시간을 결과에 기록한다.
-
-## 파일명과 완료 조건
-
-```text
-YYYYMMDD_<REF|DUT>_<CTFLOAT|CTGND>_<CONFIG>_<000|090|180|270|ROT>deg_<run>.s2p
-```
-
-완료 조건:
-
-- O/S/L/thru와 `SOLT_12` calibration 파일 보관
-- 6개 terminator의 S11 입고 검사와 `LOAD-01`–`LOAD-06` 배치표 보관
-- REF와 DUT에 동일한 fixture, CT/shield 상태, cable 위치와 load assignment 적용
-- slip-ring 6개 또는 RJ45 28개 연결별 원본 S11/S21/S12/S22 Touchstone 보관
-- instrument floor, fixture+REF floor와 DUT-to-floor margin 기록
-- 실제 qualification limit는 별도 승인 전까지 `TBD`
+- [scikit-rf UnknownThru](https://scikit-rf.readthedocs.io/en/latest/api/calibration/generated/skrf.calibration.calibration.UnknownThru.html)
+- [Keysight standard 모델](https://helpfiles.keysight.com/csg/e5080a/s3_cals/calibration_standards.htm)
+- [JLCPCB impedance stack-up](https://jlcpcb.com/impedance)
+- 종전 SMA-only 비교 문서는 [legacy 기록](docs/legacy/README.md)에 보존했다.
