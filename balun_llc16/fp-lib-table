@@ -1,0 +1,4 @@
+(fp_lib_table
+  (lib (name "balun_slipring_common")(type "KiCad")(uri "${KIPRJMOD}/../balun_slipring/common.pretty")(options "")(descr "Shared SMA footprint"))
+  (lib (name "balun_llc16")(type "KiCad")(uri "${KIPRJMOD}/llc16.pretty")(options "")(descr "LLC-specific MALE M12 footprint; manufacturer layout"))
+)

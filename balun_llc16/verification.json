@@ -1,0 +1,37 @@
+{
+  "status": "PCB_DRAFT_A_DO_NOT_ORDER",
+  "native_drc_unconnected_parity": [
+    0,
+    0,
+    0
+  ],
+  "schematic_pad_membership_equal": true,
+  "male_footprint_coordinates_and_drills": "PASS",
+  "power_pins_1_5_6_7_isolated": true,
+  "all_required_components_fit_rct_dnp": true,
+  "ground_planes": "In1/In2, filled, one connected polygon each",
+  "pairs": {
+    "TX": {
+      "lengths_mm": {
+        "P": 30.487329019650872,
+        "N": 30.487328914648387
+      },
+      "skew_mm": 1.0500248492917308e-07,
+      "signal_vias": 0
+    },
+    "RX": {
+      "lengths_mm": {
+        "P": 25.454235434442243,
+        "N": 25.454236525116936
+      },
+      "skew_mm": 1.0906746936711897e-06,
+      "signal_vias": 0
+    }
+  },
+  "rf_A_B_length_mm": 26.762102,
+  "board_mm": [
+    68,
+    44
+  ],
+  "copper_layers": 4
+}

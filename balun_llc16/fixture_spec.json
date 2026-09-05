@@ -1,0 +1,82 @@
+{
+  "status": "PCB_DRAFT_A_DO_NOT_ORDER",
+  "schematic_revision": "A-PCB",
+  "connector_population": "REQUIRED_FIT_SUPPLIER_APPROVAL_PENDING",
+  "source_pdf": "Docs/16. LLC16_13M_1. 케이블 조립체 전원 및 통신용.pdf",
+  "source_page": 1,
+  "drawing_number": "LLC-13M-1",
+  "drawing_date": "2022-04-25",
+  "source_identity_basis": "USER_IDENTIFIED_LLC_CABLE_AND_SUPPLIED_DRAWING",
+  "pinmap_design_basis": "NUMERIC_PIN_NUMBERS_AND_CONTINUOUS_WIRES_IN_SUPPLIED_PDF",
+  "pinmap_design_status": "ACCEPTED_FOR_CIRCUIT_AND_PCB_DESIGN",
+  "actual_cable_continuity_verified": false,
+  "continuity_required_before_pcb_design": false,
+  "purpose_label": "구동기 to RJ45",
+  "purpose_label_ascii": "ACTUATOR to RJ45",
+  "quantity": 2,
+  "reuse_existing_rj45_boards": true,
+  "total_requested_pcbas": 10,
+  "connector_dut_mpn": "T4112012081-000",
+  "connector_dut_mpn_status": "DRAWING_ONLY_NOT_READABLE_IN_PHOTO",
+  "connector_dut_gender_per_manufacturer": "female_socket",
+  "connector_dut_gender_confirmed": "female_socket",
+  "connector_gender_evidence": {
+    "date": "2026-09-03",
+    "source": "User identified this as the LLC cable and supplied a mating-face photo showing socket contacts.",
+    "photo": "C:/Users/artzy/Documents/DaouMessenger 4.0/4ebb4012-2e32-4099-8901-afd8052dfe48.jpg",
+    "confirms_exact_mpn_or_continuity": false
+  },
+  "connector_dut_brand_in_drawing": "NorComp",
+  "connector_dut_brand_per_mpn": "TE Connectivity",
+  "connector_pcb_required_gender": "male_pin",
+  "connector_pcb_mpn": "MB12MBAFF08ST-3",
+  "connector_pcb_manufacturer": "Finecables",
+  "connector_pcb_footprint": "balun_llc16:Finecables_MB12MBAFF08ST-3",
+  "connector_pcb_datasheet": "https://www.finecables.com/uploadfiles/2022/06/259%20M12%20A_coding%20Straight%20Connector%2C%20Panel%20Mount%2C%20PCB%20Type%2C%20Front%20fastened.pdf",
+  "connector_pcb_layout_source": "https://www.finecables.com/uploadfiles/2025/09/2025_Finecables_Industrial_Connector_Catalogue.pdf",
+  "connector_pcb_layout_page": 415,
+  "connector_pcb_body_page": 293,
+  "connector_pcb_lcsc": null,
+  "connector_pcb_jlc_sourcing_confirmed": false,
+  "connector_pcb_mount": "B.Cu, straight outward from underside; PG9 panel support required",
+  "connector_same_as_slipring": false,
+  "slipring_pcb_required_gender_per_user": "female_socket",
+  "pin_nets": {
+    "1": null,
+    "2": "PAIR_TX_N",
+    "3": "PAIR_RX_P",
+    "4": "PAIR_RX_N",
+    "5": null,
+    "6": null,
+    "7": null,
+    "8": "PAIR_TX_P"
+  },
+  "dut_continuity_expected": [
+    {"signal": "TX+", "m12": 8, "rj45": 1, "fixture_net": "PAIR_TX_P"},
+    {"signal": "TX-", "m12": 2, "rj45": 2, "fixture_net": "PAIR_TX_N"},
+    {"signal": "RX+", "m12": 3, "rj45": 3, "fixture_net": "PAIR_RX_P"},
+    {"signal": "RX-", "m12": 4, "rj45": 6, "fixture_net": "PAIR_RX_N"}
+  ],
+  "power_pins_nc_on_fixture": {"1": "P24 / P242", "7": "P24 / P242-1", "5": "N24 / N242", "6": "N24 / N242-1"},
+  "rj45_unused_pins": [4, 5, 7, 8],
+  "baseline_all_rct_dnp": true,
+  "unused_coax_loads_for_llc_measurement": 4,
+  "shared_load_kit_quantity": 6,
+  "shared_thru_quantity": 1,
+  "source_caveats": [
+    "The drawing title is LLC-13M-1 whereas the filename is LLC16_13M_1; the supplied drawing is the design basis, not proof of measured cable continuity.",
+    "The drawing lists NorComp with a TE part number; select the PCB mate from its own verified manufacturer documentation.",
+    "RJ45 BD-/CD- names conflict with numeric wiring; design uses the drawn M12 4 to RJ45 6 connection, not the label BD-."
+  ],
+  "release_blockers": [
+    "Supplier must confirm exact MB12MBAFF08ST-3, furnished pin view / finished holes, actual cable mating and B-side mounting orientation; no automatic substitution.",
+    "Validate PG9 panel support, connector seating height, cable bend access and PCB standoff mechanics before fabrication.",
+    "Obtain JLC sourcing and complete Standard PCBA approval for the male connector and edge SMA; no user hand-soldering assumed.",
+    "Confirm production stack-up / controlled impedance / SMA board-thickness fit, CAM and final ten-board quote."
+  ],
+  "before_first_vna_connection": [
+    "Disconnect all active equipment and power tails; verify the passive DUT has no applied or residual voltage.",
+    "Check cable continuity against the design map, including M12 4 to RJ45 6, and check isolation from power pins 1/5/6/7.",
+    "Record actual shell/shield connections and select the documented shield condition before REF/DUT measurements."
+  ]
+}

@@ -27,9 +27,10 @@
 
 (rule "JLC 50 ohm outer geometry"
     (layer outer)
-    # Short 0.55/0.80 mm flares inside the transformer/SMA courtyards match
-    # their large pads.  The uniform line between those launch regions is
-    # the controlled 0.35 mm section.
+    # The short 0.55 mm transformer-side signal flare matches the large RF
+    # pad.  Separate 0.80 mm tracks at the transformer are GND launches, not
+    # RF50 flares.  The uniform RF line outside the launch courtyard is the
+    # controlled 0.35 mm section.
     (condition "A.Type == 'Track' && A.hasNetclass('RF50') && !A.intersectsCourtyard('J2') && !A.intersectsCourtyard('J3') && !A.intersectsCourtyard('T?')")
     (constraint track_width (min 0.34mm) (opt 0.35mm) (max 0.36mm))
 )

@@ -2,13 +2,15 @@
 
 상태: **문서 핀맵 확인 / continuity 실측 대기 / DO NOT FABRICATE**
 
-아래 핀맵은 `Docs/[인수인계] PALA720.pptx` 슬라이드 14의 PALA720 2세대 `REV-504` 연결도를 전사해 KiCad `DRAFT 1`에 반영한 값이다. 실물 슬립링에서 측정한 continuity 결과가 아니므로 제작 승인 전에 별도 실측해야 한다.
+> **LLC 케이블과 혼용 금지:** 아래는 슬립링 전용 핀맵이다. 추가 검토한 LLC-13M-1은 TX 8/2, RX 3/4, 전원 1/5/6/7로 다르다. 2026-09-03 사용자 확인에 따라 슬립링 지그는 **암**, LLC 지그는 **수** M12를 사용하며 LLC 암 cable-end는 실물 사진으로도 확인했다. 같은 M12 8핀이라는 이유로 이 보드를 재사용하지 않는다. [`../balun_llc16/README.md`](../balun_llc16/README.md)를 참조한다. 슬립링 M12 PCB의 표기는 `슬립링 / SLIPRING`이다.
+
+아래 **핀 번호·선색·신호 매핑**은 `Docs/[인수인계] PALA720.pptx` 슬라이드 14의 PALA720 2세대 `REV-504` 연결도를 전사해 KiCad `DRAFT 1`에 반영한 값이다. 정확한 endpoint connector MPN까지 슬라이드 14에서 확인된 것은 아니며, 실물 슬립링에서 측정한 continuity 결과도 아니므로 제작 승인 전에 별도 실측해야 한다.
 
 ## 문서 핀맵
 
 `PAIR_TX = Ethernet TX`, `PAIR_RX = Ethernet RX`로 정의한다.
 
-| 지그 네트 | 신호 | Molex `5055650501` 하우징 핀 | 슬립링 선색 | M12 `MB12MBAFF08ST-0` 핀 |
+| 지그 네트 | 신호 | Molex 5극 핀 (`5055650501` 후보) | 슬립링 선색 | M12 A-coded 8핀 (`MB12MBAFF08ST-0` 후보) |
 | --- | --- | ---: | --- | ---: |
 | `PAIR_TX_P` | Ethernet TX+ | 1 | YEL | 4 |
 | `PAIR_TX_N` | Ethernet TX− | 2 | ORN | 3 |
@@ -16,7 +18,7 @@
 | `PAIR_RX_N` | Ethernet RX− | 4 | BLK | 1 |
 | NC | 문서상 배정 없음 | 5 | — | — |
 
-PCB측 상대물 `5055680571`은 `5055650501`의 계열·극수에 따른 **추론 후보**다. 해당 부품의 pin 1–5가 위 하우징 핀과 그대로 맞물린다는 전제는 실제 `REV-504` 체결과 제조사 mating drawing으로 검증해야 한다. 기존 KiCad 초안의 4극 `5055680471`은 제거했다.
+`5055650501`은 슬라이드 15의 별도 4세대 케이블 표에서 확인되는 하우징을 2세대에도 적용해 본 교차 슬라이드 추론이다. PCB측 `5055680571`은 제조사가 공식적으로 `505565` series와 mate한다고 지정한 5극 header지만, 그 조합이 실제 `REV-504`라는 전제는 실물 체결과 BOM으로 검증해야 한다. `MB12MBAFF08ST-0`도 catalog에 존재하는 male 8P 후보일 뿐 실제 DUT MPN은 미확인이다. 기존 KiCad 초안의 4극 `5055680471`은 제거했다.
 
 ## M12 5–8번의 문서상 역할
 
@@ -64,8 +66,8 @@ PCB측 상대물 `5055680571`은 `5055650501`의 계열·극수에 따른 **추�
 - Molex측: pin 1/2를 `PAIR_TX_P/N`, pin 3/4를 `PAIR_RX_P/N`에 연결하고 pin 5는 NC로 반영함
 - M12측: pin 4/3을 `PAIR_TX_P/N`, pin 2/1을 `PAIR_RX_P/N`에 연결하고 pin 5–8은 NC로 반영함
 - 두 보드 모두 shared-centerline W=0.23/G=0.22 mm 배선이며 네 쌍 모두 P/N이 F.Cu-only, signal via 0/0, 저장된 track skew 0.001 mm 미만임
-- M12 J1은 signal pin을 transformer 쪽으로 향하게 한 후면 실장 후보임; 한쪽 극성만 layer/via를 바꾸던 crossover는 제거했으나 A-key/pin-1 mating view와 패널 방향은 실물 검증 전 DNP임
+- M12 J1은 제조사의 female 8P 권장 PCB 배열로 수정됐고 signal pin을 transformer 쪽으로 향하게 한 PCB B면 후보임; 한쪽 극성만 layer/via를 바꾸던 crossover는 제거했으나 A-key/pin-1 mating view, front-fastened 패널 방향과 실물 체결은 DNP 차단 항목임
 - KiCad 10 검사: 두 회로도 ERC 0, 두 PCB DRC 0, 미연결 pad 0, schematic–PCB parity 0
-- `5055680571`과 `MB12FBAFF08ST-3`의 key 방향, pin view, 1:1 출력과 실제 기구 체결은 미검증
+- `5055680571`의 key/pin view와 `MB12FBAFF08ST-3`의 corrected 8P geometry는 도면에 대조했지만, 두 부품 모두 1:1 출력과 실제 기구 체결은 미검증
 
 `RS422_Cable_Assembly_Spec.pptx`는 별도 EM2 encoder용 10핀 케이블 문서이므로 이 핀맵의 근거로 사용하지 않는다.

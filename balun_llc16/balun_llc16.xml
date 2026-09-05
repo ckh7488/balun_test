@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="E">
+  <design>
+    <source>C:\Users\artzy\Documents\ChatGPT\test_board\balun\balun_llc16\balun_llc16.kicad_sch</source>
+    <date>2026-09-03T13:40:15</date>
+    <tool>Eeschema 10.0.0</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title>LLC-13M-1 / ACTUATOR to RJ45</title>
+        <company/>
+        <rev>A-PCB</rev>
+        <date>2026-09-03</date>
+        <source>balun_llc16.kicad_sch</source>
+        <comment number="1" value="50 ohm coax / 100 ohm differential; CT-FLOAT baseline."/>
+        <comment number="2" value="Source: LLC-13M-1 drawing, 2022-04-25, page 1."/>
+        <comment number="3" value="PCB DRAFT A: JLC sourcing / panel mechanics HOLD."/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="J1">
+      <value>MB12MBAFF08ST-3 / M12 MALE</value>
+      <footprint>balun_llc16:Finecables_MB12MBAFF08ST-3</footprint>
+      <datasheet>https://www.finecables.com/uploadfiles/2022/06/259%20M12%20A_coding%20Straight%20Connector%2C%20Panel%20Mount%2C%20PCB%20Type%2C%20Front%20fastened.pdf</datasheet>
+      <description>Male A-code 8P PG9; manufacturer PCB layout p415. DUT is female; B-side panel-supported mounting. Supplier / mechanical release pending.</description>
+      <fields>
+        <field name="Manufacturer">Finecables</field>
+        <field name="MPN">MB12MBAFF08ST-3</field>
+        <field name="Assembly">FIT REQUIRED; MB12MBAFF08ST-3; B-SIDE; JLC SOURCING / PANEL SUPPORT HOLD; DO NOT ORDER</field>
+        <field name="LCSC Part #"/>
+        <field name="Footprint">balun_llc16:Finecables_MB12MBAFF08ST-3</field>
+        <field name="Datasheet">https://www.finecables.com/uploadfiles/2022/06/259%20M12%20A_coding%20Straight%20Connector%2C%20Panel%20Mount%2C%20PCB%20Type%2C%20Front%20fastened.pdf</field>
+        <field name="Description">Male A-code 8P PG9; manufacturer PCB layout p415. DUT is female; B-side panel-supported mounting. Supplier / mechanical release pending.</field>
+      </fields>
+      <libsource lib="Connector_Generic" part="Conn_01x08" description="Generic connector, single row, 01x08, script generated (kicad-library-utils/schlib/autogen/connector/)"/>
+      <property name="Manufacturer" value="Finecables"/>
+      <property name="MPN" value="MB12MBAFF08ST-3"/>
+      <property name="Assembly" value="FIT REQUIRED; MB12MBAFF08ST-3; B-SIDE; JLC SOURCING / PANEL SUPPORT HOLD; DO NOT ORDER"/>
+      <property name="LCSC Part #" value=""/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="balun_llc16.kicad_sch"/>
+      <property name="ki_keywords" value="connector"/>
+      <property name="ki_fp_filters" value="Connector*:*_1x??_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>f8b64dbc-15c6-52b2-baf2-7522f4c4b4e9</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+            <pin num="3"/>
+            <pin num="4"/>
+            <pin num="5"/>
+            <pin num="6"/>
+            <pin num="7"/>
+            <pin num="8"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="J2">
+      <value>SMA_A</value>
+      <footprint>balun_slipring_common:SMA_MyAntenna_A-SMA-KE-16.5A_EdgeMount</footprint>
+      <datasheet>https://datasheet.lcsc.com/datasheet/pdf/92633ab2cf30de4413e1a152c04a3ed5.pdf?productCode=C22467617</datasheet>
+      <fields>
+        <field name="Manufacturer">MyAntenna</field>
+        <field name="MPN">A-SMA-KE-16.5A</field>
+        <field name="Assembly">FIT; JLC C22467617; Standard PCBA / wave-solder review</field>
+        <field name="LCSC Part #">C22467617</field>
+        <field name="Footprint">balun_slipring_common:SMA_MyAntenna_A-SMA-KE-16.5A_EdgeMount</field>
+        <field name="Datasheet">https://datasheet.lcsc.com/datasheet/pdf/92633ab2cf30de4413e1a152c04a3ed5.pdf?productCode=C22467617</field>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Connector" part="Conn_Coaxial" description="coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"/>
+      <property name="Manufacturer" value="MyAntenna"/>
+      <property name="MPN" value="A-SMA-KE-16.5A"/>
+      <property name="Assembly" value="FIT; JLC C22467617; Standard PCBA / wave-solder review"/>
+      <property name="LCSC Part #" value="C22467617"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="balun_llc16.kicad_sch"/>
+      <property name="ki_keywords" value="BNC SMA SMB SMC LEMO coaxial connector CINCH RCA MCX MMCX U.FL UMRF"/>
+      <property name="ki_fp_filters" value="*BNC* *SMA* *SMB* *SMC* *Cinch* *LEMO* *UMRF* *MCX* *U.FL*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>8e378d3d-a99e-457d-9c59-3d43592cb06c</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="J3">
+      <value>SMA_B</value>
+      <footprint>balun_slipring_common:SMA_MyAntenna_A-SMA-KE-16.5A_EdgeMount</footprint>
+      <datasheet>https://datasheet.lcsc.com/datasheet/pdf/92633ab2cf30de4413e1a152c04a3ed5.pdf?productCode=C22467617</datasheet>
+      <fields>
+        <field name="Manufacturer">MyAntenna</field>
+        <field name="MPN">A-SMA-KE-16.5A</field>
+        <field name="Assembly">FIT; JLC C22467617; Standard PCBA / wave-solder review</field>
+        <field name="LCSC Part #">C22467617</field>
+        <field name="Footprint">balun_slipring_common:SMA_MyAntenna_A-SMA-KE-16.5A_EdgeMount</field>
+        <field name="Datasheet">https://datasheet.lcsc.com/datasheet/pdf/92633ab2cf30de4413e1a152c04a3ed5.pdf?productCode=C22467617</field>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Connector" part="Conn_Coaxial" description="coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"/>
+      <property name="Manufacturer" value="MyAntenna"/>
+      <property name="MPN" value="A-SMA-KE-16.5A"/>
+      <property name="Assembly" value="FIT; JLC C22467617; Standard PCBA / wave-solder review"/>
+      <property name="LCSC Part #" value="C22467617"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="balun_llc16.kicad_sch"/>
+      <property name="ki_keywords" value="BNC SMA SMB SMC LEMO coaxial connector CINCH RCA MCX MMCX U.FL UMRF"/>
+      <property name="ki_fp_filters" value="*BNC* *SMA* *SMB* *SMC* *Cinch* *LEMO* *UMRF* *MCX* *U.FL*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>25613112-a452-492a-8609-e1f92fc9c315</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="RCT1">
+      <value>0R</value>
+      <footprint>Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder</footprint>
+      <fields>
+        <field name="Manufacturer">UNI-ROYAL</field>
+        <field name="MPN">0805W8F0000T5E</field>
+        <field name="Assembly">DNP; CT-FLOAT baseline; no optional CT-GND population approved for this LLC draft</field>
+        <field name="LCSC Part #">C17477</field>
+        <field name="Footprint">Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="Manufacturer" value="UNI-ROYAL"/>
+      <property name="MPN" value="0805W8F0000T5E"/>
+      <property name="Assembly" value="DNP; CT-FLOAT baseline; no optional CT-GND population approved for this LLC draft"/>
+      <property name="LCSC Part #" value="C17477"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="balun_llc16.kicad_sch"/>
+      <property name="exclude_from_pos_files"/>
+      <property name="dnp"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>ac3341d4-1abb-4680-b570-095e6910fe92</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="RCT2">
+      <value>0R</value>
+      <footprint>Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder</footprint>
+      <fields>
+        <field name="Manufacturer">UNI-ROYAL</field>
+        <field name="MPN">0805W8F0000T5E</field>
+        <field name="Assembly">DNP; CT-FLOAT baseline; no optional CT-GND population approved for this LLC draft</field>
+        <field name="LCSC Part #">C17477</field>
+        <field name="Footprint">Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Device" part="R" description="Resistor"/>
+      <property name="Manufacturer" value="UNI-ROYAL"/>
+      <property name="MPN" value="0805W8F0000T5E"/>
+      <property name="Assembly" value="DNP; CT-FLOAT baseline; no optional CT-GND population approved for this LLC draft"/>
+      <property name="LCSC Part #" value="C17477"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="balun_llc16.kicad_sch"/>
+      <property name="exclude_from_pos_files"/>
+      <property name="dnp"/>
+      <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>fd97f624-74df-4217-ada2-078a1ac3e649</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="T1">
+      <value>ADT2-1T+</value>
+      <footprint>RF_Mini-Circuits:Mini-Circuits_CD542_H2.84mm</footprint>
+      <datasheet>https://www.minicircuits.com/pdfs/ADT2-1T+.pdf</datasheet>
+      <fields>
+        <field name="Manufacturer">Mini-Circuits</field>
+        <field name="MPN">ADT2-1T+</field>
+        <field name="Assembly">FIT</field>
+        <field name="LCSC Part #">C5223988</field>
+        <field name="Footprint">RF_Mini-Circuits:Mini-Circuits_CD542_H2.84mm</field>
+        <field name="Datasheet">https://www.minicircuits.com/pdfs/ADT2-1T+.pdf</field>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Transformer" part="ADT2-1T" description="0.40-450MHz 1:2 RF Transformer, Unbalanced to Balanced Center Tap, CD542"/>
+      <property name="Manufacturer" value="Mini-Circuits"/>
+      <property name="MPN" value="ADT2-1T+"/>
+      <property name="Assembly" value="FIT"/>
+      <property name="LCSC Part #" value="C5223988"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="balun_llc16.kicad_sch"/>
+      <property name="ki_keywords" value="Mini-Circuits RF Transformer"/>
+      <property name="ki_fp_filters" value="Mini?Circuits*CD542*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>cd8bc015-c5d9-4064-a3bd-ecad8524d249</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="3"/>
+            <pin num="1"/>
+            <pin num="2"/>
+            <pin num="6"/>
+            <pin num="5"/>
+            <pin num="4"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="T2">
+      <value>ADT2-1T+</value>
+      <footprint>RF_Mini-Circuits:Mini-Circuits_CD542_H2.84mm</footprint>
+      <datasheet>https://www.minicircuits.com/pdfs/ADT2-1T+.pdf</datasheet>
+      <fields>
+        <field name="Manufacturer">Mini-Circuits</field>
+        <field name="MPN">ADT2-1T+</field>
+        <field name="Assembly">FIT</field>
+        <field name="LCSC Part #">C5223988</field>
+        <field name="Footprint">RF_Mini-Circuits:Mini-Circuits_CD542_H2.84mm</field>
+        <field name="Datasheet">https://www.minicircuits.com/pdfs/ADT2-1T+.pdf</field>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="Transformer" part="ADT2-1T" description="0.40-450MHz 1:2 RF Transformer, Unbalanced to Balanced Center Tap, CD542"/>
+      <property name="Manufacturer" value="Mini-Circuits"/>
+      <property name="MPN" value="ADT2-1T+"/>
+      <property name="Assembly" value="FIT"/>
+      <property name="LCSC Part #" value="C5223988"/>
+      <property name="Sheetname" value=""/>
+      <property name="Sheetfile" value="balun_llc16.kicad_sch"/>
+      <property name="ki_keywords" value="Mini-Circuits RF Transformer"/>
+      <property name="ki_fp_filters" value="Mini?Circuits*CD542*"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>eecb38d9-6984-45f0-b45d-cf8ac82a28a2</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="3"/>
+            <pin num="1"/>
+            <pin num="2"/>
+            <pin num="6"/>
+            <pin num="5"/>
+            <pin num="4"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="Connector" part="Conn_Coaxial">
+      <description>coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)</description>
+      <footprints>
+        <fp>*BNC*</fp>
+        <fp>*SMA*</fp>
+        <fp>*SMB*</fp>
+        <fp>*SMC*</fp>
+        <fp>*Cinch*</fp>
+        <fp>*LEMO*</fp>
+        <fp>*UMRF*</fp>
+        <fp>*MCX*</fp>
+        <fp>*U.FL*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_Coaxial</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description">coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)</field>
+      </fields>
+      <pins>
+        <pin num="1" name="In" type="passive"/>
+        <pin num="2" name="Ext" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Connector_Generic" part="Conn_01x08">
+      <description>Generic connector, single row, 01x08, script generated (kicad-library-utils/schlib/autogen/connector/)</description>
+      <footprints>
+        <fp>Connector*:*_1x??_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">Conn_01x08</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description">Generic connector, single row, 01x08, script generated (kicad-library-utils/schlib/autogen/connector/)</field>
+      </fields>
+      <pins>
+        <pin num="1" name="Pin_1" type="passive"/>
+        <pin num="2" name="Pin_2" type="passive"/>
+        <pin num="3" name="Pin_3" type="passive"/>
+        <pin num="4" name="Pin_4" type="passive"/>
+        <pin num="5" name="Pin_5" type="passive"/>
+        <pin num="6" name="Pin_6" type="passive"/>
+        <pin num="7" name="Pin_7" type="passive"/>
+        <pin num="8" name="Pin_8" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Device" part="R">
+      <description>Resistor</description>
+      <footprints>
+        <fp>R_*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">R</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description">Resistor</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="Transformer" part="ADT2-1T">
+      <description>0.40-450MHz 1:2 RF Transformer, Unbalanced to Balanced Center Tap, CD542</description>
+      <docs>https://www.minicircuits.com/pdfs/ADT2-1T+.pdf</docs>
+      <footprints>
+        <fp>Mini?Circuits*CD542*</fp>
+      </footprints>
+      <fields>
+        <field name="Reference">TR</field>
+        <field name="Value">ADT2-1T</field>
+        <field name="Footprint">RF_Mini-Circuits:Mini-Circuits_CD542_H2.84mm</field>
+        <field name="Datasheet">https://www.minicircuits.com/pdfs/ADT2-1T+.pdf</field>
+        <field name="Description">0.40-450MHz 1:2 RF Transformer, Unbalanced to Balanced Center Tap, CD542</field>
+      </fields>
+      <pins>
+        <pin num="1" name="" type="passive"/>
+        <pin num="2" name="" type="no_connect"/>
+        <pin num="3" name="" type="passive"/>
+        <pin num="4" name="" type="passive"/>
+        <pin num="5" name="" type="passive"/>
+        <pin num="6" name="" type="passive"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="Connector">
+      <uri>${KICAD10_SYMBOL_DIR}/Connector.kicad_sym</uri>
+    </library>
+    <library logical="Connector_Generic">
+      <uri>${KICAD10_SYMBOL_DIR}/Connector_Generic.kicad_sym</uri>
+    </library>
+    <library logical="Device">
+      <uri>${KICAD10_SYMBOL_DIR}/Device.kicad_sym</uri>
+    </library>
+    <library logical="Transformer">
+      <uri>${KICAD10_SYMBOL_DIR}/Transformer.kicad_sym</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="/CT_A" class="Default">
+      <node ref="RCT1" pin="2" pintype="passive"/>
+      <node ref="T1" pin="5" pintype="passive"/>
+    </net>
+    <net code="2" name="/CT_B" class="Default">
+      <node ref="RCT2" pin="2" pintype="passive"/>
+      <node ref="T2" pin="5" pintype="passive"/>
+    </net>
+    <net code="3" name="/GND" class="Default">
+      <node ref="J2" pin="2" pinfunction="Ext_2" pintype="passive"/>
+      <node ref="J3" pin="2" pinfunction="Ext_2" pintype="passive"/>
+      <node ref="RCT1" pin="1" pintype="passive"/>
+      <node ref="RCT2" pin="1" pintype="passive"/>
+      <node ref="T1" pin="1" pintype="passive"/>
+      <node ref="T2" pin="1" pintype="passive"/>
+    </net>
+    <net code="4" name="/PAIR_RX_N" class="ETH100">
+      <node ref="J1" pin="4" pinfunction="Pin_4_4" pintype="passive"/>
+      <node ref="T2" pin="6" pintype="passive"/>
+    </net>
+    <net code="5" name="/PAIR_RX_P" class="ETH100">
+      <node ref="J1" pin="3" pinfunction="Pin_3_3" pintype="passive"/>
+      <node ref="T2" pin="4" pintype="passive"/>
+    </net>
+    <net code="6" name="/PAIR_TX_N" class="ETH100">
+      <node ref="J1" pin="2" pinfunction="Pin_2_2" pintype="passive"/>
+      <node ref="T1" pin="6" pintype="passive"/>
+    </net>
+    <net code="7" name="/PAIR_TX_P" class="ETH100">
+      <node ref="J1" pin="8" pinfunction="Pin_8_8" pintype="passive"/>
+      <node ref="T1" pin="4" pintype="passive"/>
+    </net>
+    <net code="8" name="/RF_A_50" class="RF50">
+      <node ref="J2" pin="1" pinfunction="In_1" pintype="passive"/>
+      <node ref="T1" pin="3" pintype="passive"/>
+    </net>
+    <net code="9" name="/RF_B_50" class="RF50">
+      <node ref="J3" pin="1" pinfunction="In_1" pintype="passive"/>
+      <node ref="T2" pin="3" pintype="passive"/>
+    </net>
+    <net code="10" name="unconnected-(J1-Pin_1-Pad1)" class="Default">
+      <node ref="J1" pin="1" pinfunction="Pin_1_1" pintype="passive+no_connect"/>
+    </net>
+    <net code="11" name="unconnected-(J1-Pin_5-Pad5)" class="Default">
+      <node ref="J1" pin="5" pinfunction="Pin_5_5" pintype="passive+no_connect"/>
+    </net>
+    <net code="12" name="unconnected-(J1-Pin_6-Pad6)" class="Default">
+      <node ref="J1" pin="6" pinfunction="Pin_6_6" pintype="passive+no_connect"/>
+    </net>
+    <net code="13" name="unconnected-(J1-Pin_7-Pad7)" class="Default">
+      <node ref="J1" pin="7" pinfunction="Pin_7_7" pintype="passive+no_connect"/>
+    </net>
+    <net code="14" name="unconnected-(T1-Pad2)" class="Default">
+      <node ref="T1" pin="2" pintype="no_connect"/>
+    </net>
+    <net code="15" name="unconnected-(T2-Pad2)" class="Default">
+      <node ref="T2" pin="2" pintype="no_connect"/>
+    </net>
+  </nets>
+</export>

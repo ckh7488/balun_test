@@ -31,3 +31,4 @@ _*.kicad_prl
 # The current directory/ZIP are archived Rev A outputs and must not be ordered.
 fabrication/
 *_fabrication_HOLD.zip
+/release_jlc/

@@ -1,8 +1,12 @@
 # balun_eth_rj45 Rev B
 
+2026-09-03: 기존 회로도를 채널별 A3 한 장으로 재배치했다. 연결·부품·DNP와 PCB는 그대로이며, [가독성 정리 결과 및 PDF](../SCHEMATIC_READABILITY_2026-09-03.md)를 참고한다.
+
 LibreVNA 2-port로 일반 Ethernet 케이블과 전용 Ethernet 슬립링을 비교 측정하기 위한 수동 4-pair RJ45 지그다. 동일 보드 2장을 DUT 양쪽에 사용하며, 한 번에 한 pair를 VNA의 두 포트로 측정한다. 사용하지 않는 SMA 세 개에는 외부 50 Ω 종단기를 연결한다.
 
 > 수동 DUT 전용이다. PoE나 동작 중인 Ethernet 장비에는 연결하지 않는다.
+
+LLC-13M-1 케이블은 [LLC 전용 M12 지그](../balun_llc16/README.md)와 이 보드 1장을 조합해 A/B 채널을 측정하는 구성을 계획한다. C/D SMA도 50 Ω 종단을 유지하며 이때 필요한 외부 load는 총 4개다. LLC 실물 핀맵 확인이 선행되어야 하며, 기존 RJ45 4장을 공유하므로 현재 전체 발주 계획은 PCBA 10장이다.
 
 ## 채널 구성
 
@@ -14,6 +18,8 @@ LibreVNA 2-port로 일반 Ethernet 케이블과 전용 Ethernet 슬립링을 비
 | J5 / D | 7(+)–8(-) | T4 |
 
 T1–T4는 Mini-Circuits `ADT2-1T+`다. primary pin 3은 SMA center, pin 1은 GND이며, secondary pin 4/6은 각각 pair P/N, pin 5는 RCT, pin 2는 NC다.
+
+ADT2-1T+의 dot은 primary pin 3과 secondary pin 6이다. 따라서 현재 `P=pin 4`, `N=pin 6` 명명은 **지그 한 장에서 한 번의 극성 반전**을 만든다. 동일한 두 보드를 back-to-back으로 쓰는 기본 비교에서는 두 번 반전되어 전달 극성이 복구되지만, 단일 지그 de-embedding, 절대 위상 또는 mixed-mode 부호에는 이 convention을 반영해야 한다.
 
 ## JLCPCB Rev B 기판 사양
 
@@ -71,9 +77,9 @@ LibreVNA의 두 RF port는 공통 GND를 사용하므로 RCT 8개를 장착하�
 
 두 지그는 같은 PCB artwork를 사용하지만 RSH1 조립 상태는 기본적으로 서로 다르다. CT-FLOAT와 CT-GND 결과를 비교할 때는 RCT 외의 RSH1/CSH1 상태와 cable 배치를 고정하고, CT 상태를 바꾼 뒤 golden baseline부터 다시 측정한다.
 
-JLC PCBA에는 동일한 두 보드 모두 RSH1을 DNP로 넣는다. 입고 후 Port 1용 보드를 먼저 식별·표기하고 그 보드의 RSH1 한 곳만 `0805W8F0000T5E` (`C17477`) 0 Ω로 수동 장착한다. 이렇게 해야 하나의 동일-artwork 조립 작업에 서로 다른 variant를 섞지 않는다.
+2026-09-03 발주 요청은 RJ45 두 세트, 총 4장이다. `RSH1`에 `0805W8F0000T5E` (`C17477`) 0 Ω를 장착한 SHIELD-BONDED 보드 2장과 RSH1을 DNP로 둔 SHIELD-FLOAT 보드 2장을 업체에서 조립·식별해 납품하도록 요청한다. 각 세트에는 두 상태의 보드를 한 장씩 조합한다. 입고 후 사용자 수동 납땜을 기본 작업으로 가정하지 않는다. 두 variant를 한 작업으로 처리할 수 있는지 업체 확인이 필요하며, 불가하면 조립 작업을 분리해 견적을 받는다. 현재 공통 CAD/export는 여전히 RSH1 DNP 후보이므로 그대로는 SHIELD-BONDED 발주 자료가 아니다. 최신 조건은 [`../PCBA_PURCHASE_SCOPE_2026-09-03.md`](../PCBA_PURCHASE_SCOPE_2026-09-03.md)를 따른다.
 
-첫 보드 조립 후 RJ45 1–8, shield tab, SMA center-to-transformer 연결을 continuity test로 확인한 다음 두 번째 보드를 조립한다.
+업체 조립품 입고 후 각 보드의 RJ45 1–8, shield tab, SMA center-to-transformer 연결과 RSH1의 지정 상태를 continuity test로 확인한다. 검증 전 RF 측정 결과를 승인하지 않는다.
 
 ## 측정 순서
 
@@ -81,18 +87,22 @@ JLC PCBA에는 동일한 두 보드 모두 RSH1을 DNP로 넣는다. 입고 후 
 2. RCT 8개가 모두 DNP인 `CT-FLOAT` 상태에서 동일 지그 두 장과 golden RJ45 cable을 연결하고, 선택하지 않은 SMA 세 개씩에는 50 Ω terminator를 단다.
 3. 동일 sweep 조건으로 golden baseline과 DUT를 측정한다.
 4. S11/S22(return loss), S21(insertion loss), phase/group delay를 baseline 대비 비교한다.
-5. NEXT/FEXT는 aggressor/victim SMA 조합을 바꿔 각 조합의 S21로 측정한다. 2-port VNA라 모든 조합을 순차 측정해야 한다.
+5. NEXT는 같은 쪽 aggressor↔victim, FEXT는 한쪽 aggressor↔반대쪽 victim SMA를 연결하고 나머지 6개 SMA를 모두 50 Ω로 종단해 각 조합의 S21로 측정한다. 2-port VNA라 방향을 바꾼 모든 조합을 순차 측정해야 한다.
 6. `CT-FLOAT` 또는 `CT-GND(all 8 FIT)` 상태, shield 조립 상태, terminator, VNA power, IFBW, averaging, point 수를 결과와 함께 기록한다.
 
 coax SOLT만으로 기준면이 RJ45 접점까지 이동하지는 않는다. 또한 이 2-port balun back-to-back 결과는 differential IL/RL과 NEXT/FEXT의 비교용 proxy이며, `Sdd/Sdc/Scd/Scc`를 분리하거나 정식 CMRR을 나타내지 않는다. 절대적인 mixed-mode S-parameter가 필요하면 4-port 측정과 검증된 de-embedding 절차가 추가로 필요하다. 이 지그의 우선 목적은 같은 CT/shield 상태의 동일 fixture를 사용해 golden cable과 slip ring의 차이를 안정적으로 찾는 것이다.
+
+주파수/point/IFBW/power/averaging과 IL/RL/NEXT/FEXT·회전 변동의 수치 limit가 확정되기 전에는 이 결과를 정식 100BASE-TX `PASS/FAIL`로 표시하지 않는다. 공통 설정과 판정값은 [`../balun_slipring/MEASUREMENT.md`](../balun_slipring/MEASUREMENT.md)에 고정한다.
 
 ## 파일과 재생성 주의
 
 - `balun_eth_rj45.kicad_pcb/.kicad_pro/.kicad_dru`: Rev B 설계와 규칙.
 - `balun_eth_rj45_drc.rpt`: 최종 KiCad DRC 결과.
-- `apply_jlc_rev_b.py`: 수동 저장본을 JLC Rev B로 변환한 재현용 updater. 이미 Rev B인 보드에는 전체 변환을 다시 실행하지 말고, fan-out만 갱신할 때 `--routing-only`를 사용한다.
+- `apply_jlc_rev_b.py`: 수동 저장본을 JLC Rev B로 변환한 재현용 updater. 전체/`--routing-only` 경로 모두 변경 뒤 native KiCad zone refill+save와 DRC/schematic parity를 강제하고, 실패하면 nonzero로 중단한다. 이미 Rev B인 보드에는 전체 변환을 다시 실행하지 말고 fan-out만 갱신할 때 `--routing-only`를 사용한다.
 - `generate_pcb.py`: 이전 Rev A 생성기. 기본 실행은 차단되어 있으며 현 Rev B PCB를 만들지 못한다.
 - `fabrication/`과 `*_fabrication_HOLD.zip`: 폐기된 Rev A 로컬 참고 자료다. Git에서 제외하며 발주에 사용하지 않는다.
+
+제작 Gerber는 항상 zone을 확인·재충전하는 `--check-zones`로 export하고, In1/In2에 실제 GND plane region이 있는지 CAM에서 확인한다. updater가 fill을 저장하더라도 이후 수동 편집본에 대한 release 검사는 생략하지 않는다.
 
 ## 공식 자료
 

@@ -460,6 +460,20 @@
 				)
 			)
 		)
+		(property "Manufacturer" "UNI-ROYAL"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "08c459e1-ae1f-4180-94c6-0853a0a7ac1e")
+			(effects (font (size 1.27 1.27) (thickness 0.15)))
+		)
+		(property "MPN" "0805W8F0000T5E"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "188eae5e-7e3f-4edf-b977-b46e51e2c452")
+			(effects (font (size 1.27 1.27) (thickness 0.15)))
+		)
 		(path "/f5587d21-0f0e-4681-9d3f-ba08795220a9")
 		(attr smd exclude_from_pos_files dnp)
 		(duplicate_pad_numbers_are_jumpers no)
@@ -1595,7 +1609,7 @@
 				)
 			)
 		)
-		(property "Manufacturer" "ANY"
+		(property "Manufacturer" "UNI-ROYAL"
 			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)
@@ -1607,7 +1621,7 @@
 				)
 			)
 		)
-		(property "MPN" "0 ohm 0805"
+		(property "MPN" "0805W8F0000T5E"
 			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)
@@ -2141,6 +2155,20 @@
 				)
 			)
 		)
+		(property "Manufacturer" "Keystone Electronics"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "bf4db148-ccf3-45ea-a46f-eb20c4ca57b1")
+			(effects (font (size 1.27 1.27) (thickness 0.15)))
+		)
+		(property "MPN" "5001"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "340f27c4-d46a-4fdd-8465-383d97c8b149")
+			(effects (font (size 1.27 1.27) (thickness 0.15)))
+		)
 		(path "/a8c10948-89d6-4667-b279-f21b69766629")
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
@@ -2585,6 +2613,20 @@
 					(thickness 0.15)
 				)
 			)
+		)
+		(property "Manufacturer" "Keystone Electronics"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "2c0debf4-e4a2-4937-92ad-f5df95ae0292")
+			(effects (font (size 1.27 1.27) (thickness 0.15)))
+		)
+		(property "MPN" "5001"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "16d928fd-79c3-48df-9014-5cace0798b25")
+			(effects (font (size 1.27 1.27) (thickness 0.15)))
 		)
 		(path "/1d9fcd7c-1612-4458-b5c3-61bac8a1d533")
 		(attr through_hole)
@@ -4091,7 +4133,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "ANY"
+		(property "Manufacturer" "UNI-ROYAL"
 			(at 0 0 180)
 			(layer "B.SilkS")
 			(hide yes)
@@ -4104,7 +4146,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "0 ohm 0805"
+		(property "MPN" "0805W8F0000T5E"
 			(at 0 0 180)
 			(layer "B.SilkS")
 			(hide yes)
@@ -4297,7 +4339,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "ANY"
+		(property "Manufacturer" "UNI-ROYAL"
 			(at 0 0 180)
 			(layer "B.SilkS")
 			(hide yes)
@@ -4310,7 +4352,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "0 ohm 0805"
+		(property "MPN" "0805W8F0000T5E"
 			(at 0 0 180)
 			(layer "B.SilkS")
 			(hide yes)
@@ -4503,7 +4545,7 @@
 				(justify mirror)
 			)
 		)
-		(property "Manufacturer" "ANY"
+		(property "Manufacturer" "UNI-ROYAL"
 			(at 0 0 180)
 			(layer "B.SilkS")
 			(hide yes)
@@ -4516,7 +4558,7 @@
 				(justify mirror)
 			)
 		)
-		(property "MPN" "0 ohm 0805"
+		(property "MPN" "0805W8F0000T5E"
 			(at 0 0 180)
 			(layer "B.SilkS")
 			(hide yes)

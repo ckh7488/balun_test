@@ -8,8 +8,10 @@ routing and stack-up.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 import re
+import uuid
 
 import pcbnew
 
@@ -108,7 +110,7 @@ def update_symbol(block: str, reference: str) -> str:
     return block
 
 
-def update_schematic() -> None:
+def render_updated_schematic() -> str:
     text = SCHEMATIC.read_text(encoding="utf-8")
     cursor = 0
     output: list[str] = []
@@ -131,7 +133,7 @@ def update_schematic() -> None:
     expected = {*SMA_REFS, "RSH1"}
     if changed != expected:
         raise RuntimeError(f"Expected {sorted(expected)}; updated {sorted(changed)}")
-    SCHEMATIC.write_text("".join(output), encoding="utf-8")
+    return "".join(output)
 
 
 def add_segment(board: pcbnew.BOARD, net: pcbnew.NETINFO_ITEM,
@@ -277,7 +279,7 @@ def migrate_launches(board: pcbnew.BOARD) -> None:
             add_via(board, gnd, (92.60, sy))
 
 
-def update_board() -> None:
+def update_board(destination: Path) -> None:
     board = pcbnew.LoadBoard(str(BOARD))
     if not all(board.FindFootprintByReference(ref) for ref in (*SMA_REFS, "RSH1")):
         raise RuntimeError("Missing expected SMA or RSH1 footprint")
@@ -295,15 +297,66 @@ def update_board() -> None:
     rsh.GetField("Assembly").SetVisible(False)
     rsh.GetField("LCSC Part #").SetVisible(False)
     migrate_launches(board)
-    pcbnew.SaveBoard(str(BOARD), board)
+    if not pcbnew.ZONE_FILLER(board).Fill(board.Zones()):
+        raise RuntimeError("Could not refill PCB zones")
+    if not pcbnew.SaveBoard(str(destination), board):
+        raise RuntimeError(f"Could not save updated PCB: {destination}")
+
+
+def _temporary_peer(path: Path, token: str, label: str) -> Path:
+    return path.with_name(f".{path.stem}.{token}.{label}{path.suffix}")
+
+
+def update_project_transactionally() -> None:
+    """Prepare both outputs first and roll back if either atomic replace fails."""
+    original = {
+        SCHEMATIC: SCHEMATIC.read_bytes(),
+        BOARD: BOARD.read_bytes(),
+    }
+    token = uuid.uuid4().hex
+    schematic_temp = _temporary_peer(SCHEMATIC, token, "tmp")
+    board_temp = _temporary_peer(BOARD, token, "tmp")
+    board_project_temp = board_temp.with_suffix(".kicad_pro")
+    replaced: list[Path] = []
+    try:
+        schematic_temp.write_text(render_updated_schematic(), encoding="utf-8")
+        update_board(board_temp)
+        # SaveBoard creates a same-basename project file for the temporary PCB.
+        # Remove it before committing either real project artifact.
+        board_project_temp.unlink(missing_ok=True)
+
+        os.replace(schematic_temp, SCHEMATIC)
+        replaced.append(SCHEMATIC)
+        os.replace(board_temp, BOARD)
+        replaced.append(BOARD)
+    except BaseException as error:
+        rollback_errors: list[str] = []
+        for path in reversed(replaced):
+            restore = _temporary_peer(path, token, "restore")
+            try:
+                restore.write_bytes(original[path])
+                os.replace(restore, path)
+            except OSError as rollback_error:
+                rollback_errors.append(f"{path}: {rollback_error}")
+            finally:
+                restore.unlink(missing_ok=True)
+        if rollback_errors:
+            raise RuntimeError(
+                "Migration failed and rollback was incomplete: "
+                + "; ".join(rollback_errors)
+            ) from error
+        raise
+    finally:
+        schematic_temp.unlink(missing_ok=True)
+        board_temp.unlink(missing_ok=True)
+        board_project_temp.unlink(missing_ok=True)
 
 
 def main() -> None:
     lock = HERE / "~balun_eth_rj45.kicad_pro.lck"
     if lock.exists():
         raise SystemExit(f"Close KiCad before migration: {lock}")
-    update_schematic()
-    update_board()
+    update_project_transactionally()
     print("Updated RJ45 J2-J5 to C22467617 and made RSH1 DNP-by-default")
 
 

@@ -1,0 +1,60 @@
+(version 1)
+
+# LLC PCB DRAFT A. Source: LLC-13M-1 numeric pin map.
+# JLC04161H-7628; male M12 panel support / sourcing / SMA thickness HOLD.
+
+(rule "Controlled traces isolated from other controlled signals"
+    (condition "(A.Type == 'Track' || A.Type == 'Via') && (B.Type == 'Track' || B.Type == 'Via') && (A.hasNetclass('ETH100') || A.hasNetclass('RF50')) && (B.hasNetclass('ETH100') || B.hasNetclass('RF50')) && !AB.isCoupledDiffPair() && !A.intersectsCourtyard('T?') && !B.intersectsCourtyard('T?')")
+    (constraint clearance (min 0.60mm))
+)
+
+(rule "Copper to board edge"
+    (constraint edge_clearance (min 0.30mm))
+)
+
+(rule "No routing on solid inner GND planes"
+    (layer inner)
+    (constraint disallow track)
+)
+
+(rule "Only GND zones on inner copper"
+    (layer inner)
+    (condition "A.Type == 'Zone' && A.NetName != '/GND'")
+    (constraint disallow zone)
+)
+
+(rule "JLC 50 ohm outer geometry"
+    (layer outer)
+    # The short 0.55 mm transformer-side signal flare matches the large RF
+    # pad.  Separate 0.80 mm tracks at the transformer are GND launches, not
+    # RF50 flares.  The uniform RF line outside the launch courtyard is the
+    # controlled 0.35 mm section.
+    (condition "A.Type == 'Track' && A.hasNetclass('RF50') && !A.intersectsCourtyard('J2') && !A.intersectsCourtyard('J3') && !A.intersectsCourtyard('T?')")
+    (constraint track_width (min 0.34mm) (opt 0.35mm) (max 0.36mm))
+)
+
+(rule "JLC 100 ohm differential trace width"
+    (layer outer)
+    (condition "A.Type == 'Track' && A.hasNetclass('ETH100')")
+    (constraint track_width (min 0.22mm) (opt 0.23mm) (max 0.24mm))
+)
+
+(rule "JLC 100 ohm differential coupled gap"
+    (layer outer)
+    (condition "A.Type == 'Track' && A.hasNetclass('ETH100') && !A.intersectsCourtyard('T?') && !A.intersectsCourtyard('J1')")
+    # The pair is allowed to open only in the short connector/transformer
+    # fan-outs.  The uncoupled-length rule below bounds those exceptions.
+    (constraint diff_pair_gap (min 0.21mm) (opt 0.22mm) (max 0.23mm))
+)
+
+(rule "Ethernet pair topology"
+    (condition "A.hasNetclass('ETH100')")
+    (constraint skew (max 0.10mm) (within_diff_pairs))
+    (constraint via_count (max 0))
+    (constraint diff_pair_uncoupled (max 11.20mm))
+)
+
+(rule "SMA edge-launch exception"
+    (condition "A.memberOfFootprint('J2') || A.memberOfFootprint('J3')")
+    (constraint edge_clearance (min -0.10mm))
+)

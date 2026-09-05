@@ -14,6 +14,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -21,6 +22,7 @@ from pathlib import Path
 
 PROJECT_BASENAME = "balun_eth_rj45"
 KICAD_PYTHON = Path(r"C:\Program Files\KiCad\10.0\bin\python.exe")
+KICAD_CLI = KICAD_PYTHON.with_name("kicad-cli.exe")
 ETH_NETS = {
     "/DA_P", "/DA_N", "/DB_P", "/DB_N",
     "/DC_P", "/DC_N", "/DD_P", "/DD_N",
@@ -200,6 +202,79 @@ def _strip_zone_fill_cache(zone: str) -> str:
 
 def _stable_uuid(name: str) -> str:
     return str(uuid.uuid5(UUID_NAMESPACE, name))
+
+
+def _find_kicad_cli() -> Path:
+    """Return the KiCad CLI paired with the configured pcbnew runtime."""
+    if KICAD_CLI.exists():
+        return KICAD_CLI
+    discovered = shutil.which("kicad-cli")
+    if discovered:
+        return Path(discovered)
+    raise RuntimeError(f"KiCad CLI is missing: {KICAD_CLI}")
+
+
+def _assert_saved_inner_plane_fills(board_path: Path) -> None:
+    """Require one saved, filled /GND zone on each inner copper layer."""
+    text = board_path.read_text(encoding="utf-8")
+    plane_fills: dict[str, int] = {"In1.Cu": 0, "In2.Cu": 0}
+    for start, end in _root_child_spans(text):
+        block = text[start:end]
+        if not block.startswith("(zone") or '(net "/GND")' not in block:
+            continue
+        for layer in plane_fills:
+            if f'(layer "{layer}")' in block:
+                if "(filled_polygon" not in block and "(fill_segments" not in block:
+                    raise RuntimeError(f"Saved {layer} /GND zone has no fill cache")
+                plane_fills[layer] += 1
+
+    invalid = {layer: count for layer, count in plane_fills.items() if count != 1}
+    if invalid:
+        raise RuntimeError(
+            "Expected exactly one saved, filled /GND zone on each inner layer; "
+            f"found {invalid}"
+        )
+
+
+def refill_and_validate_project(project_dir: Path) -> None:
+    """Refill/save zones, then require a clean DRC and schematic parity check."""
+    board_path = project_dir / f"{PROJECT_BASENAME}.kicad_pcb"
+    cli = _find_kicad_cli()
+    with tempfile.TemporaryDirectory(prefix="balun_rev_b_drc_") as report_dir:
+        report_path = Path(report_dir) / f"{PROJECT_BASENAME}_post_migration_drc.rpt"
+        result = subprocess.run(
+            [
+                str(cli),
+                "pcb",
+                "drc",
+                "--output",
+                str(report_path),
+                "--format",
+                "report",
+                "--all-track-errors",
+                "--schematic-parity",
+                "--units",
+                "mm",
+                "--severity-all",
+                "--exit-code-violations",
+                "--refill-zones",
+                "--save-board",
+                str(board_path),
+            ],
+            cwd=project_dir,
+            check=False,
+        )
+        if result.returncode:
+            if report_path.exists():
+                report = report_path.read_text(encoding="utf-8", errors="replace")
+            else:
+                report = "DRC report was not created."
+            raise RuntimeError(
+                f"Post-migration KiCad DRC/parity failed with exit "
+                f"{result.returncode}:\n{report}"
+            )
+    _assert_saved_inner_plane_fills(board_path)
+    print("Post-migration zone refill/save, DRC, and schematic parity: PASS")
 
 
 def _migrate_pair_b_return_via(
@@ -881,12 +956,12 @@ def make_backup(project_dir: Path, label: str = "pre_jlc_rev_b") -> Path:
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     destination = project_dir / f"backup_{label}_{stamp}"
     destination.mkdir()
-    for suffix in (".kicad_pcb", ".kicad_pro", ".kicad_dru"):
+    for suffix in (".kicad_pcb", ".kicad_sch", ".kicad_pro", ".kicad_dru"):
         source = project_dir / f"{PROJECT_BASENAME}{suffix}"
         shutil.copy2(source, destination / source.name)
-    footprint = project_dir / "balun_eth_rj45.pretty" / "RJ45_Amphenol_RJE59-188-5401.kicad_mod"
-    if footprint.exists():
-        shutil.copy2(footprint, destination / footprint.name)
+    footprint_library = project_dir / "balun_eth_rj45.pretty"
+    if footprint_library.exists():
+        shutil.copytree(footprint_library, destination / footprint_library.name)
     return destination
 
 
@@ -926,9 +1001,10 @@ def main() -> int:
         return 2
 
     board_path = project_dir / f"{PROJECT_BASENAME}.kicad_pcb"
+    schematic_path = project_dir / f"{PROJECT_BASENAME}.kicad_sch"
     project_path = project_dir / f"{PROJECT_BASENAME}.kicad_pro"
     rules_path = project_dir / f"{PROJECT_BASENAME}.kicad_dru"
-    for path in (board_path, project_path, rules_path):
+    for path in (board_path, schematic_path, project_path, rules_path):
         if not path.exists():
             raise FileNotFoundError(path)
 
@@ -940,6 +1016,7 @@ def main() -> int:
         for key, value in stats.items():
             print(f"{key}: {value}")
         run_sma_migration(project_dir)
+        refill_and_validate_project(project_dir)
         return 0
 
     backup = None if args.no_backup else make_backup(project_dir)
@@ -953,6 +1030,7 @@ def main() -> int:
     for key, value in stats.items():
         print(f"{key}: {value}")
     run_sma_migration(project_dir)
+    refill_and_validate_project(project_dir)
     return 0
 
 

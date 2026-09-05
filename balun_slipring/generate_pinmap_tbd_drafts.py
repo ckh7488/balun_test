@@ -7,9 +7,11 @@ fabrication outputs until the endpoint connector mechanics are verified.
 
 Run this with KiCad's bundled Python, which provides the pcbnew module.  A
 forced regeneration is permitted only while every existing board and
-schematic still carries a recognized draft revision / DO NOT FABRICATE marker.  Any saved
-DRC/ERC report is removed after generation because it no longer describes the
-new files; run kicad-cli again before trusting or committing fresh reports.
+schematic still carries a recognized draft revision / DO NOT FABRICATE marker.
+Each selected variant is built in a sibling staging directory before any live
+design file is replaced.  Saved DRC/ERC reports are then removed because they
+no longer describe the new files; run kicad-cli again before trusting or
+committing fresh reports.
 """
 
 from __future__ import annotations
@@ -17,8 +19,12 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 from pathlib import Path
 import re
+import shutil
+import subprocess
+import tempfile
 import textwrap
 import uuid
 
@@ -32,6 +38,7 @@ SOURCE_SCH = SOURCE / "balun_eth_rj45.kicad_sch"
 SOURCE_PRO = SOURCE / "balun_eth_rj45.kicad_pro"
 KICAD_FP = Path(r"C:\Program Files\KiCad\10.0\share\kicad\footprints")
 KICAD_SYM = Path(r"C:\Program Files\KiCad\10.0\share\kicad\symbols")
+KICAD_CLI = Path(r"C:\Program Files\KiCad\10.0\bin\kicad-cli.exe")
 COMMON_FP = HERE / "common.pretty"
 
 DRAFT_REVISION_MARKERS = ('(rev "DRAFT 0")', '(rev "DRAFT 1")')
@@ -45,7 +52,7 @@ VARIANTS = {
         "directory": HERE / "molex_end",
         "project": "balun_slipring_molex",
         "connector_symbol": "Conn_01x05",
-        "connector_value": "5055680571 / MATE FOR 5055650501",
+        "connector_value": "5055680571 / 505565 SERIES MATE CAND",
         "connector_footprint": "balun_slipring_common:Molex_5055680571",
         "connector_datasheet": (
             "https://www.molex.com/en-us/products/part-detail/5055680571"
@@ -66,8 +73,8 @@ VARIANTS = {
             "ARE VERIFIED AGAINST REV-504"
         ),
         "connector_description": (
-            "Document-mapped five-circuit PCB-side candidate for the "
-            "5055650501 cable housing; circuit 5 is intentionally NC"
+            "Five-circuit PCB-side candidate for the 5055650501 cable housing; "
+            "the housing identity is a cross-slide inference and circuit 5 is NC"
         ),
         "connector_position": (29.0, 42.0, 90.0),
         "connector_flipped": False,
@@ -99,12 +106,13 @@ VARIANTS = {
         },
         "connector_dnp": True,
         "assembly": (
-            "BACK-SIDE CANDIDATE; DNP UNTIL MATING, KEY/PIN-1 ORIENTATION, "
-            "PANEL SUPPORT AND AVAILABILITY ARE VERIFIED"
+            "PCB B-SIDE ELECTRICAL CANDIDATE; DNP UNTIL MATING, KEY/PIN-1, "
+            "FRONT-FASTENED PANEL SUPPORT AND AVAILABILITY ARE VERIFIED"
         ),
         "connector_description": (
-            "Document-mapped M12 A-coded eight-pin female candidate; fixture "
-            "uses Ethernet pins 1-4 only and intentionally leaves pins 5-8 NC"
+            "M12 A-coded eight-pin female candidate using the manufacturer "
+            "female PCB layout; pins 1-4 are mapped from the handoff document "
+            "and pins 5-8 are intentionally NC"
         ),
         # Back-side mounting puts the four Ethernet pads toward the baluns,
         # so both members of both pairs can remain on F.Cu with zero vias.
@@ -404,6 +412,15 @@ def write_schematic(config: dict[str, object]) -> dict[str, str]:
     symbol_uuids: dict[str, str] = {}
     for ref in retained_refs:
         block = source_instances[ref]
+        # Source RJ45 symbols may have been moved for documentation.  The RF
+        # core's construction coordinates/orientations must not depend on that
+        # presentation; the endpoint-specific layout is applied after wiring.
+        construction_at = {
+            "J2": "82.55 67.31 180", "J3": "82.55 96.52 180",
+            "T1": "116.84 72.39 0", "T2": "116.84 101.6 0",
+            "RCT1": "139.7 72.39 90", "RCT2": "139.7 101.6 90",
+        }[ref]
+        block = re.sub(r'\(at [-\d.]+ [-\d.]+ [-\d.]+\)', f"(at {construction_at})", block, count=1)
         block = block.replace(OLD_PROJECT, project)
         block = block.replace(old_root, root_uuid)
         if ref in ("J2", "J3"):
@@ -435,7 +452,9 @@ def write_schematic(config: dict[str, object]) -> dict[str, str]:
             # link as an explicit all-four-links CT-GND comparison option.
             block, assembly_count = re.subn(
                 r'(\(property\s+"Assembly"\s+")[^"]*(")',
-                r'\1DNP; fit all four RCTs only for controlled CT-GND comparison\2',
+                lambda m: m.group(1) + str(config.get(
+                    "rct_assembly", "DNP; fit all four RCTs only for controlled CT-GND comparison"
+                )) + m.group(2),
                 block,
                 count=1,
             )
@@ -449,6 +468,16 @@ def write_schematic(config: dict[str, object]) -> dict[str, str]:
             )
             if position_count != 1 or dnp_count != 1:
                 raise RuntimeError(f"Could not set {ref} native DNP flags")
+            for field, value in {
+                "Manufacturer": "UNI-ROYAL",
+                "MPN": "0805W8F0000T5E",
+            }.items():
+                block, count = re.subn(
+                    rf'(\(property\s+"{field}"\s+")[^"]*(")',
+                    rf'\g<1>{value}\g<2>', block, count=1,
+                )
+                if count != 1:
+                    raise RuntimeError(f"Could not update {ref} {field}")
 
         lcsc_code = {
             "J2": "C22467617", "J3": "C22467617",
@@ -487,17 +516,17 @@ def write_schematic(config: dict[str, object]) -> dict[str, str]:
         ),
         schematic_text_item(
             project, "text:scope",
-            "PALA720 slide 14: Molex 1/2 = TX+/-; 3/4 = RX+/-. M12 4/3 = TX+/-; 2/1 = RX+/-.",
+            str(config.get("scope_note", "PALA720 slide 14: Molex 1/2 = TX+/-; 3/4 = RX+/-. M12 4/3 = TX+/-; 2/1 = RX+/-.")),
             145, 31, 1.0, False,
         ),
         schematic_text_item(
             project, "text:map",
-            "M12 5 GPS_RX, 6 GPS_1PPS, 7 +24V and 8 24V_GND are intentionally NC on this fixture.",
+            str(config.get("power_note", "M12 5 GPS_RX, 6 GPS_1PPS, 7 +24V and 8 24V_GND are intentionally NC on this fixture.")),
             145, 35, 1.0, False,
         ),
         schematic_text_item(
             project, "text:loads",
-            "Unused channel SMA requires an external 50 ohm termination during crosstalk tests.",
+            str(config.get("loads_note", "Unused channel SMA requires an external 50 ohm termination during crosstalk tests.")),
             145, 39, 1.0, False,
         ),
         schematic_text_item(project, "text:j2", "J2 / TX PAIR", 82.5, 60, 1.0, True),
@@ -552,7 +581,7 @@ def write_schematic(config: dict[str, object]) -> dict[str, str]:
     else:
         drawing.append(schematic_text_item(
             project, "text:j1-unused",
-            "J1.5 GPS_RX / 6 GPS_1PPS / 7 +24V / 8 24V_GND: ALL NC ON FIXTURE",
+            str(config.get("unused_pins_note", "J1.5 GPS_RX / 6 GPS_1PPS / 7 +24V / 8 24V_GND: ALL NC ON FIXTURE")),
             38, 107, 0.9, True,
         ))
 
@@ -564,12 +593,12 @@ def write_schematic(config: dict[str, object]) -> dict[str, str]:
 \t(uuid "{root_uuid}")
 \t(paper "A4")
 \t(title_block
-\t\t(title "100BASE-TX slip-ring VNA fixture - {config['board_label']} - DOC PINMAP")
-\t\t(date "2026-08-13")
+\t\t(title "{config.get('schematic_title', f'100BASE-TX slip-ring VNA fixture - {config["board_label"]} - DOC PINMAP')}")
+\t\t(date "{config.get('schematic_date', '2026-08-31')}")
 \t\t(rev "DRAFT 1")
-\t\t(comment 1 "Two-channel 50 ohm single-ended to 100 ohm differential fixture core.")
-\t\t(comment 2 "Electrical map from PALA720 slide 14; TX and RX fan-outs are connected.")
-\t\t(comment 3 "REVIEW ONLY - DO NOT FABRICATE UNTIL CONTINUITY AND ENDPOINT CONNECTOR MECHANICS ARE VERIFIED.")
+\t\t(comment 1 "{config.get('core_note', 'Two-channel 50 ohm single-ended to 100 ohm differential fixture core.')}")
+\t\t(comment 2 "{config.get('source_note', 'Electrical map from PALA720 slide 14; TX and RX fan-outs are connected.')}")
+\t\t(comment 3 "{config.get('release_note', 'REVIEW ONLY - DO NOT FABRICATE UNTIL CONTINUITY AND ENDPOINT CONNECTOR MECHANICS ARE VERIFIED.')}")
 \t)
 \t(lib_symbols
 {lib_text}
@@ -584,6 +613,12 @@ def write_schematic(config: dict[str, object]) -> dict[str, str]:
 \t(embedded_fonts no)
 )
 '''
+    readable_variant = {
+        "balun_slipring_molex": "molex", "balun_slipring_m12": "m12",
+    }.get(project)
+    if readable_variant:
+        from readable_schematic import render_schematic
+        content = render_schematic(content, readable_variant)
     sch_path = output_dir / f"{project}.kicad_sch"
     sch_path.write_text(content, encoding="utf-8")
     return symbol_uuids
@@ -655,9 +690,10 @@ def write_project(config: dict[str, object]) -> None:
 
 (rule "JLC 50 ohm outer geometry"
     (layer outer)
-    # Short 0.55/0.80 mm flares inside the transformer/SMA courtyards match
-    # their large pads.  The uniform line between those launch regions is
-    # the controlled 0.35 mm section.
+    # The short 0.55 mm transformer-side signal flare matches the large RF
+    # pad.  Separate 0.80 mm tracks at the transformer are GND launches, not
+    # RF50 flares.  The uniform RF line outside the launch courtyard is the
+    # controlled 0.35 mm section.
     (condition "A.Type == 'Track' && A.hasNetclass('RF50') && !A.intersectsCourtyard('J2') && !A.intersectsCourtyard('J3') && !A.intersectsCourtyard('T?')")
     (constraint track_width (min 0.34mm) (opt 0.35mm) (max 0.36mm))
 )
@@ -901,6 +937,106 @@ def validate_board_pair_topology(
         )
 
 
+def validate_rf_launch_topology(board: pcbnew.BOARD, board_name: str) -> None:
+    """Reject any drift from the symmetric, hardware-clear RF launch geometry."""
+
+    def signature(
+        start: tuple[float, float],
+        end: tuple[float, float],
+        width: float,
+    ) -> tuple[tuple[float, float], tuple[float, float], float]:
+        endpoints = tuple(sorted((
+            tuple(round(value, 6) for value in start),
+            tuple(round(value, 6) for value in end),
+        )))
+        return endpoints[0], endpoints[1], round(width, 6)
+
+    footprints = {item.GetReference(): item for item in board.GetFootprints()}
+    lengths: dict[str, float] = {}
+    hole_clearances: dict[str, float] = {}
+    for label, y in (("A", 31.0), ("B", 53.0)):
+        low_y = y - 2.54
+        expected = sorted((
+            signature((85.75, y), (83.00, y), 0.35),
+            signature((83.00, y), (65.08, y), 0.35),
+            signature((65.08, y), (62.54, low_y), 0.35),
+            signature((62.54, low_y), (61.54, low_y), 0.35),
+            signature((61.54, low_y), (60.04, low_y), 0.55),
+        ))
+        items = [
+            item for item in board.GetTracks()
+            if item.GetNetname() == f"/RF_{label}_50"
+        ]
+        if any(isinstance(item, pcbnew.PCB_VIA) for item in items):
+            raise RuntimeError(f"{board_name} RF {label}: signal via is not permitted")
+        if any(item.GetLayer() != pcbnew.F_Cu for item in items):
+            raise RuntimeError(f"{board_name} RF {label}: route is not F.Cu-only")
+
+        actual = sorted(
+            signature(
+                (
+                    pcbnew.ToMM(item.GetStart().x),
+                    pcbnew.ToMM(item.GetStart().y),
+                ),
+                (
+                    pcbnew.ToMM(item.GetEnd().x),
+                    pcbnew.ToMM(item.GetEnd().y),
+                ),
+                pcbnew.ToMM(item.GetWidth()),
+            )
+            for item in items
+        )
+        if actual != expected:
+            raise RuntimeError(
+                f"{board_name} RF {label}: launch geometry drifted from the "
+                "approved early-jog route"
+            )
+
+        length = sum(pcbnew.ToMM(item.GetLength()) for item in items)
+        if not math.isclose(length, 26.762102, abs_tol=0.000001):
+            raise RuntimeError(
+                f"{board_name} RF {label}: length {length:.6f} mm does not "
+                "match 26.762102 mm"
+            )
+        lengths[label] = length
+
+        hole_reference = "H3" if label == "A" else "H4"
+        expected_hole = (74.0, 25.0 if label == "A" else 59.0)
+        if hole_reference not in footprints:
+            raise RuntimeError(f"{board_name}: missing mounting hole {hole_reference}")
+        hole_position = footprints[hole_reference].GetPosition()
+        actual_hole = (
+            pcbnew.ToMM(hole_position.x),
+            pcbnew.ToMM(hole_position.y),
+        )
+        if not all(
+            math.isclose(actual, expected, abs_tol=0.000001)
+            for actual, expected in zip(actual_hole, expected_hole)
+        ):
+            raise RuntimeError(
+                f"{board_name}: {hole_reference} moved from "
+                f"{expected_hole} to {actual_hole}"
+            )
+        hole_clearance = abs(actual_hole[1] - y)
+        if not math.isclose(hole_clearance, 6.0, abs_tol=0.000001):
+            raise RuntimeError(
+                f"{board_name}: RF {label} centerline to {hole_reference} "
+                f"center is {hole_clearance:.6f} mm, not 6.000000 mm"
+            )
+        hole_clearances[label] = hole_clearance
+
+    if not math.isclose(lengths["A"], lengths["B"], abs_tol=0.000001):
+        raise RuntimeError(
+            f"{board_name}: RF A/B lengths differ: "
+            f"{lengths['A']:.6f}/{lengths['B']:.6f} mm"
+        )
+    print(
+        f"  {board_name} RF: A={lengths['A']:.6f} mm "
+        f"B={lengths['B']:.6f} mm H3/H4 center clearance="
+        f"{hole_clearances['A']:.6f}/{hole_clearances['B']:.6f} mm"
+    )
+
+
 def footprint_pad_center(footprint: pcbnew.FOOTPRINT,
                          pad_number: str) -> tuple[float, float]:
     pads = [pad for pad in footprint.Pads() if pad.GetNumber() == pad_number]
@@ -1030,12 +1166,12 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
     title = board.GetTitleBlock()
     title.SetTitle(f"100BASE-TX slip-ring VNA fixture - {config['board_label']} - DOC PINMAP")
     title.SetRevision("DRAFT 1")
-    title.SetDate("2026-08-13")
+    title.SetDate("2026-08-31")
     title.SetComment(0, "Electrical map from PALA720 slide 14; TX and RX pairs are routed.")
     title.SetComment(1, "REVIEW ONLY - DO NOT FABRICATE; verify continuity and endpoint connectors.")
     title.SetComment(2, "JLC04161H-7628 draft: 50R W0.35; 100R W0.23/G0.22; L2/L3 GND.")
     if bool(config["connector_flipped"]):
-        title.SetComment(3, "J1 BACK-SIDE CANDIDATE; verify A-key, pin 1 and mating face.")
+        title.SetComment(3, "J1 PCB B-SIDE CANDIDATE; verify front-fastened panel, A-key and pin 1.")
 
     net_names = [
         "/GND",
@@ -1087,7 +1223,7 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
             flipped=True,
             symbol_uuid=symbol_uuids[rref],
             properties={
-                "Manufacturer": "ANY", "MPN": "0 ohm 0805",
+                "Manufacturer": "UNI-ROYAL", "MPN": "0805W8F0000T5E",
                 "LCSC Part #": "C17477",
                 "Assembly": "DNP; fit all four RCTs only for controlled CT-GND comparison",
             },
@@ -1164,15 +1300,21 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
     for start, end in zip(outline, outline[1:]):
         add_line(board, start, end)
 
-    # The two identical 50-ohm single-ended launches remain inherited from
-    # the validated reference fixture.  Document-mapped differential routes
-    # are added below and kept on F.Cu over the solid inner GND planes.
+    # Keep both 50-ohm launches as exact 22 mm translations of each other.
+    # Route the long section on the SMA centerline so the edge launch has a
+    # straight approach and both traces remain 6 mm from the adjacent M3-hole
+    # centers.  After the short 0.55 mm transformer-pad flare, retain 1.0 mm
+    # of 0.35 mm straight trace before the 2.54 x 2.54 mm 45-degree jog.  This
+    # separates the width step from the bend without changing the inherited
+    # 26.762102 mm total centerline length.
+    # Document-mapped differential routes are added below and kept on F.Cu
+    # over the solid inner GND planes.
     for _label, jref, _tref, rref, y in channels:
         input_net = f"/RF_{_label}_50"
         add_segment(board, nets, (85.75, y), (83.00, y), 0.35, pcbnew.F_Cu, input_net)
-        add_segment(board, nets, (83.00, y), (82.00, y), 0.35, pcbnew.F_Cu, input_net)
-        add_segment(board, nets, (82.00, y), (79.46, y - 2.54), 0.35, pcbnew.F_Cu, input_net)
-        add_segment(board, nets, (79.46, y - 2.54), (61.54, y - 2.54), 0.35, pcbnew.F_Cu, input_net)
+        add_segment(board, nets, (83.00, y), (65.08, y), 0.35, pcbnew.F_Cu, input_net)
+        add_segment(board, nets, (65.08, y), (62.54, y - 2.54), 0.35, pcbnew.F_Cu, input_net)
+        add_segment(board, nets, (62.54, y - 2.54), (61.54, y - 2.54), 0.35, pcbnew.F_Cu, input_net)
         add_segment(board, nets, (61.54, y - 2.54), (60.04, y - 2.54), 0.55, pcbnew.F_Cu, input_net)
 
         # Preserve an optional CT-GND test path below the differential pair.
@@ -1242,8 +1384,10 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
             board, nets, "M12 TX", "/PAIR_TX_P", "/PAIR_TX_N",
             route_starts["PAIR_TX_P"], route_starts["PAIR_TX_N"],
             [
-                (33.272393, 37.576874), (35.651584, 34.361372),
-                (46.0, 31.0), (48.0, 30.682805736),
+                (31.766629161, 38.746273545),
+                (33.102674036, 36.285585818),
+                (36.0, 34.0), (46.0, 31.0),
+                (48.0, 30.638185215),
             ],
             route_ends["PAIR_TX_P"], route_ends["PAIR_TX_N"],
             [(49.0, 29.9), (52.8, 28.46)],
@@ -1253,8 +1397,10 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
             board, nets, "M12 RX", "/PAIR_RX_P", "/PAIR_RX_N",
             route_starts["PAIR_RX_P"], route_starts["PAIR_RX_N"],
             [
-                (33.924798, 45.856172), (36.778528, 48.659068),
-                (46.0, 53.0), (48.0, 53.259219334),
+                (32.479359637, 44.479359637),
+                (34.459258625, 46.459258625),
+                (37.0, 49.0), (46.0, 53.0),
+                (48.0, 53.262015126),
             ],
             route_ends["PAIR_RX_P"], route_ends["PAIR_RX_N"],
             [(49.0, 51.9), (52.8, 50.46)],
@@ -1267,6 +1413,7 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
     validate_board_pair_topology(
         board, f"{config['board_label']} RX", "/PAIR_RX_P", "/PAIR_RX_N"
     )
+    validate_rf_launch_topology(board, str(config["board_label"]))
 
     # Ground stitching only; there are deliberately no F/B blanket pours.
     stitch_points = [
@@ -1281,7 +1428,11 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
     for layer in (pcbnew.In1_Cu, pcbnew.In2_Cu):
         add_ground_zone(board, nets["/GND"], layer)
 
-    add_board_text(board, f"SLIPRING {config['board_label']} / DOC MAP", 54, 22.1, size=1.05, thickness=0.18)
+    if str(config["board_label"]) == "M12 END":
+        usage_label = add_board_text(board, "슬립링 / SLIPRING", 54, 22.1, size=1.05, thickness=0.18)
+        usage_label.SetUnresolvedFontName("Malgun Gothic")
+    else:
+        add_board_text(board, f"SLIPRING {config['board_label']} / DOC MAP", 54, 22.1, size=1.05, thickness=0.18)
     add_board_text(board, "DRAFT 1 - DO NOT FAB", 53, 62.0, size=1.05, thickness=0.18)
     add_board_text(board, "TX", 78.5, 33.8, size=1.0, thickness=0.16)
     add_board_text(board, "RX", 78.5, 55.8, size=1.0, thickness=0.16)
@@ -1300,7 +1451,7 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
         add_board_text(board, "J1 PIN 1", 29.0, 36.0, size=0.80, thickness=0.13)
         add_board_text(board, "5055680571 CAND", 29.0, 49.0, size=0.80, thickness=0.13)
     else:
-        add_board_text(board, "M12 FEMALE / BACK SIDE CAND", 30.0, 30.0, size=0.80, thickness=0.13)
+        add_board_text(board, "M12 J1 / B-SIDE CAND", 30.0, 30.0, size=0.80, thickness=0.13)
         add_board_text(board, "PIN 1 / A-KEY VERIFY", 30.0, 52.8, pcbnew.Cmts_User, 0.8, 0.13)
         add_board_text(board, "VERIFY MATING FACE / PANEL ACCESS", 30.0, 32.0, pcbnew.Cmts_User, 0.7, 0.12)
         add_board_text(board, "PINS 5-8: NC", 30.0, 55.0, pcbnew.Cmts_User, 0.8, 0.13)
@@ -1334,9 +1485,9 @@ def write_board(config: dict[str, object], symbol_uuids: dict[str, str]) -> None
     output.write_text(board_text, encoding="utf-8")
 
 
-def verify_overwrite_policy(force: bool) -> None:
+def verify_overwrite_policy(force: bool, variants: list[dict[str, object]]) -> None:
     outputs: list[Path] = []
-    for config in VARIANTS.values():
+    for config in variants:
         directory = Path(config["directory"])
         project = str(config["project"])
         outputs.extend(directory / f"{project}.{suffix}" for suffix in ("kicad_sch", "kicad_pcb", "kicad_pro", "kicad_dru"))
@@ -1380,19 +1531,109 @@ def invalidate_reports(config: dict[str, object]) -> None:
             print(f"Removed stale verification report {report.relative_to(HERE)}")
 
 
+def refill_and_validate_staged_board(config: dict[str, object]) -> None:
+    """Persist zone fills and reject a staged PCB with DRC/parity violations."""
+    directory = Path(config["directory"])
+    project = str(config["project"])
+    board = directory / f"{project}.kicad_pcb"
+    report = directory / f"{project}_staged_drc.rpt"
+    if not KICAD_CLI.is_file():
+        raise RuntimeError(f"KiCad CLI not found: {KICAD_CLI}")
+    result = subprocess.run(
+        [
+            str(KICAD_CLI), "pcb", "drc",
+            "--refill-zones", "--save-board",
+            "--schematic-parity", "--all-track-errors",
+            "--severity-all", "--severity-exclusions",
+            "--exit-code-violations",
+            "-o", str(report), str(board),
+        ],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        report_text = report.read_text(encoding="utf-8", errors="replace") if report.exists() else ""
+        details = "\n".join(
+            part for part in (result.stdout, result.stderr, report_text) if part
+        )
+        raise RuntimeError(
+            f"Staged {project} DRC/parity/refill failed with exit "
+            f"{result.returncode}:\n{details}"
+        )
+
+
+def generate_variant_transactionally(config: dict[str, object]) -> None:
+    """Build a complete variant off-line, then replace the live draft files."""
+    target_dir = Path(config["directory"])
+    project = str(config["project"])
+    target_dir.mkdir(parents=True, exist_ok=True)
+    filenames = [
+        f"{project}.kicad_sch",
+        f"{project}.kicad_pcb",
+        f"{project}.kicad_pro",
+        f"{project}.kicad_dru",
+        "fp-lib-table",
+    ]
+
+    # A sibling of the output directories preserves the
+    # ${KIPRJMOD}/../common.pretty relationship in fp-lib-table.
+    with tempfile.TemporaryDirectory(prefix=f".{project}-stage-", dir=HERE) as temp:
+        stage_dir = Path(temp)
+        stage_config = dict(config)
+        stage_config["directory"] = stage_dir
+        symbol_uuids = write_schematic(stage_config)
+        write_board(stage_config, symbol_uuids)
+        # pcbnew.SaveBoard creates a minimal sibling .kicad_pro on Windows.
+        # Restore the intended impedance/netclass settings after board save.
+        write_project(stage_config)
+        refill_and_validate_staged_board(stage_config)
+
+        missing = [name for name in filenames if not (stage_dir / name).is_file()]
+        if missing:
+            raise RuntimeError(f"Staged generation did not create: {', '.join(missing)}")
+
+        backup_dir = stage_dir / "backup"
+        backup_dir.mkdir()
+        originally_present: set[str] = set()
+        for name in filenames:
+            target = target_dir / name
+            if target.exists():
+                shutil.copy2(target, backup_dir / name)
+                originally_present.add(name)
+
+        replaced: list[str] = []
+        try:
+            for name in filenames:
+                os.replace(stage_dir / name, target_dir / name)
+                replaced.append(name)
+            invalidate_reports(config)
+        except Exception:
+            # Never leave a schematic from one generation paired with a
+            # PCB/project from another after a failed live-file replacement.
+            for name in reversed(replaced):
+                target = target_dir / name
+                if name in originally_present:
+                    os.replace(backup_dir / name, target)
+                elif target.exists():
+                    target.unlink()
+            raise
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--force", action="store_true", help="overwrite existing draft outputs")
+    parser.add_argument(
+        "--variant",
+        action="append",
+        choices=tuple(VARIANTS),
+        help="regenerate only the selected endpoint; may be supplied more than once",
+    )
     args = parser.parse_args()
-    verify_overwrite_policy(args.force)
-    for config in VARIANTS.values():
-        Path(config["directory"]).mkdir(parents=True, exist_ok=True)
-        symbol_uuids = write_schematic(config)
-        write_board(config, symbol_uuids)
-        # pcbnew.SaveBoard creates a minimal sibling .kicad_pro on Windows.
-        # Restore the intended impedance/netclass settings after board save.
-        write_project(config)
-        invalidate_reports(config)
+    selected = [VARIANTS[name] for name in (args.variant or tuple(VARIANTS))]
+    verify_overwrite_policy(args.force, selected)
+    for config in selected:
+        generate_variant_transactionally(config)
         print(f"Generated {config['project']} in {Path(config['directory']).relative_to(HERE)}")
 
 
