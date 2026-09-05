@@ -1,0 +1,308 @@
+{
+  "balun_eth_rj45/balun_eth_rj45": {
+    "sha256": "7436a6b587415cd457dc8c045ce75f8a78035bbd219b59c9a03a877bd1814e7a",
+    "track_width_counts": {
+      "Net-(J3-In)": {
+        "0.357": 4
+      },
+      "/GND": {
+        "0.8": 22,
+        "0.5": 4
+      },
+      "/SHIELD": {
+        "0.8": 9
+      },
+      "/DB_P": {
+        "0.234": 6,
+        "0.15": 1
+      },
+      "Net-(RCT2-Pad2)": {
+        "0.3": 1
+      },
+      "/DB_N": {
+        "0.234": 6,
+        "0.15": 1
+      },
+      "Net-(J5-In)": {
+        "0.357": 4
+      },
+      "/DD_P": {
+        "0.234": 6,
+        "0.15": 1
+      },
+      "Net-(RCT4-Pad2)": {
+        "0.3": 2
+      },
+      "/DD_N": {
+        "0.234": 6,
+        "0.15": 1
+      },
+      "Net-(J2-In)": {
+        "0.357": 4
+      },
+      "Net-(J4-In)": {
+        "0.357": 4
+      },
+      "/DC_P": {
+        "0.15": 1,
+        "0.234": 6
+      },
+      "Net-(RCT3-Pad2)": {
+        "0.3": 2
+      },
+      "/DC_N": {
+        "0.234": 6,
+        "0.15": 1
+      },
+      "/DA_P": {
+        "0.234": 6,
+        "0.15": 1
+      },
+      "Net-(RCT1-Pad2)": {
+        "0.3": 2
+      },
+      "/DA_N": {
+        "0.234": 6,
+        "0.15": 1
+      }
+    },
+    "track_lengths_mm": {
+      "Net-(J3-In)": 30.76210244842766,
+      "/GND": 82.03977766016835,
+      "/SHIELD": 40.665507257638566,
+      "/DB_P": 32.930086254774714,
+      "Net-(RCT2-Pad2)": 2.96,
+      "/DB_N": 32.93008509330951,
+      "Net-(J5-In)": 30.76210244842766,
+      "/DD_P": 43.667678502756715,
+      "Net-(RCT4-Pad2)": 2.96,
+      "/DD_N": 43.667673594479666,
+      "Net-(J2-In)": 30.76210244842766,
+      "Net-(J4-In)": 30.76210244842766,
+      "/DC_P": 32.83568330227737,
+      "Net-(RCT3-Pad2)": 2.96,
+      "/DC_N": 32.8356842302402,
+      "/DA_P": 44.96493275482622,
+      "Net-(RCT1-Pad2)": 2.96,
+      "/DA_N": 44.96493978372216
+    },
+    "parallel_trunks": [
+      {
+        "net": "/DB_P",
+        "layer": "B.Cu",
+        "overlap_mm": 12.605993,
+        "center_pitch_mm": 0.45,
+        "edge_gap_mm": 0.216
+      },
+      {
+        "net": "/DD_P",
+        "layer": "F.Cu",
+        "overlap_mm": 24.295557,
+        "center_pitch_mm": 0.449999,
+        "edge_gap_mm": 0.215999
+      },
+      {
+        "net": "/DC_P",
+        "layer": "F.Cu",
+        "overlap_mm": 8.726467,
+        "center_pitch_mm": 0.450001,
+        "edge_gap_mm": 0.216001
+      },
+      {
+        "net": "/DC_P",
+        "layer": "F.Cu",
+        "overlap_mm": 8.002174,
+        "center_pitch_mm": 0.450001,
+        "edge_gap_mm": 0.216001
+      },
+      {
+        "net": "/DA_P",
+        "layer": "F.Cu",
+        "overlap_mm": 26.608812,
+        "center_pitch_mm": 0.449999,
+        "edge_gap_mm": 0.215999
+      }
+    ],
+    "via_pad_gap_under_0_35_mm": [
+      {
+        "ref": "RCT4",
+        "pad": "1",
+        "via_mm": [
+          57.5,
+          84.2
+        ],
+        "copper_edge_gap_mm": 0.2
+      },
+      {
+        "ref": "RCT4",
+        "pad": "2",
+        "via_mm": [
+          61.0,
+          83.0
+        ],
+        "copper_edge_gap_mm": 0.1
+      },
+      {
+        "ref": "RCT3",
+        "pad": "2",
+        "via_mm": [
+          61.0,
+          65.0
+        ],
+        "copper_edge_gap_mm": 0.1
+      },
+      {
+        "ref": "RCT1",
+        "pad": "2",
+        "via_mm": [
+          61.0,
+          29.0
+        ],
+        "copper_edge_gap_mm": 0.1
+      }
+    ],
+    "via_pad_audit_limit": "Copper-edge distance; rectangular bounding box for non-circle/oval pads. Confirm mask/CAM plug eligibility with manufacturer."
+  },
+  "adapters/m12_slipring/m12_slipring": {
+    "sha256": "9e13c8c6d584bdbfd5511c421ceaeae2302da6911df7d3042db5fcfaae11a489",
+    "track_width_counts": {
+      "/PAIR_A_P": {
+        "0.234": 5,
+        "0.15": 1
+      },
+      "/PAIR_A_N": {
+        "0.234": 5,
+        "0.15": 1
+      },
+      "/PAIR_B_P": {
+        "0.234": 5,
+        "0.15": 1
+      },
+      "/PAIR_B_N": {
+        "0.234": 6,
+        "0.15": 1
+      }
+    },
+    "track_lengths_mm": {
+      "/PAIR_A_P": 29.20783089484562,
+      "/PAIR_A_N": 29.207830507331234,
+      "/PAIR_B_P": 33.16917896483395,
+      "/PAIR_B_N": 33.167195114806056
+    },
+    "parallel_trunks": [
+      {
+        "net": "/PAIR_A_P",
+        "layer": "F.Cu",
+        "overlap_mm": 12.0,
+        "center_pitch_mm": 0.45,
+        "edge_gap_mm": 0.216
+      },
+      {
+        "net": "/PAIR_B_P",
+        "layer": "B.Cu",
+        "overlap_mm": 12.0,
+        "center_pitch_mm": 0.45,
+        "edge_gap_mm": 0.216
+      }
+    ],
+    "via_pad_gap_under_0_35_mm": [],
+    "via_pad_audit_limit": "Copper-edge distance; rectangular bounding box for non-circle/oval pads. Confirm mask/CAM plug eligibility with manufacturer."
+  },
+  "adapters/m12_llc/m12_llc": {
+    "sha256": "4bc74d3ed1ca7854b2aa0ed3d8effa824be8cda9ba3e66bb36da7b5c913d1961",
+    "track_width_counts": {
+      "/PAIR_A_N": {
+        "0.234": 5,
+        "0.15": 1
+      },
+      "/PAIR_B_P": {
+        "0.234": 5,
+        "0.15": 1
+      },
+      "/PAIR_B_N": {
+        "0.234": 5,
+        "0.15": 1
+      },
+      "/PAIR_A_P": {
+        "0.234": 5,
+        "0.15": 1
+      }
+    },
+    "track_lengths_mm": {
+      "/PAIR_A_N": 36.658872773031995,
+      "/PAIR_B_P": 28.51436873015493,
+      "/PAIR_B_N": 28.51436835078888,
+      "/PAIR_A_P": 36.658873247894626
+    },
+    "parallel_trunks": [
+      {
+        "net": "/PAIR_B_P",
+        "layer": "B.Cu",
+        "overlap_mm": 12.0,
+        "center_pitch_mm": 0.45,
+        "edge_gap_mm": 0.216
+      },
+      {
+        "net": "/PAIR_A_P",
+        "layer": "F.Cu",
+        "overlap_mm": 5.502243,
+        "center_pitch_mm": 0.45,
+        "edge_gap_mm": 0.216
+      },
+      {
+        "net": "/PAIR_A_P",
+        "layer": "F.Cu",
+        "overlap_mm": 11.0,
+        "center_pitch_mm": 0.45,
+        "edge_gap_mm": 0.216
+      }
+    ],
+    "via_pad_gap_under_0_35_mm": [],
+    "via_pad_audit_limit": "Copper-edge distance; rectangular bounding box for non-circle/oval pads. Confirm mask/CAM plug eligibility with manufacturer."
+  },
+  "adapters/molex_slipring/molex_slipring": {
+    "sha256": "e3c22ec099047fc1ec5f05eeb7f2d5029768bcc9e01d814df1de1f5e3c3f0452",
+    "track_width_counts": {
+      "/PAIR_A_P": {
+        "0.234": 5,
+        "0.15": 1
+      },
+      "/PAIR_A_N": {
+        "0.234": 5,
+        "0.15": 1
+      },
+      "/PAIR_B_P": {
+        "0.234": 5,
+        "0.15": 1
+      },
+      "/PAIR_B_N": {
+        "0.234": 5,
+        "0.15": 1
+      }
+    },
+    "track_lengths_mm": {
+      "/PAIR_A_P": 29.88663915251882,
+      "/PAIR_A_N": 29.886639110788614,
+      "/PAIR_B_P": 29.96260081201085,
+      "/PAIR_B_N": 29.962599647778823
+    },
+    "parallel_trunks": [
+      {
+        "net": "/PAIR_A_P",
+        "layer": "F.Cu",
+        "overlap_mm": 12.0,
+        "center_pitch_mm": 0.45,
+        "edge_gap_mm": 0.216
+      },
+      {
+        "net": "/PAIR_B_P",
+        "layer": "B.Cu",
+        "overlap_mm": 12.0,
+        "center_pitch_mm": 0.45,
+        "edge_gap_mm": 0.216
+      }
+    ],
+    "via_pad_gap_under_0_35_mm": [],
+    "via_pad_audit_limit": "Copper-edge distance; rectangular bounding box for non-circle/oval pads. Confirm mask/CAM plug eligibility with manufacturer."
+  }
+}

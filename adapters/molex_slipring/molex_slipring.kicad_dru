@@ -1,6 +1,6 @@
 (version 1)
 (rule "Board edge" (constraint edge_clearance (min 0.30mm)))
 (rule "Inner planes only" (layer inner) (constraint disallow track))
-(rule "Differential trace width" (layer outer) (condition "A.Type == 'Track' && A.hasNetclass('ETH100')") (constraint track_width (min 0.22mm) (opt 0.23mm) (max 0.24mm)))
-(rule "RJ45 pin escape" (condition "A.Type == 'Track' && A.hasNetclass('ETH100') && A.intersectsCourtyard('J1')") (constraint track_width (min 0.14mm) (opt 0.15mm) (max 0.24mm)))
+(rule "Differential trace width" (layer outer) (condition "A.Type == 'Track' && A.hasNetclass('ETH100')") (constraint track_width (min 0.233mm) (opt 0.234mm) (max 0.235mm)))
+(rule "RJ45 pin escape" (condition "A.Type == 'Track' && A.hasNetclass('ETH100') && A.intersectsCourtyard('J1')") (constraint track_width (min 0.14mm) (opt 0.15mm) (max 0.235mm)))
 (rule "Signal vias" (condition "A.Type == 'Via' && A.hasNetclass('ETH100')") (constraint via_diameter (min 0.60mm)) (constraint hole_size (min 0.30mm)))

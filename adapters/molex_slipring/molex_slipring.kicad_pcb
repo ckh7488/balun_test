@@ -12,7 +12,7 @@
 		(date "2026-09-05")
 		(rev "A-DRAFT")
 		(comment 1 "MOLEX 5P / SLIPRING; PIN 5 NC; VERIFY HOUSING")
-		(comment 2 "JLC04161H-7628 / 100R trunk W0.23 G0.22 / verify manufacturer mating")
+		(comment 2 "JLC04161H-7628 / 100R trunk W0.234 G0.216 / verify manufacturer mating")
 	)
 	(layers
 		(0 "F.Cu" signal)
@@ -1191,7 +1191,7 @@
 		(layer "Edge.Cuts")
 		(uuid "6d834f07-e1a9-406b-b091-3c5d4f68ae8a")
 	)
-	(gr_text "A-DRAFT / VERIFY MATE + IMPEDANCE"
+	(gr_text "A-DRAFT / VERIFY MATE + CAM"
 		(at 33 37 0)
 		(layer "F.SilkS")
 		(uuid "90f9e274-8789-4ae4-b5a6-516375cb2bd1")
@@ -1227,7 +1227,7 @@
 	(segment
 		(start 22 16.39)
 		(end 26 16.945)
-		(width 0.23)
+		(width 0.234)
 		(layer "F.Cu")
 		(net "/PAIR_A_P")
 		(uuid "14fa58a4-e0f1-491d-ad26-4a6832909c61")
@@ -1235,7 +1235,7 @@
 	(segment
 		(start 26 16.945)
 		(end 30 17.5)
-		(width 0.23)
+		(width 0.234)
 		(layer "F.Cu")
 		(net "/PAIR_A_P")
 		(uuid "3ee2bff0-1069-49f7-953c-e17200be9f72")
@@ -1243,7 +1243,7 @@
 	(segment
 		(start 30 17.5)
 		(end 42 17.5)
-		(width 0.23)
+		(width 0.234)
 		(layer "F.Cu")
 		(net "/PAIR_A_P")
 		(uuid "5ce599d5-ace1-4106-a4f4-8af772a915d5")
@@ -1251,7 +1251,7 @@
 	(segment
 		(start 42 17.5)
 		(end 44 17.5)
-		(width 0.23)
+		(width 0.234)
 		(layer "F.Cu")
 		(net "/PAIR_A_P")
 		(uuid "864893ac-ce8d-449b-9a31-ffce8cd3cfa7")
@@ -1259,7 +1259,7 @@
 	(segment
 		(start 44 17.5)
 		(end 46.81 17.5)
-		(width 0.23)
+		(width 0.234)
 		(layer "F.Cu")
 		(net "/PAIR_A_P")
 		(uuid "939a3bc8-626c-4b97-ac30-54b59c2f5abf")
@@ -1275,7 +1275,7 @@
 	(segment
 		(start 26 20.632319)
 		(end 30 17.95)
-		(width 0.23)
+		(width 0.234)
 		(layer "F.Cu")
 		(net "/PAIR_A_N")
 		(uuid "052e6362-79bb-477e-b280-828ef78605e0")
@@ -1283,7 +1283,7 @@
 	(segment
 		(start 22 17.41)
 		(end 26 20.632319)
-		(width 0.23)
+		(width 0.234)
 		(layer "F.Cu")
 		(net "/PAIR_A_N")
 		(uuid "3dbfa945-5803-4c8d-a138-e0de9c84dc16")
@@ -1291,7 +1291,7 @@
 	(segment
 		(start 42 17.95)
 		(end 44 18.75)
-		(width 0.23)
+		(width 0.234)
 		(layer "F.Cu")
 		(net "/PAIR_A_N")
 		(uuid "43c9539b-f935-4f22-8a1b-c7bbb8d33850")
@@ -1299,7 +1299,7 @@
 	(segment
 		(start 44 18.75)
 		(end 46.81 18.75)
-		(width 0.23)
+		(width 0.234)
 		(layer "F.Cu")
 		(net "/PAIR_A_N")
 		(uuid "92ff9567-90a4-4989-8171-f6b9e238e0b1")
@@ -1307,7 +1307,7 @@
 	(segment
 		(start 30 17.95)
 		(end 42 17.95)
-		(width 0.23)
+		(width 0.234)
 		(layer "F.Cu")
 		(net "/PAIR_A_N")
 		(uuid "99bb3bdf-12f8-422d-91dc-8d3583f6be54")
@@ -1323,7 +1323,7 @@
 	(segment
 		(start 44 20)
 		(end 46.81 20)
-		(width 0.23)
+		(width 0.234)
 		(layer "F.Cu")
 		(net "/PAIR_B_P")
 		(uuid "36d31529-30f7-4a92-8ba4-ec15dada62d0")
@@ -1339,7 +1339,7 @@
 	(segment
 		(start 30 20)
 		(end 42 20)
-		(width 0.23)
+		(width 0.234)
 		(layer "B.Cu")
 		(net "/PAIR_B_P")
 		(uuid "7629f2a1-278b-4216-8d38-48118460973e")
@@ -1347,7 +1347,7 @@
 	(segment
 		(start 26 19.215)
 		(end 30 20)
-		(width 0.23)
+		(width 0.234)
 		(layer "B.Cu")
 		(net "/PAIR_B_P")
 		(uuid "877eddd8-c538-4c09-8adb-ff1eb214b970")
@@ -1363,7 +1363,7 @@
 	(segment
 		(start 22 18.43)
 		(end 26 19.215)
-		(width 0.23)
+		(width 0.234)
 		(layer "B.Cu")
 		(net "/PAIR_B_P")
 		(uuid "ca9821d0-0f78-413c-84ff-46a4a929fc5f")
@@ -1371,7 +1371,7 @@
 	(segment
 		(start 42 20)
 		(end 44 20)
-		(width 0.23)
+		(width 0.234)
 		(layer "B.Cu")
 		(net "/PAIR_B_P")
 		(uuid "faf8b455-f20a-4512-bafa-d085be27f2a5")
@@ -1379,7 +1379,7 @@
 	(segment
 		(start 44 21.25)
 		(end 46.81 21.25)
-		(width 0.23)
+		(width 0.234)
 		(layer "F.Cu")
 		(net "/PAIR_B_N")
 		(uuid "b675dd13-bc60-4eec-8a13-6330141a35a2")
@@ -1403,7 +1403,7 @@
 	(segment
 		(start 30 20.45)
 		(end 42 20.45)
-		(width 0.23)
+		(width 0.234)
 		(layer "B.Cu")
 		(net "/PAIR_B_N")
 		(uuid "47c64934-44a9-4e72-8c09-bf7c4d4acd52")
@@ -1411,7 +1411,7 @@
 	(segment
 		(start 42 20.45)
 		(end 44 21.25)
-		(width 0.23)
+		(width 0.234)
 		(layer "B.Cu")
 		(net "/PAIR_B_N")
 		(uuid "57f0a0c4-5155-4670-91ca-ea5534fc7c69")
@@ -1419,7 +1419,7 @@
 	(segment
 		(start 22 21.49)
 		(end 26 23.964817)
-		(width 0.23)
+		(width 0.234)
 		(layer "B.Cu")
 		(net "/PAIR_B_N")
 		(uuid "589bb876-8490-4fe9-b2f9-5643db18d55c")
@@ -1427,7 +1427,7 @@
 	(segment
 		(start 26 23.964817)
 		(end 30 20.45)
-		(width 0.23)
+		(width 0.234)
 		(layer "B.Cu")
 		(net "/PAIR_B_N")
 		(uuid "736e6f86-4032-42fb-b348-5870377bfb55")

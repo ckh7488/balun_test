@@ -1,0 +1,64 @@
+{
+  "adapters/m12_llc/m12_llc.kicad_pcb": {
+    "footprints_pad_nets_positions_unchanged": true,
+    "centerline_difference_nm": {
+      "removed": [],
+      "added": []
+    }
+  },
+  "adapters/m12_slipring/m12_slipring.kicad_pcb": {
+    "footprints_pad_nets_positions_unchanged": true,
+    "centerline_difference_nm": {
+      "removed": [
+        [
+          "/PAIR_B_P",
+          2,
+          30000000,
+          22700000,
+          42000000,
+          22700000
+        ],
+        [
+          "/PAIR_B_P",
+          2,
+          42000000,
+          22700000,
+          46502243,
+          24000000
+        ]
+      ],
+      "added": [
+        [
+          "/PAIR_B_P",
+          2,
+          30000000,
+          22700000,
+          42050000,
+          22700000
+        ],
+        [
+          "/PAIR_B_P",
+          2,
+          42050000,
+          22700000,
+          46502243,
+          24000000
+        ]
+      ]
+    }
+  },
+  "adapters/molex_slipring/molex_slipring.kicad_pcb": {
+    "footprints_pad_nets_positions_unchanged": true,
+    "centerline_difference_nm": {
+      "removed": [],
+      "added": []
+    }
+  },
+  "balun_eth_rj45/balun_eth_rj45.kicad_pcb": {
+    "footprints_pad_nets_positions_unchanged": true,
+    "centerline_difference_nm": {
+      "removed": [],
+      "added": []
+    }
+  }
+}

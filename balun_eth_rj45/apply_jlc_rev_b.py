@@ -76,13 +76,13 @@ DRU_TEXT = """(version 1)
 (rule "JLC 50 ohm outer geometry"
     (layer outer)
     (condition "A.Type == 'Track' && A.hasNetclass('RF50')")
-    (constraint track_width (min 0.34mm) (opt 0.35mm) (max 0.36mm))
+    (constraint track_width (min 0.356mm) (opt 0.357mm) (max 0.358mm))
 )
 
 (rule "JLC 100 ohm differential trace width"
     (layer outer)
     (condition "A.Type == 'Track' && A.hasNetclass('ETH100')")
-    (constraint track_width (min 0.22mm) (opt 0.23mm) (max 0.24mm))
+    (constraint track_width (min 0.233mm) (opt 0.234mm) (max 0.235mm))
 )
 
 (rule "JLC 100 ohm differential coupled gap"
@@ -91,7 +91,7 @@ DRU_TEXT = """(version 1)
     # The pair intentionally opens at connector/transformer fanouts.  A
     # maximum here creates false errors after KiCad reclassifies those short
     # sections; the uncoupled-length rules below limit how far that can extend.
-    (constraint diff_pair_gap (min 0.21mm) (opt 0.22mm))
+    (constraint diff_pair_gap (min 0.21mm) (opt 0.216mm))
 )
 
 (rule "Ethernet pair topology"
@@ -123,7 +123,7 @@ DRU_TEXT = """(version 1)
 # pin-field escape keeps at least 0.295 mm copper clearance to adjacent PTHs.
 (rule "RJ45 pin-field neckdown"
     (condition "A.Type == 'Track' && A.hasNetclass('ETH100') && A.intersectsCourtyard('J1')")
-    (constraint track_width (min 0.14mm) (opt 0.15mm) (max 0.24mm))
+    (constraint track_width (min 0.14mm) (opt 0.15mm) (max 0.235mm))
 )
 
 (rule "RJ45 PTH to signal escape clearance"
@@ -373,7 +373,7 @@ def _segment_object(
     layer: str,
     start: tuple[float, float],
     end: tuple[float, float],
-    width: float = 0.23,
+    width: float = 0.234,
 ) -> str:
     return (
         f"(segment{newline}"
@@ -424,7 +424,7 @@ def _legacy_rev_a_route_objects(newline: str) -> list[str]:
 
     def add_polyline(name: str, net: str, layer: str, points: list[tuple[float, float]], neck: bool = False) -> None:
         for index, (start, end) in enumerate(zip(points, points[1:])):
-            width = 0.20 if neck and index == 0 else 0.23
+            width = 0.20 if neck and index == 0 else 0.234
             objects.append(_segment_object(newline, f"{name}-{index}", net, layer, start, end, width))
 
     add_polyline("A-P", "/DA_P", "F.Cu", [
@@ -576,7 +576,7 @@ def _routed_pair_objects(newline: str) -> list[str]:
         net: str,
         layer: str,
         points: list[tuple[float, float]],
-        width: float = 0.23,
+        width: float = 0.234,
     ) -> None:
         for index, (start, end) in enumerate(zip(points, points[1:])):
             objects.append(_segment_object(newline, f"{name}-{index}", net, layer, start, end, width))
@@ -646,7 +646,7 @@ def update_board(board_path: Path) -> dict[str, int]:
     text = _replace_once(
         text,
         '\t\t(comment 3 "Confirm 50/100 ohm geometry with the selected PCB fabricator.")',
-        '\t\t(comment 3 "JLC04161H-7628: 50R W0.35; 100R W0.23/G0.22; L2/L3 GND.")',
+        '\t\t(comment 3 "JLC04161H-7628: 50R W0.357; 100R W0.234/G0.216; L2/L3 GND.")',
         "title-block impedance note",
     )
     text = _replace_once(text, '\t\t(4 "In1.Cu" signal)', '\t\t(4 "In1.Cu" power)', "In1 layer type")
@@ -692,7 +692,7 @@ def update_board(board_path: Path) -> dict[str, int]:
     text = _replace_once(
         text,
         "VERIFY 50R/100R WIDTHS WITH FAB STACKUP BEFORE ORDER",
-        "NON-COPLANAR: 50R W0.35 / 100R W0.23 G0.22",
+        "NON-COPLANAR: 50R W0.357 / 100R W0.234 G0.216",
         "impedance drawing note",
     )
 
@@ -737,7 +737,7 @@ def update_board(board_path: Path) -> dict[str, int]:
                 eth_segments += 1
                 removed_eth_segments += 1
             elif net_name in RF_NETS:
-                block, count = re.subn(r'\(width [0-9.]+\)', '(width 0.35)', block, count=1)
+                block, count = re.subn(r'\(width [0-9.]+\)', '(width 0.357)', block, count=1)
                 if count != 1:
                     raise RuntimeError(f"Missing width in RF segment on {net_name}")
                 rf_segments += 1
@@ -912,8 +912,8 @@ def update_project(project_path: Path) -> None:
     project = json.loads(raw.decode("utf-8"))
     design = project["board"]["design_settings"]
     design["defaults"]["zones"]["min_clearance"] = 0.25
-    design["diff_pair_dimensions"] = [{"gap": 0.22, "via_gap": 0.30, "width": 0.23}]
-    design["track_widths"] = [0.23, 0.25, 0.35, 0.5, 0.8]
+    design["diff_pair_dimensions"] = [{"gap": 0.216, "via_gap": 0.30, "width": 0.234}]
+    design["track_widths"] = [0.234, 0.25, 0.357, 0.5, 0.8]
     design["via_dimensions"] = [{"diameter": 0.6, "drill": 0.3}]
 
     # Keep the global edge value at zero: the custom rule enforces 0.30 mm and
@@ -930,9 +930,9 @@ def update_project(project_path: Path) -> None:
     eth = classes["ETH100"]
     eth.update({
         "clearance": 0.20,
-        "track_width": 0.23,
-        "diff_pair_width": 0.23,
-        "diff_pair_gap": 0.22,
+        "track_width": 0.234,
+        "diff_pair_width": 0.234,
+        "diff_pair_gap": 0.216,
         "diff_pair_via_gap": 0.30,
         "via_diameter": 0.6,
         "via_drill": 0.3,
@@ -941,7 +941,7 @@ def update_project(project_path: Path) -> None:
     rf = classes["RF50"]
     rf.update({
         "clearance": 0.25,
-        "track_width": 0.35,
+        "track_width": 0.357,
         "via_diameter": 0.6,
         "via_drill": 0.3,
     })

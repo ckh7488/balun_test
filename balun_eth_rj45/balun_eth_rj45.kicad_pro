@@ -55,9 +55,9 @@
       },
       "diff_pair_dimensions": [
         {
-          "gap": 0.22,
+          "gap": 0.216,
           "via_gap": 0.3,
-          "width": 0.23
+          "width": 0.234
         }
       ],
       "drc_exclusions": [],
@@ -194,9 +194,9 @@
         }
       ],
       "track_widths": [
-        0.23,
+        0.234,
         0.25,
-        0.35,
+        0.357,
         0.5,
         0.8
       ],
@@ -516,9 +516,9 @@
       {
         "bus_width": 12,
         "clearance": 0.2,
-        "diff_pair_gap": 0.22,
+        "diff_pair_gap": 0.216,
         "diff_pair_via_gap": 0.3,
-        "diff_pair_width": 0.23,
+        "diff_pair_width": 0.234,
         "line_style": 0,
         "microvia_diameter": 0.3,
         "microvia_drill": 0.1,
@@ -526,7 +526,7 @@
         "pcb_color": "rgba(0, 102, 204, 0.000)",
         "priority": 1,
         "schematic_color": "rgba(0, 102, 204, 1.000)",
-        "track_width": 0.23,
+        "track_width": 0.234,
         "tuning_profile": "",
         "via_diameter": 0.6,
         "via_drill": 0.3,
@@ -545,7 +545,7 @@
         "pcb_color": "rgba(204, 51, 0, 0.000)",
         "priority": 2,
         "schematic_color": "rgba(204, 51, 0, 1.000)",
-        "track_width": 0.35,
+        "track_width": 0.357,
         "tuning_profile": "",
         "via_diameter": 0.6,
         "via_drill": 0.3,

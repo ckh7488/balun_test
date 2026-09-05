@@ -67,7 +67,7 @@ def xy(obj):
     return pcb.ToMM(p.x), pcb.ToMM(p.y)
 
 
-def add_track(b, net, a, z, layer, width=.23):
+def add_track(b, net, a, z, layer, width=.234):
     if math.dist(a, z) < 1e-8:
         return
     track = pcb.PCB_TRACK(b)
@@ -163,7 +163,7 @@ def schematic(path, name, cfg):
     path.write_text(f'''(kicad_sch (version 20260306) (generator "eeschema") (generator_version "10.0")
       (uuid "{uid(name)}") (paper "A4")
       (title_block (title "{name} / passive Ethernet adapter") (date "2026-09-05") (rev "A-DRAFT")
-        (comment 1 "ELECTRICAL CAD DRAFT; verify mating and JLC impedance before ordering"))
+        (comment 1 "ELECTRICAL CAD DRAFT; verify mating and JLC production stack before ordering"))
       (lib_symbols {definitions})
       {chr(10).join(parts)}
       (sheet_instances (path "/" (page "1"))) (embedded_fonts no))\n''', encoding="utf-8")
@@ -222,13 +222,18 @@ def board(directory, name, cfg):
                 low = mid
             else:
                 high = mid
+    # With the verified 0.234 mm width, extend this trunk by 50 um
+    # before the fanout to retain the existing 0.20 mm clearance. The resulting
+    # sub-0.01 mm pair skew is preferable to another long tuning detour.
+    if name == "m12_slipring":
+        routes["B_P"][-3] = (42.05, 22.7)
     for net, route in routes.items():
         layer = pcb.F_Cu if net.startswith("A") else pcb.B_Cu
         for i, (a, z) in enumerate(zip(route, route[1:])):
             # Molex B pair uses one symmetric signal via per conductor.
             if name == "molex_slipring" and net.startswith("B") and i == len(route) - 2:
                 via(b, nets[net], a); layer = pcb.F_Cu
-            add_track(b, nets[net], a, z, layer, .15 if i == 0 else .23)
+            add_track(b, nets[net], a, z, layer, .15 if i == 0 else .234)
     for at in ((4, 4), (62, 4), (62, 36), (4, 36)):
         hole = pcb.FOOTPRINT(b); hole.SetReference("H" + str(len(list(b.GetFootprints())) - 2))
         hole.SetAttributes(pcb.FP_BOARD_ONLY | pcb.FP_EXCLUDE_FROM_BOM | pcb.FP_EXCLUDE_FROM_POS_FILES)
@@ -262,10 +267,10 @@ def board(directory, name, cfg):
             via(b, nets["SHIELD"], at)
     text(b, name.upper().replace("_", " "), (33, 2), size=1.2)
     text(b, "100BASE-TX / PASSIVE ONLY", (33, 34), size=1)
-    text(b, "A-DRAFT / VERIFY MATE + IMPEDANCE", (33, 37), size=.8)
+    text(b, "A-DRAFT / VERIFY MATE + CAM", (33, 37), size=.8)
     title = b.GetTitleBlock(); title.SetTitle(name + " passive adapter"); title.SetRevision("A-DRAFT")
     title.SetDate("2026-09-05"); title.SetComment(0, cfg["note"])
-    title.SetComment(1, "JLC04161H-7628 / 100R trunk W0.23 G0.22 / verify manufacturer mating")
+    title.SetComment(1, "JLC04161H-7628 / 100R trunk W0.234 G0.216 / verify manufacturer mating")
     pcb.SaveBoard(str(path), b)
     return {k: {"length_mm": length(v), "signal_vias": int(name == "molex_slipring" and k.startswith("B")),
                 "vertices_mm": v} for k, v in routes.items()}
@@ -287,8 +292,8 @@ def generate(output):
         (directory / (name + ".kicad_dru")).write_text('''(version 1)
 (rule "Board edge" (constraint edge_clearance (min 0.30mm)))
 (rule "Inner planes only" (layer inner) (constraint disallow track))
-(rule "Differential trace width" (layer outer) (condition "A.Type == 'Track' && A.hasNetclass('ETH100')") (constraint track_width (min 0.22mm) (opt 0.23mm) (max 0.24mm)))
-(rule "RJ45 pin escape" (condition "A.Type == 'Track' && A.hasNetclass('ETH100') && A.intersectsCourtyard('J1')") (constraint track_width (min 0.14mm) (opt 0.15mm) (max 0.24mm)))
+(rule "Differential trace width" (layer outer) (condition "A.Type == 'Track' && A.hasNetclass('ETH100')") (constraint track_width (min 0.233mm) (opt 0.234mm) (max 0.235mm)))
+(rule "RJ45 pin escape" (condition "A.Type == 'Track' && A.hasNetclass('ETH100') && A.intersectsCourtyard('J1')") (constraint track_width (min 0.14mm) (opt 0.15mm) (max 0.235mm)))
 (rule "Signal vias" (condition "A.Type == 'Via' && A.hasNetclass('ETH100')") (constraint via_diameter (min 0.60mm)) (constraint hole_size (min 0.30mm)))
 ''')
     shutil.copytree(HERE / "adapter.pretty", output / "adapter.pretty")

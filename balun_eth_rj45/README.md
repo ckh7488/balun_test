@@ -1,6 +1,6 @@
 # balun_eth_rj45 Rev B
 
-**2026-09-05 현재 역할:** 교체형 수동 어댑터와 공유하는 공통 balun PCB다. 이번 방향 전환에서 회로/동박은 유지했다. 설계 선택 이유와 검증 한계는 [설계 검토 인계](../DESIGN_REVIEW_HANDOFF.md), 실제 CAD 검토는 [FIXTURE_REVIEW](../adapters/FIXTURE_REVIEW.md)를 참고한다.
+**2026-09-05 현재 역할:** 교체형 수동 어댑터와 공유하는 공통 balun PCB다. 방향 전환 당시 회로/동박을 유지했으며, 후속 임피던스 확인에서 배선 폭을 수정했다. [2026-09-05 계산·검증](../docs/jlcpcb/IMPEDANCE.md)과 [주문 화면 가이드](../docs/jlcpcb/README.md)를 따른다. 설계 선택 이유와 검증 한계는 [설계 검토 인계](../DESIGN_REVIEW_HANDOFF.md), 실제 CAD 검토는 [FIXTURE_REVIEW](../adapters/FIXTURE_REVIEW.md)를 참고한다.
 
 2026-09-03: 기존 회로도를 채널별 A3 한 장으로 재배치했다. 연결·부품·DNP와 PCB는 그대로이며, [가독성 정리 결과 및 PDF](../SCHEMATIC_READABILITY_2026-09-03.md)를 참고한다.
 
@@ -38,18 +38,18 @@ ADT2-1T+의 dot은 primary pin 3과 secondary pin 6이다. 따라서 현재 `P=p
 
 ## 임피던스와 배선 규칙
 
-- SMA single-ended 50 Ω 목표: 외층 폭 `0.35 mm`.
-- Ethernet differential 100 Ω 목표: 외층 폭 `0.23 mm`, edge-to-edge gap `0.22 mm`. 실제 JLC stack과 solver/coupon 확인 전 nominal 설계값이다.
+- SMA single-ended 50 Ω 목표: 외층 폭 `0.357 mm`.
+- Ethernet differential 100 Ω 목표: 외층 폭 `0.234 mm`, edge-to-edge gap `0.216 mm`. 2026-09-05 공식 계산기 결과를 반영한 nominal 치수이며 제조 CAM/coupon은 별도 확인한다.
 - RJ45 pin field만 폭 `0.15 mm`로 짧게 neck-down한다.
 - J1 signal PTH는 pad `1.30 mm`, drill `0.90 mm`; 인접 PTH와 escape trace 사이 최소 동박 간격은 약 `0.295 mm`다.
 - 일반 신호 via는 `0.60/0.30 mm`; pair B만 P/N에 각각 같은 through-via 1개를 쓴다.
 - A/C/D는 F.Cu, B는 J1 쪽 B.Cu에서 진행한 뒤 T2 앞에서 대칭적으로 F.Cu로 전환한다.
 - T2의 기준면 전환용 GND via 네 개는 P/N 사이가 아닌 바깥쪽에 대칭 배치한다. 각 signal via와의 중심 간격은 `1.355 mm`, 동박 가장자리 간격은 `0.755 mm`다.
 - T4도 F.Cu에 둔다. B.Cu로 뒤집으면 F.Cu 전용 SMA center launch 때문에 single-ended 쪽 via가 필요하고 채널 간 fixture 대칭성이 나빠진다.
-- SMA는 MyAntenna `A-SMA-KE-16.5A` (`C22467617`)로 통일한다. 권장 PCB 두께 `1.6 ±0.05 mm`가 nominal 1.5862 mm 적층과 맞고, 정격은 50 Ω / DC–6 GHz다. 기존 Amphenol `132289`는 PCB 두께 상한 1.57 mm가 nominal stack보다 작아 최종 BOM에서 제외했다.
+- SMA는 MyAntenna `A-SMA-KE-16.5A` (`C22467617`)로 통일한다. 권장 PCB 두께 `1.6 ±0.05 mm`에 nominal 1.5862 mm는 들어가지만 JLC 일반 두께 ±10%는 이 기구 공차를 보장하지 않으며, 정격은 50 Ω / DC–6 GHz다. 기존 Amphenol `132289`는 PCB 두께 상한 1.57 mm가 nominal stack보다 작아 최종 BOM에서 제외했다.
 - `A-SMA-KE-16.5A`는 기존 JLC 조달 검토에서 Standard PCBA의 wave-solder/high-difficulty 품목으로 분류됐다. 현재 CAD의 부품/land pattern을 유지하며, 실제 조립 방식에 맞춰 board-edge 안착, 방향, 납땜 접근성과 두께 공차를 확인한다. PCBA를 선택하면 업체 공정도 확인한다.
 - 서로 다른 controlled signal 사이 최소 clearance는 `0.60 mm`; 가능하면 그 이상을 유지한다.
-- 결합 gap은 최소 `0.21 mm` / 권장 `0.22 mm`; fan-out을 포함한 uncoupled 길이는 일반 pair `16.0 mm`, split pair B `16.5 mm` 이하로 제한한다.
+- 결합 gap은 최소 `0.21 mm` / 권장 `0.216 mm`; fan-out을 포함한 uncoupled 길이는 일반 pair `16.0 mm`, split pair B `16.5 mm` 이하로 제한한다.
 - transformer 앞에서는 한쪽 선에 짧은 U자 보정을 넣지 않는다. 대신 coupled trunk의 마지막 분기점을 약 1.3 mm 이동해 부드러운 fan-out 형상으로 end-to-end 길이를 맞춘다.
 - RCT4를 포함한 선택형 CT-GND 경로는 0 Ω 저항의 GND pad를 내부 GND plane에 짧게 연결한다. RCT가 DNP이면 GND측 동박과 via는 plane에 남지만 transformer center-tap으로 이어지는 경로는 개방된다.
 - L2/L3에는 track 및 non-GND zone을 금지한다.

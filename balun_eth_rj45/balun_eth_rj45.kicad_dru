@@ -30,13 +30,13 @@
 (rule "JLC 50 ohm outer geometry"
     (layer outer)
     (condition "A.Type == 'Track' && A.hasNetclass('RF50')")
-    (constraint track_width (min 0.34mm) (opt 0.35mm) (max 0.36mm))
+    (constraint track_width (min 0.356mm) (opt 0.357mm) (max 0.358mm))
 )
 
 (rule "JLC 100 ohm differential trace width"
     (layer outer)
     (condition "A.Type == 'Track' && A.hasNetclass('ETH100')")
-    (constraint track_width (min 0.22mm) (opt 0.23mm) (max 0.24mm))
+    (constraint track_width (min 0.233mm) (opt 0.234mm) (max 0.235mm))
 )
 
 (rule "JLC 100 ohm differential coupled gap"
@@ -45,7 +45,7 @@
     # The pair intentionally opens at connector/transformer fanouts.  A
     # maximum here creates false errors after KiCad reclassifies those short
     # sections; the uncoupled-length rules below limit how far that can extend.
-    (constraint diff_pair_gap (min 0.21mm) (opt 0.22mm))
+    (constraint diff_pair_gap (min 0.21mm) (opt 0.216mm))
 )
 
 (rule "Ethernet pair topology"
@@ -77,7 +77,7 @@
 # pin-field escape keeps at least 0.295 mm copper clearance to adjacent PTHs.
 (rule "RJ45 pin-field neckdown"
     (condition "A.Type == 'Track' && A.hasNetclass('ETH100') && A.intersectsCourtyard('J1')")
-    (constraint track_width (min 0.14mm) (opt 0.15mm) (max 0.24mm))
+    (constraint track_width (min 0.14mm) (opt 0.15mm) (max 0.235mm))
 )
 
 (rule "RJ45 PTH to signal escape clearance"

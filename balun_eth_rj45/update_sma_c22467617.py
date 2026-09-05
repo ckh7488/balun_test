@@ -235,7 +235,7 @@ def migrate_launches(board: pcbnew.BOARD) -> None:
                round(pcbnew.ToMM(item.GetEnd().y), 3))
         for reference, y in SMA_YS.items():
             if ((97.75, y) in (start, end)
-                    and abs(pcbnew.ToMM(item.GetWidth()) - 0.35) < 1e-9):
+                    and abs(pcbnew.ToMM(item.GetWidth()) - 0.357) < 1e-9):
                 rf_at_pad.add(reference)
     if rf_at_pad == set(SMA_REFS) and new_vias <= present_vias and not (old_vias & present_vias):
         return
@@ -268,8 +268,8 @@ def migrate_launches(board: pcbnew.BOARD) -> None:
         anchor = rf_anchors.get(net_name)
         if anchor is None:
             raise RuntimeError(f"Could not find the local RF launch for {reference}")
-        add_segment(board, net, (97.75, y), (95.00, y), 0.35, pcbnew.F_Cu)
-        add_segment(board, net, (95.00, y), anchor, 0.35, pcbnew.F_Cu)
+        add_segment(board, net, (97.75, y), (95.00, y), 0.357, pcbnew.F_Cu)
+        add_segment(board, net, (95.00, y), anchor, 0.357, pcbnew.F_Cu)
 
     for y in SMA_YS.values():
         for sy in (y - 2.825, y + 2.825):

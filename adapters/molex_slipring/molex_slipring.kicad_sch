@@ -1,7 +1,7 @@
 (kicad_sch (version 20260306) (generator "eeschema") (generator_version "10.0")
       (uuid "5e6f90af-e298-5171-be59-d794e5e80902") (paper "A4")
       (title_block (title "molex_slipring / passive Ethernet adapter") (date "2026-09-05") (rev "A-DRAFT")
-        (comment 1 "ELECTRICAL CAD DRAFT; verify mating and JLC impedance before ordering"))
+        (comment 1 "ELECTRICAL CAD DRAFT; verify mating and JLC production stack before ordering"))
       (lib_symbols (symbol "Adapter:RJ45" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
       (property "Reference" "J" (at 0 5.08 0) (effects (font (size 1.27 1.27))))
       (property "Value" "RJ45" (at 0 2.54 0) (effects (font (size 1.27 1.27))))

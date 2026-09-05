@@ -17,3 +17,5 @@
 공통 [balun_eth_rj45](../../balun_eth_rj45/README.md) Rev B 자체는 현재도 재사용한다. 그 [FAB_NOTES](../../balun_eth_rj45/JLCPCB_FAB_NOTES.md)의 nominal 적층과 land pattern은 유효한 설계 참고이며, 이력 구매 문서와 함께 모두 폐기한 것이 아니다. 다만 실제 제조사의 stack/solver, 조립 방식과 부품 안착은 현재 제작 건에 맞춰 확인한다.
 
 과거 설계·구매 기록을 삭제하거나 주문을 취소한 것이 아니다. 새 구성의 통합 수량표, 표준 부품/PCB, 패널 도면과 어댑터 제조 export가 작성되면 해당 문서를 현재 기준으로 연결한다.
+
+현재 제조 옵션 및 치수는 [2026-09-05 주문 화면 가이드](../jlcpcb/README.md)와 [임피던스 증거](../jlcpcb/IMPEDANCE.md)가 우선한다.

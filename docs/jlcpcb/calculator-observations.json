@@ -1,0 +1,20 @@
+{
+  "date": "2026-09-05",
+  "url": "https://jlcpcb.com/pcb-impedance-calculator",
+  "board": {
+    "type": "Rigid",
+    "layers": 4,
+    "thickness_mm": 1.6,
+    "inner_copper_oz": 0.5,
+    "outer_copper_oz": 1,
+    "stackup": "JLC04161H-7628"
+  },
+  "width_spacing_complement": false,
+  "unit": "mm",
+  "initial_single_l1": "Impedance Tolerance (±):\n%\nImpedance (Ω)\nType\nSignal Layer\nTop Ref\nBottom Ref\nTrace Width\nTrace Spacing\nImpedance trace to copper\n50\nSingle Ended (Non coplanar)\nL\n1\n/\nL\n2\n0.3586\n/\n/\nLayer\nMaterial\nThickness (mil)\nThickness (mm)\nL1\nOuter Copper Weight1oz\n1.38\n0.0350\nPrepreg\n7628, RC 49%, 8.6 mil\n8.28\n0.2104\nL2\nCore\nL3\nInner Copper Weight\n1.1mm H/HOZ with copper\nInner Copper Weight\n0.60\n41.93\n0.60\n0.0152\n1.0650\n0.0152\nPrepreg\n7628, RC 49%, 8.6 mil\n8.28\n0.2104\nL4\nOuter Copper Weight1oz\n1.38\n0.0350",
+  "initial_differential_l1": "Impedance Tolerance (±):\n%\nImpedance (Ω)\nType\nSignal Layer\nTop Ref\nBottom Ref\nTrace Width\nTrace Spacing\nImpedance trace to copper\n100\nDifferential Pair (Non coplanar)\nL\n1\n/\nL\n2\n0.2365\n0.2200\n/\nLayer\nMaterial\nThickness (mil)\nThickness (mm)\nL1\nOuter Copper Weight1oz\n1.38\n0.0350\nPrepreg\n7628, RC 49%, 8.6 mil\n8.28\n0.2104\nL2\nCore\nL3\nInner Copper Weight\n1.1mm H/HOZ with copper\nInner Copper Weight\n0.60\n41.93\n0.60\n0.0152\n1.0650\n0.0152\nPrepreg\n7628, RC 49%, 8.6 mil\n8.28\n0.2104\nL4\nOuter Copper Weight1oz\n1.38\n0.0350",
+  "final_differential_l1": "Impedance Tolerance (±):\n%\nImpedance (Ω)\nType\nSignal Layer\nTop Ref\nBottom Ref\nTrace Width\nTrace Spacing\nImpedance trace to copper\n100\nDifferential Pair (Non coplanar)\nL\n1\n/\nL\n2\n0.2342\n0.2159\n/\nLayer\nMaterial\nThickness (mil)\nThickness (mm)\nL1\nOuter Copper Weight1oz\n1.38\n0.0350\nPrepreg\n7628, RC 49%, 8.6 mil\n8.28\n0.2104\nL2\nCore\nL3\nInner Copper Weight\n1.1mm H/HOZ with copper\nInner Copper Weight\n0.60\n41.93\n0.60\n0.0152\n1.0650\n0.0152\nPrepreg\n7628, RC 49%, 8.6 mil\n8.28\n0.2104\nL4\nOuter Copper Weight1oz\n1.38\n0.0350",
+  "final_differential_l4": "Impedance Tolerance (±):\n%\nImpedance (Ω)\nType\nSignal Layer\nTop Ref\nBottom Ref\nTrace Width\nTrace Spacing\nImpedance trace to copper\n100\nDifferential Pair (Non coplanar)\nL\n4\nL\n3\n/\n0.2342\n0.2159\n/\nLayer\nMaterial\nThickness (mil)\nThickness (mm)\nL1\nOuter Copper Weight1oz\n1.38\n0.0350\nPrepreg\n7628, RC 49%, 8.6 mil\n8.28\n0.2104\nL2\nCore\nL3\nInner Copper Weight\n1.1mm H/HOZ with copper\nInner Copper Weight\n0.60\n41.93\n0.60\n0.0152\n1.0650\n0.0152\nPrepreg\n7628, RC 49%, 8.6 mil\n8.28\n0.2104\nL4\nOuter Copper Weight1oz\n1.38\n0.0350",
+  "final_single_l1": "Impedance Tolerance (±):\n%\nImpedance (Ω)\nType\nSignal Layer\nTop Ref\nBottom Ref\nTrace Width\nTrace Spacing\nImpedance trace to copper\n50\nSingle Ended (Non coplanar)\nL\n1\n/\nL\n2\n0.3566\n/\n/\nLayer\nMaterial\nThickness (mil)\nThickness (mm)\nL1\nOuter Copper Weight1oz\n1.38\n0.0350\nPrepreg\n7628, RC 49%, 8.6 mil\n8.28\n0.2104\nL2\nCore\nL3\nInner Copper Weight\n1.1mm H/HOZ with copper\nInner Copper Weight\n0.60\n41.93\n0.60\n0.0152\n1.0650\n0.0152\nPrepreg\n7628, RC 49%, 8.6 mil\n8.28\n0.2104\nL4\nOuter Copper Weight1oz\n1.38\n0.0350",
+  "final_numerical_tolerance_percent": 0.01
+}

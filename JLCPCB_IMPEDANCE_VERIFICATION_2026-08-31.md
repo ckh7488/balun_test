@@ -1,5 +1,7 @@
 # JLCPCB 적층·임피던스 제조 검증 — 2026-08-31
 
+> **과거 기록:** 이 문서의 0.35 및 0.23/0.22 mm 계산은 현 주문 기준에서 대체됐다. [2026-09-05 공식 계산기 화면·현재 CAD 검증](docs/jlcpcb/IMPEDANCE.md)을 우선한다. 과거 정량 결과를 이번 재검증 결과로 해석하지 않는다.
+
 이 문서는 `balun_eth_rj45`, `balun_slipring/molex_end`, `balun_slipring/m12_end` 세 PCB의 JLCPCB 4층 제작 조건과 controlled-impedance geometry를 **2026-08-31 주문 화면 및 공식 계산 자료**에 맞춰 검증한 기록이다. 결론은 다음과 같다.
 
 - 세 PCB의 주 전송선 geometry는 지정 적층에서 50 Ω / 100 Ω 목표와 잘 맞는다.
