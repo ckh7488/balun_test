@@ -1,5 +1,7 @@
 # M12 / 커넥터 끝 UnknownThru 보정 도구
 
+전체 설계와 보정 가정을 검토할 때는 [설계 검토 인계](../DESIGN_REVIEW_HANDOFF.md)를 먼저 읽는다. 특히 adapter-end 기준면, 50/100 Ω 처리, 첫 full SMA SOLT 이후의 zero switch terms 가정과 실물 미검증 범위를 확인한다.
+
 대상: **LibreVNA full 2-port SMA SOLT가 이미 적용된** complex Touchstone. raw 측정, 포트별 SOL만 적용한 측정, 크기만 저장한 CSV에는 사용하지 않는다. 이름은 `m12_cal`이지만 양끝이 M12/RJ45/Molex인 경우도 해당 접속면의 표준과 핀맵을 정의하면 같은 방식이다.
 
 ## 설치

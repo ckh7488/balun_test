@@ -2,6 +2,8 @@
 
 산업용 100BASE-TX 케이블·커넥터·슬립링의 **정적 전송 품질을 먼저 평가**하기 위한 프로젝트다. 일반 RJ45 케이블과 사내 전용 핀맵의 케이블을 같은 플랫폼에서 측정한다.
 
+**설계 검토를 시작한다면 [설계 의도·패치 범위·검토 인계](DESIGN_REVIEW_HANDOFF.md)를 먼저 읽는다.** 사용자 요구, 구현 선택 이유, 현재/이전 문서 구분, 검증 증거와 남은 질문을 정리했다. 현재는 배선된 CAD와 합성 검증 단계이며, O/S/L/T 표준 PCB·실물 RF 검증·새 구성의 제조 release는 아직 없다.
+
 ## 현재 기본 구성
 
 양쪽에 `LibreVNA coax → SMA–balun–RJ45 PCB → 고정 RJ45 연결 → 교체형 커넥터 어댑터 → DUT`를 사용한다. 일반 RJ45 DUT는 어댑터 없이 연결한다. 최종 보정 기준면은 **어댑터 뒤의 DUT 접속면**이다. M12와 Molex 조합처럼 양끝 커넥터가 달라도 같은 원리를 사용한다.
@@ -17,13 +19,14 @@ LibreVNA 화면은 SMA 기준으로 남는다. 자작 thru를 이상적인 0 ps 
 
 | 문서/경로 | 내용 |
 | --- | --- |
+| [DESIGN_REVIEW_HANDOFF.md](DESIGN_REVIEW_HANDOFF.md) | 패치 목적과 변경 범위, 설계 판단 근거, 검토 우선순위·재현 방법 |
 | [VNA_TEST_PLAN.md](VNA_TEST_PLAN.md) | 목적, 기준면, 표준 제작, 측정·검증 순서 |
 | [analysis/README.md](analysis/README.md) | 설치, 3+3+1 파일 입력, 보정 저장과 DUT 처리 |
 | [balun_eth_rj45](balun_eth_rj45/README.md) | 공통 SMA–RJ45 balun PCB |
 | [adapters](adapters/README.md) | JLCPCB용 교체형 어댑터와 지그 검토 |
 | [docs/legacy](docs/legacy/README.md) | 종전 SMA 기준 비교 계획; 변경 이력용 |
 
-`balun_slipring/`과 `balun_llc16/`의 커넥터 전용 balun PCB는 기존 설계 자산이다. 현재 기본안은 **공통 RJ45 balun PCB + 커넥터별 수동 어댑터 PCB**이며, 기존 PCBA 10장 구매 문서는 이 기본안의 최신 발주 수량표가 아니다. 기존 설계·BOM을 삭제하거나 이미 주문한 물량을 취소한 것은 아니다.
+`balun_slipring/`과 `balun_llc16/`의 커넥터 전용 balun PCB는 기존 설계 자산이다. 현재 기본안은 **공통 RJ45 balun PCB + 커넥터별 수동 어댑터 PCB**이며, 과거 4/8/10장 등 구매 문서는 이 기본안의 최신 발주 수량표가 아니다. 기존 설계·BOM을 삭제하거나 이미 주문한 물량을 취소한 것은 아니다. 기존 `export_jlc_release.ps1`도 새 `adapters/`를 export하지 않는다. [이력 자료 목록](docs/legacy/README.md)에서 적용 범위를 확인한다.
 
 ## 결과의 의미
 

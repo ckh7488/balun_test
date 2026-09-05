@@ -1,5 +1,7 @@
 # Slip-ring comparison measurement worksheet
 
+> **2026-09-05 이전 절차:** 이 문서는 전용 balun endpoint와 SMA 기준 REF 비교 구성의 이력이다. 현재 공통 RJ45 지그 + 어댑터 구성은 [VNA_TEST_PLAN](../VNA_TEST_PLAN.md)의 adapter-end O/S/L + UnknownThru 절차를 따른다. 미사용 SMA 수, 기준면, 표준과 조달 지시는 새 구성에 그대로 적용하지 않는다. 변경 이유는 [설계 검토 인계](../DESIGN_REVIEW_HANDOFF.md)에 있다.
+
 상태: `DRAFT` — 문서 핀맵과 SMA land pattern은 반영했지만 REV-504 continuity, endpoint connector 기구, M12 실장 방향과 JLC wave-solder 승인이 미검증이므로 아직 제작하거나 측정에 사용하지 않는다.
 
 ## DUT와 안전 조건

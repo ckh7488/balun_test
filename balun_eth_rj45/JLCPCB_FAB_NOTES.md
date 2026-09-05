@@ -1,5 +1,7 @@
 # JLCPCB fabrication notes — balun_eth_rj45 Rev B
 
+**2026-09-05 적용 범위:** 현재도 사용하는 공통 RJ45 Rev B 한 보드의 nominal 적층/geometry 참고다. 전체 시스템 수량과 조립 방식은 [설계 검토 인계](../DESIGN_REVIEW_HANDOFF.md), 새 수동 어댑터는 [adapters/JLCPCB_BUILD](../adapters/JLCPCB_BUILD.md)를 따른다. 현재 CAD의 SMA 부품은 유지했으나 기존 PCBA 공정 설명을 손납땜 금지 조건으로 해석하지 않는다.
+
 이 문서는 JLCPCB 주문 화면에서 선택해야 할 값과 임피던스 기준을 고정한다. 임의 대체 stack-up은 허용하지 않는다. 아래 Dk는 설계 당시 입력값이며 현재 주문 solver의 supplier 보증값으로 간주하지 않는다.
 
 ## 주문 선택값
@@ -57,7 +59,7 @@ RJ45 PTH pin field의 `0.15 mm` neck-down은 connector 내부의 매우 짧은 e
 - pair B signal via 주변의 GND return via 네 개는 각 signal via에서 중심 간 `1.355 mm`로 대칭 배치한다.
 - unused SMA에는 PCB 부품이 아니라 측정 시 외부 50 Ω terminator를 장착한다.
 - Keystone `5001` 권장 mounting hole은 1.02 mm이고 현재 KiCad standard footprint drill은 1.00 mm다. JLC finished-hole 공차와 snap-fit retention을 확인하거나 첫 샘플을 실제 삽입해 승인한다.
-- SMA 12개는 모두 MyAntenna `A-SMA-KE-16.5A` / `C22467617`만 사용하고 자동 대체를 허용하지 않는다.
+- 공통 RJ45 보드 한 장의 SMA 4개는 현 CAD의 MyAntenna `A-SMA-KE-16.5A` / `C22467617` 기준이다. 다른 부품을 사용하면 land pattern과 두께/안착 조건을 함께 검토한다. 과거 전체 구성의 SMA 12개 합계를 현재 신규 발주량으로 사용하지 않는다.
 - `C22467617`의 패드가 board edge에 맞닿고 connector body가 보드 밖쪽을 향하는지 JLC placement/DFM 화면에서 확인한다.
 - fabrication ZIP 이름에 `Rev A` 또는 `HOLD`가 있으면 발주하지 않는다.
 - Gerber는 `--check-zones`로 생성하고 In1/In2 각각에 실제 `/GND` plane region polygon이 있는지 CAM에서 확인한다.

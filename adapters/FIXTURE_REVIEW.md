@@ -1,6 +1,6 @@
 # 공통 RJ45 balun 지그 검토 — 2026-09-05
 
-결론: **현재 RJ45 Rev B를 공통 플랫폼으로 사용하는 것이 적합한 출발점이다.** 새 측정 방향은 지그 이후 기준면 보정을 추가하는 변경이며, 이를 위해 balun PCB 회로를 새로 설계할 필요는 없다. 커넥터별 전용 balun PCB 대신 수동 어댑터 PCB를 교체한다.
+설계 판단: **현재 RJ45 Rev B를 공통 플랫폼 후보로 유지한다.** 새 측정 방향은 지그 이후 기준면 보정을 추가하는 변경이다. 현재 CAD 검토에서 공통 balun 회로를 즉시 교체해야 할 근거는 찾지 않았으며, 실측 대역·balance·누설 결과에 따라 재설계할 수 있다. 커넥터별 전용 balun PCB 대신 수동 어댑터 PCB를 교체한다. 전체 변경 의도와 검토 질문은 [설계 검토 인계](../DESIGN_REVIEW_HANDOFF.md)에 있다.
 
 ## 실제 CAD에서 확인한 것
 
@@ -36,6 +36,8 @@ KiCad 10.0.6으로 기존 `balun_eth_rj45.kicad_pcb`를 검사했다. 표준 라
 ## 이번에 만든 어댑터의 검사 범위
 
 세 보드의 native DRC/ERC/parity, 정확한 pair 결선과 power/NC 핀 분리를 확인했다. 저장된 CAD hash와 검사 결과는 [verification.json](verification.json)에 있다. 각 보드의 inner SHIELD plane fill과 레이어/회로도 SVG를 생성했다.
+
+DRC 0은 각 보고서의 검사 설정에서의 결과이며 `ignored_checks`도 함께 읽어야 한다. 어댑터의 넓은 fanout은 길이 일치만 확인한 것으로, loop/uncoupled 길이와 실제 전기적 대칭은 추가 검토 대상이다. 어댑터의 SHIELD plane과 기존 balun PCB의 GND plane은 접속 조건이 다르므로 body/패널/patch shield까지 포함해 검토한다.
 
 이것은 CAD 검증이다. 아직 실제 JLC 제작품, PCB용 M12의 사내 케이블 체결, 실제 표준과 DUT 데이터는 없다. 임피던스 정밀도나 industrial-use PASS/FAIL을 이 단계에서 단정하지 않는다.
 

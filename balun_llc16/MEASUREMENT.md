@@ -1,5 +1,7 @@
 # LLC-13M-1 비교 측정 초안
 
+> **2026-09-05 이전 절차:** 이 문서는 LLC 전용 balun 보드와 SMA 기준 REF 비교 구성의 이력이다. 현재 공통 RJ45 지그 + 어댑터 구성은 [VNA_TEST_PLAN](../VNA_TEST_PLAN.md)의 adapter-end O/S/L + UnknownThru 절차를 따른다. 미사용 SMA 수, 기준면, 표준과 조달 지시는 새 구성에 그대로 적용하지 않는다. 변경 이유는 [설계 검토 인계](../DESIGN_REVIEW_HANDOFF.md)에 있다.
+
 상태: **핀맵 문서 기반 계획 / 커넥터 및 PCB 검증 전 / 측정 실행 승인 아님**
 
 LLC 케이블 측 암 / PCB 지그 측 수 방향은 2026-09-03 실물 사진과 사용자 확인으로 확정했다. 이는 아래 continuity와 전원 분리 검사를 대체하지 않는다.
